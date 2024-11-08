@@ -1,7 +1,56 @@
+import React,{useState} from 'react';
+import axios from 'axios';
 import {Button,Input} from "@nextui-org/react";
+import {Spinner} from "@nextui-org/spinner";
 
 
 export default function SignUp() {
+    const [confirmPassword, setConfirmPassword] = useState(''); 
+    const [error, setError] = useState('');
+    const [subLoading, setSubLoading] = useState(false);
+    const [formData, setFormData] = useState({firstName:'',lastName:'',dateofBirth:'',userName:'',email: '', password: ''})
+
+    const hanldeSignUp = async() => {
+        setSubLoading(true);
+        setError('');
+        try{
+            if(!formData.firstName || !formData.lastName || !formData.dateofBirth || !formData.userName || !formData.email || !formData.password){
+                throw new Error('All fields are required');
+            }
+            if(formData.password !== confirmPassword){
+                throw new Error('Passwords do not match');
+            }
+            const res = await axios.post('http://localhost:3000/api/signup', formData);
+            if (res.status === 201) {
+                alert("User created successfully");
+                // Reset form fields on successful signup
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    dateofBirth: '',
+                    userName: '',
+                    email: '',
+                    password: ''
+                });
+                setConfirmPassword('');
+            }
+            } catch (error: unknown) {
+                // Handle Axios errors separately from other errors
+                if (axios.isAxiosError(error)) {
+                    const backendMessage = error.response?.data?.error?.message || 'An error occurred';
+                    setError(backendMessage);
+                } else if (error instanceof Error) {
+                    // Handle other errors
+                    setError(error.message);
+                } else {
+                    // Fallback for any other unknown error types
+                    setError('An unknown error occurred');
+                }
+            } finally {
+                setSubLoading(false); // Stop loading spinner
+            }
+    }
+
     return (
         <div className="flex h-screen">
             <div className="w-1/2 h-full p-5 flex items-center justify-center">
@@ -11,21 +60,28 @@ export default function SignUp() {
                     </div>
                     <div className="flex flex-col gap-4 space-y-3 mr-6 ml-6">
                         <div className="flex justify-between gap-4">
-                            <Input type="text" label="First Name" />
-                            <Input type="text" label="Last Name" />
+                            <Input type="text" label="First Name" onChange={(e)=>setFormData({...formData, firstName: e.target.value})}/>
+                            <Input type="text" label="Last Name" onChange={(e)=>setFormData({...formData, lastName: e.target.value})}/>
                         </div>
-                        <Input type= "date" label="Date of Birth" />
-                        <Input type="username" label="User Name" />
-                        <Input type="email" label="Email" />
+                        <Input type= "date" label="Date of Birth" onChange={(e)=>setFormData({...formData, dateofBirth: e.target.value})}/>
+                        <Input type="username" label="User Name" onChange={(e)=>setFormData({...formData, userName: e.target.value})}/>
+                        <Input type="email" label="Email" onChange={(e)=>setFormData({...formData, email: e.target.value})}/>
                         <div className="flex justify-between gap-4">
-                            <Input type="password" label="Password" />
-                            <Input type="password" label="Confirm Password" /> 
+                            <Input type="password" label="Password" onChange={(e)=>setFormData({...formData, password: e.target.value})}/>
+                            <Input type="password" label="Confirm Password" onChange={(e) => setConfirmPassword(e.target.value)}/> 
                         </div>
-                        <p><a href="/login" className="text-blue-400">Already have an Account?</a></p>
+                        {error && <p className="text-red-600 font-light text-sm">{error}</p>}
                     </div>
-                    <Button color="secondary" radius="lg" variant="shadow" className="mt-5 text-center">
-                        Sign Up
-                    </Button>
+                        {subLoading ?
+                        <Spinner color="primary"/> 
+                        :
+                        <>
+                            <p className='mt-5 '><a href="/login" className="text-blue-400 ">Already have an Account?</a></p>
+                            <Button onClick={hanldeSignUp}color="secondary" radius="lg" variant="shadow" className="mt-5 text-center">
+                                Sign Up
+                            </Button>
+                        </>
+                        }   
                 </div>
             </div>
             <div className="w-1/2 h-full">
