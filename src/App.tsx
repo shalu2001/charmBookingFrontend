@@ -1,16 +1,10 @@
-import './App.css'
-import AuthProvider from 'react-auth-kit'
-import store from './AuthStore'
+import AppRoutes from './../Routers/routes';
 
 function App() {
-
-  return (
-    <AuthProvider store={store}>
-      <div className='text-5xl text-yellow-300'>
-        hello world
-      </div>
-    </AuthProvider>
-  )
+    return (
+     <AppRoutes/>
+        
+    );
 }
 
-export default App
+export default App;
