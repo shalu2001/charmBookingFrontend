@@ -2,9 +2,10 @@
 import Header from '../components/header';
 import Footer from '../components/footer';
 import SearchBar from '../components/searchBar';
-import Carousel from '../components/carousel';
 import ProductCard from '../components/productCard';
 import SalonCard from '../components/salonCard';
+import EmblaCarousel from '../components/carousel';
+import { EmblaOptionsType } from 'embla-carousel';
 
 
 const salons = [
@@ -22,28 +23,43 @@ const products = [
   // Add more products here
 ];
 
+const OPTIONS: EmblaOptionsType = { loop: true, duration: 600000 }; // 10 minutes in milliseconds
+const SLIDES = [
+  '/image1.avif',
+  '/image2.jpeg',
+  '/image3.avif',
+  // Add more image paths here
+];
+
 const HomePage = () => {
   return (
     <div>
       <Header />
-      <SearchBar />
-      <Carousel />
-      <div className="p-20">
-        <h2 className="text-2xl mb-4">Salons</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {salons.map((salon, index) => (
-            <SalonCard key={index} />
-          ))}
+        <div className="relative w-screen h-screen">
+          <EmblaCarousel slides={SLIDES} options={OPTIONS} />
+            <div className="absolute inset-0 bg-black opacity-50">
+              <p className="text-9xl text-quaternary text-left p-20">Salon and Beauty Services</p>
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <SearchBar />
+            </div>
         </div>
-      </div>
-      <div className="p-20">
-        <h2 className="text-2xl mb-4">Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {products.map((product, index) => (
-            <ProductCard key={index} />
-          ))}
+        <div className="p-20">
+          <h2 className="text-2xl mb-4">Salons</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            {salons.map((salon, index) => (
+              <SalonCard key={index} />
+            ))}
+          </div>
         </div>
-      </div>
+        <div className="p-20">
+          <h2 className="text-2xl mb-4">Products</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            {products.map((product, index) => (
+              <ProductCard key={index} />
+            ))}
+          </div>
+        </div>
       <Footer />
     </div>
   );
