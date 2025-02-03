@@ -1,22 +1,30 @@
-import React from 'react';
 import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 
-const ProductCard = () => {
+interface ProductCardProps {
+  product: {
+    name: string;
+    price: number;
+    rating: number;
+    image: string;
+  };
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <Card className="py-4">
-    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-      <Image
-        alt="Card background"
-        className="object-cover rounded-xl"
-        src="https://nextui.org/images/hero-card-complete.jpeg"
-      />
-    </CardHeader>
-    <CardBody className="overflow-visible py-2 px-5">
-      <h4 className="font-bold text-large">Hair Spray 350ml</h4>
-      <p className=" text-tiny">RS. 1500.00</p>
-      <small className="text-default-500">4.0</small>
-    </CardBody>
-  </Card>
+      <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+        <Image
+          alt={product.name}
+          className="object-cover rounded-xl"
+          src={product.image}
+        />
+      </CardHeader>
+      <CardBody className="overflow-visible py-2 px-5">
+        <h4 className="font-bold text-large">{product.name}</h4>
+        <p className="text-tiny">RS. {product.price.toFixed(2)}</p>
+        <small className="text-default-500">{product.rating}</small>
+      </CardBody>
+    </Card>
   );
 };
 
