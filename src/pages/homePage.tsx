@@ -41,14 +41,15 @@ const HomePage = () => {
         <div className="relative w-screen h-screen">
           <EmblaCarousel slides={SLIDES} options={OPTIONS} />
             <div className="absolute inset-0">
-              <p className="text-9xl text-primary text-left p-20">Salon and Beauty Services</p>
+              <p className="text-8xl font-instrumentSerif text-left pr-20 pl-20 pt-20 pb-0">Salon and Beauty</p>
+              <p className="text-8xl font-instrumentSerif text-left pr-20 pl-20 pt-5 pb-20">Services</p>
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
               <SearchBar />
             </div>
         </div>
         <div className="p-20">
-          <h2 className="text-2xl mb-4">Salons</h2>
+          <h2 className="font-instrumentSerif text-5xl mb-4">Salons</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {salons.map((salon, index) => (
               <SalonCard key={index} salon={salon}/>
@@ -56,7 +57,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="p-20">
-          <h2 className="text-2xl mb-4">Products</h2>
+          <h2 className="font-instrumentSerif text-5xl mb-4">Products</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {products.map((product, index) => (
               <ProductCard key={index} product={product} />
@@ -65,7 +66,7 @@ const HomePage = () => {
         </div>
 
         <div className="p-20">
-            <h2 className="text-2xl mb-4">Why you should use Charmbooking?</h2>
+            <h2 className="font-instrumentSerif text-5xl mb-4">Why you should use Charmbooking?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
               <div className="relative bg-white shadow-md rounded-lg overflow-hidden">
           <img src="/image1.avif" alt="Convenience" className="w-full h-full object-cover" />

@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        birthstone: ['Birthstone', 'serif'],
+        instrumentSerif: ['Instrument Serif', 'serif'],
+      },
       colors: {
         primary: "var(--primary)",
         secondary: "var(--secondary)",
