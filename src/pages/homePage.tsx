@@ -5,6 +5,7 @@ import ProductCard from '../components/productCard';
 import SalonCard from '../components/salonCard';
 import EmblaCarousel from '../components/carousel';
 import { EmblaOptionsType } from 'embla-carousel';
+import { useState } from 'react';
 
 
 const salons = [
@@ -35,6 +36,7 @@ const SLIDES = [
 ];
 
 const HomePage = () => {
+
   return (
     <div>
       <Header />
