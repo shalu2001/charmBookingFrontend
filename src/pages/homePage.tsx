@@ -5,8 +5,6 @@ import ProductCard from '../components/productCard';
 import SalonCard from '../components/salonCard';
 import EmblaCarousel from '../components/carousel';
 import { EmblaOptionsType } from 'embla-carousel';
-import { useState } from 'react';
-
 
 const salons = [
     { name: 'Base Hair Salon', rating: 3.8, address: 'address 1', image: '/image2.jpeg' },
