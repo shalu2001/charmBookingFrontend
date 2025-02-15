@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Layout from "../../layout/layout";
 import ModalComponent from "../../components/modal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
+import StarRating from "../../components/starRating";
 
 const SalonPage = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +23,6 @@ const SalonPage = () => {
     const salonLocation = "New York, NY";
     const salonCurrentStatus= "Open";
     const salonOpeningHours = "9:00 AM - 5:00 PM";
-
 
     return (
         <Layout>
@@ -47,6 +49,21 @@ const SalonPage = () => {
             <ModalComponent images={images} isOpen={isOpen} onClose={handleClose} />
 
             <div className="font-instrumentSerif text-5xl m-4">{salonName}</div>
+            <div className="font-instrumentSerif text-xl m-4 flex space-x-4">
+                <span>{salonRating}</span>
+                <StarRating 
+                    name="read-only" 
+                    value={salonRating} 
+                    readOnly={true} 
+                    size="small" 
+                />
+                <span>{salonCurrentStatus}</span>
+                <span>{salonOpeningHours}</span>
+            </div>
+            <div className="font-instrumentSerif text-xl m-4 flex items-center">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
+                <span>{salonLocation}</span>
+            </div>
                 
         </div>
 
