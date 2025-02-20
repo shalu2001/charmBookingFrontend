@@ -1,46 +1,46 @@
-// import React, { useState } from 'react';
-//import axios from 'axios';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Button, Input } from "@nextui-org/react";
-//import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@nextui-org/spinner";
 
 export default function Login() {
-  //const [formData, setFormData] = useState({ identifier: '', password: '' });
-  //const [error, setError] = useState('');
-  //const [subLoading, setSubLoading] = useState(false);
+  const [formData, setFormData] = useState({ identifier: '', password: '' });
+  const [error, setError] = useState('');
+  const [subLoading, setSubLoading] = useState(false);
 
   const handleLogin = async () => {
-    // setSubLoading(true);
-    // setError('');
-    // try {
-    //   if (!formData.identifier || !formData.password) {
-    //     throw new Error('Both fields are required');
-    //   }
-    //   const res = await axios.post('http://localhost:3000/api/login', formData);
-    //   if (res.status === 200) {
-    //     alert("Login successful");
-    //     // Handle successful login (e.g., redirect to dashboard)
-    //   }
-    // } catch (error: unknown) {
-    //   // Handle Axios errors separately from other errors
-    //   if (axios.isAxiosError(error)) {
-    //     const backendMessage = error.response?.data?.error?.message || 'An error occurred';
-    //     setError(backendMessage);
-    //   } else if (error instanceof Error) {
-    //     // Handle other errors
-    //     setError(error.message);
-    //   } else {
-    //     // Fallback for any other unknown error types
-    //     setError('An unknown error occurred');
-    //   }
-    // } finally {
-    //   setSubLoading(false); // Stop loading spinner
-    // }
+    setSubLoading(true);
+    setError('');
+    try {
+      if (!formData.identifier || !formData.password) {
+        throw new Error('Both fields are required');
+      }
+      const res = await axios.post('http://localhost:3000/api/login', formData);
+      if (res.status === 200) {
+        alert("Login successful");
+        // Handle successful login (e.g., redirect to dashboard)
+      }
+    } catch (error: unknown) {
+      // Handle Axios errors separately from other errors
+      if (axios.isAxiosError(error)) {
+        const backendMessage = error.response?.data?.error?.message || 'An error occurred';
+        setError(backendMessage);
+      } else if (error instanceof Error) {
+        // Handle other errors
+        setError(error.message);
+      } else {
+        // Fallback for any other unknown error types
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setSubLoading(false); // Stop loading spinner
+    }
   };
 
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     // setFormData({ ...formData, [e.target.name]: e.target.value });
-//     // setError(''); // Clear the error state
-//   };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Clear the error state
+  };
 
   return (
     <div className="flex h-screen">
@@ -54,19 +54,18 @@ export default function Login() {
               type="text"
               label="Email or Username"
               name="identifier"
-              //onChange={handleChange}
+              value={formData.identifier}
+              onChange={handleChange}
             />
             <Input
               type="password"
               label="Password"
               name="password"
-              //onChange={handleChange}
+              value={formData.password}
+              onChange={handleChange}
             />
-            {/* {error && <p className="text-red-600 font-light text-sm">{error}</p>} */}
+            {error && <p className="text-red-600 font-light text-sm">{error}</p>}
           </div>
-          {/* {subLoading ? ( */}
-            {/* <Spinner color="primary" />
-          ) : ( */}
             <>
               <p className="mt-5">
                 <a href="/signup" className="text-blue-400">
@@ -80,10 +79,10 @@ export default function Login() {
                 variant="shadow"
                 className="mt-5 text-center"
               >
-                Login
+                {subLoading ? <Spinner color="white" size="sm" /> : 'Login'}
+
               </Button>
             </>
-          {/* )} */}
         </div>
       </div>
       <div className="w-1/2 h-full">
