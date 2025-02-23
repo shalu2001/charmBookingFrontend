@@ -27,7 +27,7 @@ const products = [
   // Add more products here
 ];
 
-const OPTIONS: EmblaOptionsType = { loop: true, duration: 600000 }; // 10 minutes in milliseconds
+const OPTIONS: EmblaOptionsType = { loop: true, duration: 60 }; 
 const SLIDES = [
   '/image1.avif',
   '/image2.jpeg',
@@ -42,7 +42,7 @@ const HomePage = () => {
       <Header />
         <div className="relative w-screen h-screen">
           <EmblaCarousel slides={SLIDES} options={OPTIONS} />
-            <div className="absolute inset-0">
+            <div className="w-fit h-fit absolute inset-0 bg-clip-text text-transparent bg-gradient-to-br from-black to-quaternary drop-shadow-lg">
               <p className="text-8xl font-instrumentSerif text-left pr-20 pl-20 pt-20 pb-0">Salon and Beauty</p>
               <p className="text-8xl font-instrumentSerif text-left pr-20 pl-20 pt-5 pb-20">Services</p>
             </div>

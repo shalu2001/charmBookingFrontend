@@ -11,7 +11,7 @@ interface SalonCardProps {
 
 const SalonCard: React.FC<SalonCardProps> = ({ salon }) => {
   return (
-    <Card className="py-4">
+    <Card className="py-4" isPressable shadow="sm" onPress={() => console.log("item pressed")}>
     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
       <Image
         alt="Card background"
