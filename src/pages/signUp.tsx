@@ -33,6 +33,8 @@ export default function SignUp() {
                     password: ''
                 });
                 setConfirmPassword('');
+
+                window.location.href = '/login';
             }
             } catch (error: unknown) {
                 // Handle Axios errors separately from other errors
