@@ -1,8 +1,8 @@
 import { Routes,Route, BrowserRouter} from "react-router-dom";
-import SignUp from "./pages/signUp";
-import Login from "./pages/login";
-import HomePage from "./pages/homePage";
-import SalonPage from "./pages/salon/salonPage"
+import SignUp from "../pages/signUp";
+import Login from "../pages/login";
+import HomePage from "../pages/homePage";
+import SalonPage from "../pages/salon/salonPage"
 
 
 export default function AppRoutes() {
