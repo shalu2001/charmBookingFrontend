@@ -1,9 +1,9 @@
-import Header from '../components/header';
-import Footer from '../components/footer';
-import SearchBar from '../components/searchBar';
-import ProductCard from '../components/productCard';
-import SalonCard from '../components/salonCard';
-import EmblaCarousel from '../components/carousel';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import SearchBar from '../components/SearchBar';
+import ProductCard from '../components/ProductCard';
+import SalonCard from '../components/SalonCard';
+import EmblaCarousel from '../components/Carousel';
 import { EmblaOptionsType } from 'embla-carousel';
 // import { useState } from 'react';
 

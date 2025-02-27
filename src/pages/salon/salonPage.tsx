@@ -1,10 +1,10 @@
 import { useState,useRef } from "react";
 import Layout from "../../layout/layout";
-import ModalComponent from "../../components/modal";
+import ModalComponent from "../../components/Modal";
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faMapMarkerAlt,faChevronRight,faChevronLeft} from '@fortawesome/free-solid-svg-icons';
-import StarRating from "../../components/starRating";
-import ServiceField from "../../components/serviceField";
+import StarRating from "../../components/StarRating";
+import ServiceField from "../../components/ServiceField";
 import { Button } from '@nextui-org/react';
 
 const SalonPage = () => {
