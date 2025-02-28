@@ -1,0 +1,27 @@
+[
+    {
+      "customer": "6543210abcdef6543210abc",
+      "rating": 5,
+      "reviewText": "Excellent service! Highly recommended."
+    },
+    {
+      "customer": "1234567abcdef1234567abc",
+      "rating": 4,
+      "reviewText": "Good experience, but a bit pricey."
+    },
+    {
+      "customer": "9876543abcdef9876543abc",
+      "rating": 5,
+      "reviewText": "Amazing staff and relaxing atmosphere."
+    },
+    {
+      "customer": "5555555abcdef5555555abc",
+      "rating": 3,
+      "reviewText": "Okay service, nothing special."
+    },
+    {
+      "customer": "1111111abcdef1111111abc",
+      "rating": 5,
+      "reviewText": "The best salon I've ever been to!"
+    }
+  ]
