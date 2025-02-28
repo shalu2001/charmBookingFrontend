@@ -5,16 +5,10 @@ import ProductCard from '../components/ProductCard';
 import SalonCard from '../components/SalonCard';
 import EmblaCarousel from '../components/Carousel';
 import { EmblaOptionsType } from 'embla-carousel';
+import { getSalons } from '../actions/salonActions';
+import { useQuery } from '@tanstack/react-query';
 // import { useState } from 'react';
 
-
-const salons = [
-    { name: 'Base Hair Salon', rating: 3.8, address: 'address 1', image: '/image2.jpeg' },
-    { name: 'Beauty Salon', rating: 4.0, address: 'address 2', image: '/image1.avif' },
-    { name: 'Glamour Salon', rating: 3.6, address: 'address 3', image: '/image3.avif' },
-    { name: 'Forever Salon', rating: 3.8, address: 'address 4', image: '/image3.avif' },
-    // Add more salons here
-];
 const products = [
   { name: 'Revitalizing Shampoo', description: 'Nourishes and strengthens hair', price: 15.99, rating: 4.5, image: '/bellose.jpeg' },
   { name: 'Hydrating Conditioner', description: 'Moisturizes and detangles hair', price: 12.99, rating: 4.7, image: '/bellose.jpeg' },
@@ -36,7 +30,7 @@ const SLIDES = [
 ];
 
 const HomePage = () => {
-
+  const { data: salons } = useQuery({queryKey: ['salons'], queryFn: getSalons});
   return (
     <div>
       <Header />
@@ -53,7 +47,7 @@ const HomePage = () => {
         <div className="p-20">
           <h2 className="font-instrumentSerif text-5xl mb-4">Salons</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {salons.map((salon, index) => (
+            {salons?.map((salon, index) => (
               <SalonCard key={index} salon={salon}/>
             ))}
           </div>

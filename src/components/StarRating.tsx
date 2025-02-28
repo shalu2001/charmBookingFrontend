@@ -3,7 +3,7 @@ import Rating from '@mui/material/Rating';
 
 interface StarRatingProps {
   name: string;
-  value: number | null;
+  value: number | undefined;
   onChange?: (event: React.ChangeEvent<unknown>, newValue: number | null) => void;
   readOnly?: boolean;
   disabled?: boolean;

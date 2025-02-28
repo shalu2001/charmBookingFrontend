@@ -12,7 +12,7 @@ export default function AppRoutes() {
                 <Route path="/signup" element={<SignUp/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="" element={<HomePage/>} />
-                <Route path="/salon" element={<SalonPage/>} />
+                <Route path="/salon/:salonId" element={<SalonPage/>} />
 
             </Routes>
         </BrowserRouter>

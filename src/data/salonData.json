@@ -1,305 +1,305 @@
-[
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b71",
-    "salonName": "Luxury Spa & Beauty",
-    "ownerName": "Alice Johnson",
-    "location": {
-      "address": "123 Main St",
-      "city": "New York",
-      "country": "USA",
-      "postalCode": "10001"
-    },
-    "contactInfo": {
-      "phone": "123-456-7890",
-      "email": "luxuryspa@example.com"
-    },
-    "category": [
-      {
-        "name": "Hair Services",
-        "services": [
-          { "serviceName": "Haircut", "price": 50, "durationMinutes": 45 },
-          { "serviceName": "Hair Coloring", "price": 100, "durationMinutes": 90 }
-        ]
+{
+  "salons": [
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b71",
+      "salonName": "Luxury Spa & Beauty",
+      "ownerName": "Alice Johnson",
+      "location": {
+        "address": "123 Main St",
+        "city": "New York",
+        "country": "USA",
+        "postalCode": "10001"
       },
-      {
-        "name": "Facial Treatments",
-        "services": [
-          { "serviceName": "Anti-Aging Facial", "price": 80, "durationMinutes": 60 },
-          { "serviceName": "Deep Cleansing Facial", "price": 60, "durationMinutes": 50 }
-        ]
+      "contactInfo": {
+        "phone": "123-456-7890",
+        "email": "luxuryspa@example.com"
       },
-      {
-        "name": "Nail Care",
-        "services": [
-          { "serviceName": "Manicure", "price": 30, "durationMinutes": 30 },
-          { "serviceName": "Pedicure", "price": 40, "durationMinutes": 45 }
-        ]
+      "category": [
+        {
+          "name": "Hair Services",
+          "services": [
+            { "serviceName": "Haircut", "price": 50, "durationMinutes": 45 },
+            { "serviceName": "Hair Coloring", "price": 100, "durationMinutes": 90 }
+          ]
+        },
+        {
+          "name": "Facial Treatments",
+          "services": [
+            { "serviceName": "Anti-Aging Facial", "price": 80, "durationMinutes": 60 },
+            { "serviceName": "Deep Cleansing Facial", "price": 60, "durationMinutes": 50 }
+          ]
+        },
+        {
+          "name": "Nail Care",
+          "services": [
+            { "serviceName": "Manicure", "price": 30, "durationMinutes": 30 },
+            { "serviceName": "Pedicure", "price": 40, "durationMinutes": 45 }
+          ]
+        },
+        {
+          "name": "Massage Therapy",
+          "services": [
+            { "serviceName": "Swedish Massage", "price": 70, "durationMinutes": 60 },
+            { "serviceName": "Deep Tissue Massage", "price": 90, "durationMinutes": 75 }
+          ]
+        },
+        {
+          "name": "Makeup Services",
+          "services": [
+            { "serviceName": "Bridal Makeup", "price": 120, "durationMinutes": 90 },
+            { "serviceName": "Party Makeup", "price": 80, "durationMinutes": 60 }
+          ]
+        },
+        {
+          "name": "Waxing",
+          "services": [
+            { "serviceName": "Full Body Wax", "price": 100, "durationMinutes": 75 },
+            { "serviceName": "Eyebrow Waxing", "price": 20, "durationMinutes": 15 }
+          ]
+        }
+      ],
+      "workingHours": {
+        "monday": "9:00 AM - 8:00 PM",
+        "tuesday": "9:00 AM - 8:00 PM",
+        "wednesday": "9:00 AM - 8:00 PM",
+        "thursday": "9:00 AM - 8:00 PM",
+        "friday": "9:00 AM - 8:00 PM",
+        "saturday": "10:00 AM - 6:00 PM",
+        "sunday": "Closed"
       },
-      {
-        "name": "Massage Therapy",
-        "services": [
-          { "serviceName": "Swedish Massage", "price": 70, "durationMinutes": 60 },
-          { "serviceName": "Deep Tissue Massage", "price": 90, "durationMinutes": 75 }
-        ]
+      "rating": 4.8,
+      "reviews": [
+        {
+          "customerName": "Jessica Smith",
+          "rating": 5,
+          "reviewText": "Amazing service and friendly staff!"
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
+    },
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b72",
+      "salonName": "The Hair Lounge",
+      "ownerName": "Bob Williams",
+      "location": {
+        "address": "456 Elm St",
+        "city": "Los Angeles",
+        "country": "USA",
+        "postalCode": "90001"
       },
-      {
-        "name": "Makeup Services",
-        "services": [
-          { "serviceName": "Bridal Makeup", "price": 120, "durationMinutes": 90 },
-          { "serviceName": "Party Makeup", "price": 80, "durationMinutes": 60 }
-        ]
+      "contactInfo": {
+        "phone": "323-555-1212",
+        "email": "hairlounge@example.com"
       },
-      {
-        "name": "Waxing",
-        "services": [
-          { "serviceName": "Full Body Wax", "price": 100, "durationMinutes": 75 },
-          { "serviceName": "Eyebrow Waxing", "price": 20, "durationMinutes": 15 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "9:00 AM - 8:00 PM",
-      "tuesday": "9:00 AM - 8:00 PM",
-      "wednesday": "9:00 AM - 8:00 PM",
-      "thursday": "9:00 AM - 8:00 PM",
-      "friday": "9:00 AM - 8:00 PM",
-      "saturday": "10:00 AM - 6:00 PM",
-      "sunday": "Closed"
-    },
-    "rating": 4.8,
-    "reviews": [
-      {
-        "customerName": "Jessica Smith",
-        "rating": 5,
-        "reviewText": "Amazing service and friendly staff!"
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  },
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b72",
-    "salonName": "The Hair Lounge",
-    "ownerName": "Bob Williams",
-    "location": {
-      "address": "456 Elm St",
-      "city": "Los Angeles",
-      "country": "USA",
-      "postalCode": "90001"
-    },
-    "contactInfo": {
-      "phone": "323-555-1212",
-      "email": "hairlounge@example.com"
-    },
-    "category": [
-      {
-        "name": "Hair Services",
-        "services": [
-          { "serviceName": "Balayage", "price": 150, "durationMinutes": 120 },
-          { "serviceName": "Perm", "price": 80, "durationMinutes": 90 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "10:00 AM - 7:00 PM",
-      "tuesday": "10:00 AM - 7:00 PM",
-      "wednesday": "10:00 AM - 7:00 PM",
-      "thursday": "10:00 AM - 7:00 PM",
-      "friday": "10:00 AM - 7:00 PM",
-      "saturday": "9:00 AM - 6:00 PM",
-      "sunday": "Closed"
-    },
-    "rating": 4.5,
-    "reviews": [
-      {
-        "customerName": "Michael Brown",
-        "rating": 4,
-        "reviewText": "Good haircut, a bit pricey."
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  },
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b73",
-    "salonName": "Serenity Day Spa",
-    "ownerName": "Carol Davis",
-    "location": {
-      "address": "789 Oak Ave",
-      "city": "Chicago",
-      "country": "USA",
-      "postalCode": "60601"
-    },
-    "contactInfo": {
-      "phone": "773-555-3434",
-      "email": "serenity@example.com"
-    },
-    "category": [
-      {
-        "name": "Massage Therapy",
-        "services": [
-          { "serviceName": "Hot Stone Massage", "price": 100, "durationMinutes": 90 },
-          { "serviceName": "Aromatherapy Massage", "price": 85, "durationMinutes": 75 }
-        ]
+      "category": [
+        {
+          "name": "Hair Services",
+          "services": [
+            { "serviceName": "Balayage", "price": 150, "durationMinutes": 120 },
+            { "serviceName": "Perm", "price": 80, "durationMinutes": 90 }
+          ]
+        }
+      ],
+      "workingHours": {
+        "monday": "10:00 AM - 7:00 PM",
+        "tuesday": "10:00 AM - 7:00 PM",
+        "wednesday": "10:00 AM - 7:00 PM",
+        "thursday": "10:00 AM - 7:00 PM",
+        "friday": "10:00 AM - 7:00 PM",
+        "saturday": "9:00 AM - 6:00 PM",
+        "sunday": "Closed"
       },
-      {
-        "name": "Facial Treatments",
-        "services": [
-          { "serviceName": "Hydrating Facial", "price": 75, "durationMinutes": 60 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "9:00 AM - 9:00 PM",
-      "tuesday": "9:00 AM - 9:00 PM",
-      "wednesday": "9:00 AM - 9:00 PM",
-      "thursday": "9:00 AM - 9:00 PM",
-      "friday": "9:00 AM - 9:00 PM",
-      "saturday": "10:00 AM - 6:00 PM",
-      "sunday": "11:00 AM - 5:00 PM"
+      "rating": 4.5,
+      "reviews": [
+        {
+          "customerName": "Michael Brown",
+          "rating": 4,
+          "reviewText": "Good haircut, a bit pricey."
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
     },
-    "rating": 4.7,
-    "reviews": [
-      {
-        "customerName": "Emily Wilson",
-        "rating": 5,
-        "reviewText": "Relaxing atmosphere and excellent service."
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  },
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b74",
-    "salonName": "Nail Art Studio",
-    "ownerName": "David Garcia",
-    "location": {
-      "address": "101 Pine Ln",
-      "city": "Houston",
-      "country": "USA",
-      "postalCode": "77001"
-    },
-    "contactInfo": {
-      "phone": "832-555-5656",
-      "email": "nailart@example.com"
-    },
-    "category": [
-      {
-        "name": "Nail Care",
-        "services": [
-          { "serviceName": "Gel Manicure", "price": 45, "durationMinutes": 45 },
-          { "serviceName": "Acrylic Nails", "price": 60, "durationMinutes": 60 },
-          { "serviceName": "Nail Art", "price": 25, "durationMinutes": 30 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "11:00 AM - 8:00 PM",
-      "tuesday": "11:00 AM - 8:00 PM",
-      "wednesday": "11:00 AM - 8:00 PM",
-      "thursday": "11:00 AM - 8:00 PM",
-      "friday": "11:00 AM - 8:00 PM",
-      "saturday": "10:00 AM - 7:00 PM",
-      "sunday": "Closed"
-    },
-    "rating": 4.6,
-    "reviews": [
-      {
-        "customerName": "Sarah Rodriguez",
-        "rating": 5,
-        "reviewText": "Creative and talented nail artists!"
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  },
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b75",
-    "salonName": "Gents Barber Shop",
-    "ownerName": "Edward Martinez",
-    "location": {
-      "address": "222 Cedar Rd",
-      "city": "Miami",
-      "country": "USA",
-      "postalCode": "33101"
-    },
-    "contactInfo": {
-      "phone": "305-555-7878",
-      "email": "gentsbarber@example.com"
-    },
-    "category": [
-      {
-        "name": "Barber Services",
-        "services": [
-          { "serviceName": "Classic Haircut", "price": 35, "durationMinutes": 30 },
-          { "serviceName": "Beard Trim", "price": 25, "durationMinutes": 20 },
-          { "serviceName": "Hot Towel Shave", "price": 45, "durationMinutes": 40 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "9:00 AM - 7:00 PM",
-      "tuesday": "9:00 AM - 7:00 PM",
-      "wednesday": "9:00 AM - 7:00 PM",
-      "thursday": "9:00 AM - 7:00 PM",
-      "friday": "9:00 AM - 7:00 PM",
-      "saturday": "9:00 AM - 6:00 PM",
-      "sunday": "Closed"
-    },
-    "rating": 4.9,
-    "reviews": [
-      {
-        "customerName": "Kevin Anderson",
-        "rating": 5,
-        "reviewText": "Best barber shop in town!"
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  },
-  {
-    "_id": "657e0b7b0b7b0b7b0b7b0b76",
-    "salonName": "The Beauty Spot",
-    "ownerName": "Linda Thomas",
-    "location": {
-      "address": "333 Maple Dr",
-      "city": "Atlanta",
-      "country": "USA",
-      "postalCode": "30301"
-    },
-    "contactInfo": {
-      "phone": "404-555-9090",
-      "email": "beautyspot@example.com"
-    },
-    "category": [
-      {
-        "name": "Waxing",
-        "services": [
-          { "serviceName": "Brazilian Wax", "price": 70, "durationMinutes": 45 },
-          { "serviceName": "Leg Wax", "price": 50, "durationMinutes": 30 },
-          { "serviceName": "Eyebrow Threading", "price": 20, "durationMinutes": 15 }
-        ]
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b73",
+      "salonName": "Serenity Day Spa",
+      "ownerName": "Carol Davis",
+      "location": {
+        "address": "789 Oak Ave",
+        "city": "Chicago",
+        "country": "USA",
+        "postalCode": "60601"
       },
-      {
-        "name": "Eyelash Extensions",
-        "services": [
-          { "serviceName": "Classic Eyelash Extensions", "price": 120, "durationMinutes": 90 },
-          { "serviceName": "Volume Eyelash Extensions", "price": 150, "durationMinutes": 120 }
-        ]
-      }
-    ],
-    "workingHours": {
-      "monday": "10:00 AM - 8:00 PM",
-      "tuesday": "10:00 AM - 8:00 PM",
-      "wednesday": "10:00 AM - 8:00 PM",
-      "thursday": "10:00 AM - 8:00 PM",
-      "friday": "10:00 AM - 8:00 PM",
-      "saturday": "10:00 AM - 6:00 PM",
-      "sunday": "Closed"
+      "contactInfo": {
+        "phone": "773-555-3434",
+        "email": "serenity@example.com"
+      },
+      "category": [
+        {
+          "name": "Massage Therapy",
+          "services": [
+            { "serviceName": "Hot Stone Massage", "price": 100, "durationMinutes": 90 },
+            { "serviceName": "Aromatherapy Massage", "price": 85, "durationMinutes": 75 }
+          ]
+        },
+        {
+          "name": "Facial Treatments",
+          "services": [{ "serviceName": "Hydrating Facial", "price": 75, "durationMinutes": 60 }]
+        }
+      ],
+      "workingHours": {
+        "monday": "9:00 AM - 9:00 PM",
+        "tuesday": "9:00 AM - 9:00 PM",
+        "wednesday": "9:00 AM - 9:00 PM",
+        "thursday": "9:00 AM - 9:00 PM",
+        "friday": "9:00 AM - 9:00 PM",
+        "saturday": "10:00 AM - 6:00 PM",
+        "sunday": "11:00 AM - 5:00 PM"
+      },
+      "rating": 4.7,
+      "reviews": [
+        {
+          "customerName": "Emily Wilson",
+          "rating": 5,
+          "reviewText": "Relaxing atmosphere and excellent service."
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
     },
-    "rating": 4.7,
-    "reviews": [
-      {
-        "customerName": "Jennifer White",
-        "rating": 5,
-        "reviewText": "Great waxing and lash services!"
-      }
-    ],
-    "createdAt": "2024-02-27T12:00:00Z"
-  }
-]
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b74",
+      "salonName": "Nail Art Studio",
+      "ownerName": "David Garcia",
+      "location": {
+        "address": "101 Pine Ln",
+        "city": "Houston",
+        "country": "USA",
+        "postalCode": "77001"
+      },
+      "contactInfo": {
+        "phone": "832-555-5656",
+        "email": "nailart@example.com"
+      },
+      "category": [
+        {
+          "name": "Nail Care",
+          "services": [
+            { "serviceName": "Gel Manicure", "price": 45, "durationMinutes": 45 },
+            { "serviceName": "Acrylic Nails", "price": 60, "durationMinutes": 60 },
+            { "serviceName": "Nail Art", "price": 25, "durationMinutes": 30 }
+          ]
+        }
+      ],
+      "workingHours": {
+        "monday": "11:00 AM - 8:00 PM",
+        "tuesday": "11:00 AM - 8:00 PM",
+        "wednesday": "11:00 AM - 8:00 PM",
+        "thursday": "11:00 AM - 8:00 PM",
+        "friday": "11:00 AM - 8:00 PM",
+        "saturday": "10:00 AM - 7:00 PM",
+        "sunday": "Closed"
+      },
+      "rating": 4.6,
+      "reviews": [
+        {
+          "customerName": "Sarah Rodriguez",
+          "rating": 5,
+          "reviewText": "Creative and talented nail artists!"
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
+    },
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b75",
+      "salonName": "Gents Barber Shop",
+      "ownerName": "Edward Martinez",
+      "location": {
+        "address": "222 Cedar Rd",
+        "city": "Miami",
+        "country": "USA",
+        "postalCode": "33101"
+      },
+      "contactInfo": {
+        "phone": "305-555-7878",
+        "email": "gentsbarber@example.com"
+      },
+      "category": [
+        {
+          "name": "Barber Services",
+          "services": [
+            { "serviceName": "Classic Haircut", "price": 35, "durationMinutes": 30 },
+            { "serviceName": "Beard Trim", "price": 25, "durationMinutes": 20 },
+            { "serviceName": "Hot Towel Shave", "price": 45, "durationMinutes": 40 }
+          ]
+        }
+      ],
+      "workingHours": {
+        "monday": "9:00 AM - 7:00 PM",
+        "tuesday": "9:00 AM - 7:00 PM",
+        "wednesday": "9:00 AM - 7:00 PM",
+        "thursday": "9:00 AM - 7:00 PM",
+        "friday": "9:00 AM - 7:00 PM",
+        "saturday": "9:00 AM - 6:00 PM",
+        "sunday": "Closed"
+      },
+      "rating": 4.9,
+      "reviews": [
+        {
+          "customerName": "Kevin Anderson",
+          "rating": 5,
+          "reviewText": "Best barber shop in town!"
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
+    },
+    {
+      "_id": "657e0b7b0b7b0b7b0b7b0b76",
+      "salonName": "The Beauty Spot",
+      "ownerName": "Linda Thomas",
+      "location": {
+        "address": "333 Maple Dr",
+        "city": "Atlanta",
+        "country": "USA",
+        "postalCode": "30301"
+      },
+      "contactInfo": {
+        "phone": "404-555-9090",
+        "email": "beautyspot@example.com"
+      },
+      "category": [
+        {
+          "name": "Waxing",
+          "services": [
+            { "serviceName": "Brazilian Wax", "price": 70, "durationMinutes": 45 },
+            { "serviceName": "Leg Wax", "price": 50, "durationMinutes": 30 },
+            { "serviceName": "Eyebrow Threading", "price": 20, "durationMinutes": 15 }
+          ]
+        },
+        {
+          "name": "Eyelash Extensions",
+          "services": [
+            { "serviceName": "Classic Eyelash Extensions", "price": 120, "durationMinutes": 90 },
+            { "serviceName": "Volume Eyelash Extensions", "price": 150, "durationMinutes": 120 }
+          ]
+        }
+      ],
+      "workingHours": {
+        "monday": "10:00 AM - 8:00 PM",
+        "tuesday": "10:00 AM - 8:00 PM",
+        "wednesday": "10:00 AM - 8:00 PM",
+        "thursday": "10:00 AM - 8:00 PM",
+        "friday": "10:00 AM - 8:00 PM",
+        "saturday": "10:00 AM - 6:00 PM",
+        "sunday": "Closed"
+      },
+      "rating": 4.7,
+      "reviews": [
+        {
+          "customerName": "Jennifer White",
+          "rating": 5,
+          "reviewText": "Great waxing and lash services!"
+        }
+      ],
+      "createdAt": "2024-02-27T12:00:00Z"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useState,useRef } from "react";
+import { useState,useRef, useEffect } from "react";
 import Layout from "../../layout/layout";
 import ModalComponent from "../../components/Modal";
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -6,10 +6,24 @@ import {faMapMarkerAlt,faChevronRight,faChevronLeft} from '@fortawesome/free-sol
 import StarRating from "../../components/StarRating";
 import ServiceField from "../../components/ServiceField";
 import { Button } from '@nextui-org/react';
+import { useParams } from "react-router-dom";
+import { getSalon } from "../../actions/salonActions";
+import { useQuery } from "@tanstack/react-query";
+import { Category } from "../../types/salon";
 
 const SalonPage = () => {
+    const { salonId } = useParams();
+    const { data: salon, isLoading, isError } = useQuery({ 
+        queryKey: ["salon", salonId], 
+        queryFn: () => getSalon(salonId as string),
+        enabled: !!salonId
+    });
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState("Featured");
+    const [selectedCategory, setSelectedCategory] = useState<Category|undefined>(undefined);
+
+    useEffect(() => {
+        if (salon?.category) setSelectedCategory(salon.category[0]);
+    }, [salon]);
     const scrollRef = useRef<HTMLDivElement>(null);
     const images = [
         '/image1.avif',
@@ -22,8 +36,6 @@ const SalonPage = () => {
     const handleOpen = () => setIsOpen(true);
     const handleClose = () => setIsOpen(false);
 
-    const categories = ["Featured","Haircut", "Makeup", "Facial", "Manicure", "Pedicure", "Massage", "Spa", "Manicure", "Pedicure", "Massage", "Spa"];
-
     const scrollLeft = () => {
         if (scrollRef.current) scrollRef.current.scrollBy({ left: -100, behavior: "smooth" });
       };
@@ -32,17 +44,8 @@ const SalonPage = () => {
         if (scrollRef.current) scrollRef.current.scrollBy({ left: 100, behavior: "smooth" });
       };
 
-    const salonName = "RF Salons";
-    const salonRating = 4.5;
-    const salonLocation = "New York, NY";
-    const salonCurrentStatus= "Open";
-    const salonOpeningHours = "9:00 AM - 5:00 PM";
-    
-    const services = [
-        { name: 'Haircut', price: 30, time: '30 mins' },
-        { name: 'Manicure', price: 20, time: '45 mins' },
-        { name: 'Pedicure', price: 25, time: '50 mins' },
-      ];
+    if (isLoading) return <div>Loading...</div>;
+    if (isError) return <div>Error fetching salon</div>;
 
     return (
         <Layout>
@@ -68,21 +71,21 @@ const SalonPage = () => {
             </div>
             <ModalComponent images={images} isOpen={isOpen} onClose={handleClose} />
 
-            <div className="font-instrumentSerif text-5xl font-bold m-4">{salonName}</div>
+            <div className="font-instrumentSerif text-5xl font-bold m-4">{salon?.salonName}</div>
             <div className="font-instrumentSerif text-xl m-4 flex space-x-4">
-                <span>{salonRating}</span>
+                <span>{salon?.rating}</span>
                 <StarRating 
                     name="read-only" 
-                    value={salonRating} 
+                    value={salon?.rating} 
                     readOnly={true} 
                     size="small" 
                 />
-                <span>{salonCurrentStatus}</span>
-                <span>{salonOpeningHours}</span>
+                {/* <span>{salonCurrentStatus}</span> */}
+                <span>{salon?.workingHours.monday}</span>
             </div>
             <div className="font-instrumentSerif text-xl m-4 flex items-center">
                 <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                <span>{salonLocation}</span>
+                <span>{salon?.location.address}</span>
             </div>
 
 
@@ -99,15 +102,15 @@ const SalonPage = () => {
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </button>
                         <div ref={scrollRef} className="flex overflow-x-auto no-scrollbar w-full whitespace-nowrap mx-10 scrollbar-hide">
-                            {categories.map((category) => (
+                            {salon?.category.map((category) => (
                             <button
-                                key={category}
+                                key={category.name}
                                 className={`px-4 py-2 mx-2 text-sm font-semibold rounded-lg ${
-                                selectedCategory === category ? "bg-tertiary text-white" : "bg-gray-200"
+                                selectedCategory?.name === category.name ? "bg-tertiary text-white" : "bg-gray-200"
                                 }`}
                                 onClick={() => setSelectedCategory(category)}
                             >
-                                {category}
+                                {category.name}
                             </button>
                             ))}
                         </div>
@@ -115,12 +118,12 @@ const SalonPage = () => {
                         <FontAwesomeIcon icon={faChevronRight}/>
                         </button>
                     </div>
-                    {services.map((service, index) => (
+                    {selectedCategory?.services.map((service, index) => (
                         <ServiceField
                             key={index}
-                            serviceName={service.name}
+                            serviceName={service.serviceName}
                             price={service.price}
-                            time={service.time}
+                            time={service.durationMinutes.toString()}
                             onChange={() => {}}
                         />
                     ))}
@@ -129,10 +132,10 @@ const SalonPage = () => {
                     <div className="bg-tertiary p-5 rounded-2xl flex items-center">
                         <img src="/image1.avif" alt="Salon" className="w-36 h-16 object-cover rounded-lg mr-5" />
                         <div className="flex flex-col">
-                            <h2 className="font-instrumentSerif text-3xl">{salonName}</h2>
+                            <h2 className="font-instrumentSerif text-3xl">{salon?.salonName}</h2>
                             <p className="font-instrumentSerif text-xl flex items-center">
                                 <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                                {salonLocation}
+                                {salon?.location.address}
                             </p>
                         </div>
                     <Button color="secondary" radius="lg" variant="shadow" className="text-center text-black flex flex-row" onClick={()=>{}}>
