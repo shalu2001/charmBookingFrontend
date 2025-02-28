@@ -23,7 +23,7 @@ export default function Login() {
               type: 'Bearer'
           },
           // refresh: res.data.refreshToken,
-          userState: res.data.authUserState
+          userState: res.data.customer
         })) {
           console.log('Sign in successful');
           window.location.href = '/';
