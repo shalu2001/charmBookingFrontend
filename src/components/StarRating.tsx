@@ -27,6 +27,7 @@ const StarRating: React.FC<StarRatingProps> = ({
       onChange={controlled ? onChange : undefined}
       readOnly={readOnly}
       disabled={disabled}
+      sx={{ color: '#AC958A' }}
       size={size}
       precision={0.5}
     />

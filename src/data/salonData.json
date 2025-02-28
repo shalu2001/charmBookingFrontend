@@ -73,6 +73,21 @@
           "customerName": "Jessica Smith",
           "rating": 5,
           "reviewText": "Amazing service and friendly staff!"
+        },
+        {
+          "customerName": "David Johnson",
+          "rating": 4,
+          "reviewText": "Great massage but a bit expensive."
+        },
+        {
+          "customerName": "Mary Brown",
+          "rating": 5,
+          "reviewText": "Best facial treatment I've ever had!"
+        },
+        {
+          "customerName": "John Davis",
+          "rating": 5,
+          "reviewText": "Highly recommend this salon!"
         }
       ],
       "createdAt": "2024-02-27T12:00:00Z"
