@@ -1,51 +1,40 @@
 export interface Salon {
-    _id: string;
-    salonName: string;
+    id: number;
+    name: string;
     ownerName: string;
-    location: Location;
-    contactInfo: ContactInfo;
-    category: Category[];
-    workingHours: WorkingHours;
-    rating: number;
-    reviews: Review[];
-    createdAt: string;
-  }
-  
-  export interface Location {
-    address: string;
-    city: string;
-    country: string;
-    postalCode: string;
-  }
-  
-  export interface ContactInfo {
+    services: Service[];
+    location: string;
     phone: string;
     email: string;
-  }
-  
-  export interface Category {
+    website: string;
+    description: string;
+    longitude: string;
+    latitude: string;
+    reviews: Review[];
+}
+
+export interface Service {
+    serviceId: number;
+    categories: Category[];
     name: string;
-    services: Service[];
-  }
-  
-  export interface Service {
-    serviceName: string;
     price: number;
-    durationMinutes: number;
-  }
-  
-  export interface WorkingHours {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  }
-  
-  export interface Review {
-    customerName: string;
+    duration: number;
+}
+
+export interface Category {
+    categoryId: number;
+    name: string;
+}
+
+export interface Review {
+    reviewId: number;
     rating: number;
-    reviewText: string;
-  }
+    comment: string;
+    createdAt: string;
+    user: User;
+}
+
+export interface User {
+    firstName: string;
+    lastName: string;
+}
