@@ -15,11 +15,11 @@ const Header = () => {
                 </Link>
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                <NavbarItem>
+                {/* <NavbarItem>
                     <Link href="#">For Booking</Link>
-                </NavbarItem>
+                </NavbarItem> */}
                 <NavbarItem>
-                    <Link href="#">For Business</Link>
+                    <Link href="/business">For Business</Link>
                 </NavbarItem>
             </NavbarContent>
             <NavbarContent justify="end" className="">

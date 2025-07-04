@@ -3,12 +3,18 @@
 @tailwind utilities;
 
 :root {
-  background-color: #FAF7F0;
-  --primary: #4A4947;
-  --secondary: #AC958A;
-  --tertiary: #D8D2C2;
-  --quaternary: #FAF7F0;
+    background-color: #faf7f0;
+    --primary: #4a4947;
+    --secondary: #ac958a;
+    --tertiary: #d8d2c2;
+    --quaternary: #faf7f0;
 }
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+}
+
 /*
 a {
   font-weight: 500;
