@@ -6,7 +6,6 @@ export interface Salon {
   location: string
   phone: string
   email: string
-  website: string
   description: string
   longitude: string
   latitude: string
