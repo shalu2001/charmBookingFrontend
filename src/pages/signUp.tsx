@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { Button, Input } from '@heroui/react'
-import { Spinner } from '@heroui/spinner'
+import { Button, Input, Spinner } from '@heroui/react'
 
 export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('')

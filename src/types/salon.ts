@@ -20,6 +20,18 @@ export interface Service {
   duration: number
 }
 
+export interface ServiceModalProps {
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+  categories: Category[]
+  onAddService: (service: Service) => void
+  // serviceName: string
+  // description: string
+  // price: number
+  // duration: number
+  // category: string
+}
+
 export interface Category {
   categoryId: number
   name: string
@@ -48,4 +60,10 @@ export type RegisterSalonDTO = {
   phone: string
   description: string
   salonImages: string[]
+}
+
+export interface DashboardLayoutProps {
+  children: React.ReactNode
+  currentPage: string
+  onPageChange: (page: string) => void
 }

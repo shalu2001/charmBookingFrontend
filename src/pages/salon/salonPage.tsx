@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom'
 import ServiceField from '../../components/ServiceField'
 import { Category, Salon } from '../../types/salon'
 import { calculateRatingAverage } from '../../helpers'
-import ReviewCard from '../../components/ReviewCard'
+import ReviewCard from '../../components/Cards/ReviewCard'
 
 const SalonPage = () => {
   const { salonId } = useParams()

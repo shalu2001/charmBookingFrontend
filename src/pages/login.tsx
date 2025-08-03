@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import axios from 'axios'
-import { Button, Input } from '@heroui/react'
-import { Spinner } from '@heroui/spinner'
+import { Button, Input, Spinner } from '@heroui/react'
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
