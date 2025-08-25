@@ -18,95 +18,29 @@ import { CustomTable } from '../../../components/Table'
 import { CustomCard } from '../../../components/Cards/CustomCard'
 import { Badge, Button, Input } from '@heroui/react'
 import { useState } from 'react'
-
-interface Booking {
-  id: string
-  customerId: string
-  customerName: string
-  customerEmail: string
-  customerPhone: string
-  serviceId: string
-  serviceName: string
-  date: string
-  time: string
-  duration: number
-  price: number
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
-  paymentStatus: 'paid' | 'unpaid' | 'refunded'
-  notes?: string
-}
-
-const mockBookings: Booking[] = [
-  {
-    id: '1',
-    customerId: 'c1',
-    customerName: 'Sarah Johnson',
-    customerEmail: 'sarah@email.com',
-    customerPhone: '(555) 123-4567',
-    serviceId: 's1',
-    serviceName: 'Hair Cut & Style',
-    date: '2024-01-20',
-    time: '10:00',
-    duration: 60,
-    price: 65,
-    status: 'confirmed',
-    paymentStatus: 'paid',
-  },
-  {
-    id: '2',
-    customerId: 'c2',
-    customerName: 'Emily Davis',
-    customerEmail: 'emily@email.com',
-    customerPhone: '(555) 234-5678',
-    serviceId: 's2',
-    serviceName: 'Hair Color',
-    date: '2024-01-20',
-    time: '14:00',
-    duration: 120,
-    price: 120,
-    status: 'pending',
-    paymentStatus: 'unpaid',
-  },
-  {
-    id: '3',
-    customerId: 'c3',
-    customerName: 'Jessica Wilson',
-    customerEmail: 'jessica@email.com',
-    customerPhone: '(555) 345-6789',
-    serviceId: 's3',
-    serviceName: 'Manicure',
-    date: '2024-01-21',
-    time: '11:30',
-    duration: 45,
-    price: 35,
-    status: 'confirmed',
-    paymentStatus: 'paid',
-  },
-  {
-    id: '4',
-    customerId: 'c4',
-    customerName: 'Michelle Brown',
-    customerEmail: 'michelle@email.com',
-    customerPhone: '(555) 456-7890',
-    serviceId: 's4',
-    serviceName: 'Deep Cleansing Facial',
-    date: '2024-01-22',
-    time: '15:00',
-    duration: 75,
-    price: 85,
-    status: 'cancelled',
-    paymentStatus: 'refunded',
-  },
-]
+import { useQuery } from '@tanstack/react-query'
+import { Booking } from '../../../types/booking'
+import { getBookings } from '../../../actions/bookingActions'
 
 export function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [paymentFilter, setPaymentFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
 
-  const filteredBookings = bookings.filter(booking => {
+  //useQuery to get bookings
+  const { data: bookings, isPending } = useQuery<Booking[]>({
+    queryKey: ['bookings'],
+    queryFn: () => getBookings('1'),
+  })
+  if (!bookings || isPending) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <div className='text-muted-foreground'>Loading bookings...</div>
+      </div>
+    )
+  }
+  const filteredBookings = bookings?.filter(booking => {
     const matchesSearch =
       booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.serviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -164,21 +98,9 @@ export function BookingsPage() {
     }
   }
 
-  const updateBookingStatus = (bookingId: string, newStatus: Booking['status']) => {
-    setBookings(
-      bookings.map(booking =>
-        booking.id === bookingId ? { ...booking, status: newStatus } : booking,
-      ),
-    )
-  }
+  const updateBookingStatus = (bookingId: string, newStatus: Booking['status']) => {}
 
-  const updatePaymentStatus = (bookingId: string, newPaymentStatus: Booking['paymentStatus']) => {
-    setBookings(
-      bookings.map(booking =>
-        booking.id === bookingId ? { ...booking, paymentStatus: newPaymentStatus } : booking,
-      ),
-    )
-  }
+  const updatePaymentStatus = (bookingId: string, newPaymentStatus: Booking['paymentStatus']) => {}
 
   const tableHeaders = [
     { key: 'Booking ID', label: 'Booking ID' },
@@ -191,7 +113,7 @@ export function BookingsPage() {
     { key: 'Actions', label: 'Actions' },
   ]
 
-  const tableData = filteredBookings.map(booking => ({
+  const tableData = filteredBookings?.map(booking => ({
     key: booking.id,
     'Booking ID': booking.id,
     Customer: (

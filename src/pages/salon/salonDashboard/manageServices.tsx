@@ -10,133 +10,144 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Input, Card, CardHeader } from '@heroui/react'
+import {
+  Category,
+  CreateServiceDTO,
+  SalonAdmin,
+  Service,
+  ServiceFormData,
+} from '../../../types/salon'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import {
+  addSalonService,
+  deleteSalonService,
+  getAllCategories,
+  getSalonServices,
+  updateSalonService,
+} from '../../../actions/salonActions'
 import SalonServiceModal from '../../../components/salonServiceModal'
-import { Category } from '../../../types/salon'
-
-interface Service {
-  id: string
-  name: string
-  description: string
-  price: number
-  duration: number
-  category: string
-}
-
-const mockCategories: Category[] = [
-  { categoryId: 1, name: 'Hair Services' },
-  { categoryId: 2, name: 'Nail Care' },
-  { categoryId: 3, name: 'Facial Treatments' },
-  { categoryId: 4, name: 'Massage Therapy' },
-]
-
-const mockServices: Service[] = [
-  {
-    id: '1',
-    name: 'Hair Cut & Style',
-    description: 'Professional haircut with styling',
-    price: 65,
-    duration: 60,
-    category: 'hair',
-  },
-  {
-    id: '2',
-    name: 'Hair Color',
-    description: 'Full hair coloring service',
-    price: 120,
-    duration: 120,
-    category: 'hair',
-  },
-  {
-    id: '3',
-    name: 'Manicure',
-    description: 'Classic manicure with nail polish',
-    price: 35,
-    duration: 45,
-    category: 'nails',
-  },
-  {
-    id: '4',
-    name: 'Deep Cleansing Facial',
-    description: 'Comprehensive facial treatment',
-    price: 85,
-    duration: 75,
-    category: 'facial',
-  },
-]
 
 export function ServicesPage() {
-  const [services, setServices] = useState<Service[]>(mockServices)
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedCategory, setSelectedCategory] = useState<number>(0)
   const [searchTerm, setSearchTerm] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
-
-  const [formData, setFormData] = useState({
+  const admin = useAuthUser<SalonAdmin>()
+  const queryClient = useQueryClient()
+  const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
-    description: '',
     price: '',
     duration: '',
-    category: '',
+    bufferTime: '0',
+    categoryIds: [],
   })
+
+  const { data: categories, isPending: categoriesFetching } = useQuery({
+    queryKey: ['salonCategories'],
+    queryFn: () => getAllCategories(),
+  })
+
+  const { data: services, isPending: servicesFetching } = useQuery({
+    queryKey: ['salonServices'],
+    enabled: !!admin?.salonId,
+    queryFn: () => getSalonServices(admin!.salonId),
+  })
+
+  const { mutate: addService, isPending: serviceCreating } = useMutation({
+    mutationFn: (newService: CreateServiceDTO) => addSalonService(admin!.salonId, newService),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salonServices'] })
+      setIsAddDialogOpen(false)
+      // Reset form data
+      setFormData({
+        name: '',
+        price: '',
+        duration: '',
+        bufferTime: '0',
+        categoryIds: [],
+      })
+    },
+  })
+
+  const { mutate: updateMutate, isPending: serviceUpdating } = useMutation({
+    mutationFn: (updatedService: CreateServiceDTO) =>
+      updateSalonService(editingService!.serviceId, updatedService),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salonServices'] })
+      setEditingService(null)
+      setFormData({
+        name: '',
+        price: '',
+        duration: '',
+        bufferTime: '0',
+        categoryIds: [],
+      })
+    },
+  })
+
+  const { mutate: deleteMutate, isPending: serviceDeleting } = useMutation({
+    mutationFn: (serviceId: string) => deleteSalonService(serviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salonServices'] })
+    },
+  })
+
+  if (servicesFetching) return <div>Loading...</div>
+  if (!services || services.length === 0) return <div>No services found</div>
 
   const filteredServices = services.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || service.category === selectedCategory
+    const matchesCategory =
+      selectedCategory === 0 || service.categories.some(cat => cat.categoryId === selectedCategory)
     return matchesSearch && matchesCategory
   })
 
-  //   const getCategoryColor = (categoryId: string) => {
-  //     const category = mockCategories.find(cat => cat.id === categoryId)
-  //     return category?.color || 'secondary'
-  //   }
+  const handleAddService = (e: React.FormEvent) => {
+    e.preventDefault()
 
-  const handleAddService = () => {
-    const newService: Service = {
-      id: Date.now().toString(),
+    const newService: CreateServiceDTO = {
+      salonId: admin!.salonId,
       name: formData.name,
-      description: formData.description,
       price: parseFloat(formData.price),
       duration: parseInt(formData.duration),
-      category: formData.category,
+      bufferTime: parseInt(formData.bufferTime || '0'),
+      categoryIds: formData.categoryIds,
     }
-    setServices([...services, newService])
-    setFormData({ name: '', description: '', price: '', duration: '', category: '' })
-    setIsAddDialogOpen(false)
+
+    addService(newService)
   }
 
-  const handleEditService = () => {
+  const handleEditService = (e: React.FormEvent) => {
+    e.preventDefault()
+
     if (!editingService) return
 
-    const updatedServices = services.map(service =>
-      service.id === editingService.id
-        ? {
-            ...service,
-            name: formData.name,
-            description: formData.description,
-            price: parseFloat(formData.price),
-            duration: parseInt(formData.duration),
-            category: formData.category,
-          }
-        : service,
-    )
-    setServices(updatedServices)
-    setEditingService(null)
-    setFormData({ name: '', description: '', price: '', duration: '', category: '' })
-  }
+    const updatedService: CreateServiceDTO = {
+      salonId: admin!.salonId,
+      name: formData.name,
+      price: parseFloat(formData.price),
+      duration: parseInt(formData.duration),
+      bufferTime: parseInt(formData.bufferTime || '0'),
+      categoryIds: formData.categoryIds,
+    }
 
-  const handleDeleteService = (serviceId: string) => {
-    setServices(services.filter(service => service.id !== serviceId))
+    updateMutate(updatedService)
   }
 
   const openEditDialog = (service: Service) => {
     setEditingService(service)
     setFormData({
       name: service.name,
-      description: service.description,
       price: service.price.toString(),
       duration: service.duration.toString(),
-      category: service.category,
+      bufferTime: service.bufferTime.toString(),
+      categoryIds: service.categories.map(cat => cat.categoryId),
     })
+  }
+
+  const handleDeleteService = (serviceId: string) => {
+    deleteMutate(serviceId)
   }
 
   return (
@@ -144,7 +155,7 @@ export function ServicesPage() {
       <div className='flex flex-col md:flex-row gap-4 justify-between items-start md:items-center'>
         <div>
           <h2 className='text-3xl font-bold text-foreground'>Services Management</h2>
-          <p className='text-muted-foreground'>Manage your salon services and categories</p>
+          <p className='text-muted-foreground'>Manage your salon services</p>
         </div>
         <Button onPress={() => setIsAddDialogOpen(true)}>
           <FontAwesomeIcon icon={faPlus} className='mr-2' /> Add Service
@@ -152,8 +163,12 @@ export function ServicesPage() {
         <SalonServiceModal
           isOpen={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}
-          categories={mockCategories}
-          onAddService={handleAddService}
+          categories={categories || []}
+          onSubmit={handleAddService}
+          formData={formData}
+          setFormData={setFormData}
+          isLoading={serviceCreating}
+          mode='add'
         />
       </div>
 
@@ -174,16 +189,16 @@ export function ServicesPage() {
             </div>
             <div className='flex gap-2'>
               <Button
-                // variant={selectedCategory === "all" ? "solid" : "outline"}
-                onPress={() => setSelectedCategory('all')}
+                variant={selectedCategory === 0 ? 'solid' : 'ghost'}
+                onPress={() => setSelectedCategory(0)}
               >
                 All
               </Button>
-              {mockCategories.map(cat => (
+              {categories?.map(cat => (
                 <Button
                   key={cat.categoryId}
-                  //   variant={selectedCategory === cat.id ? "solid" : "outline"}
-                  //   onPress={() => setSelectedCategory(cat.categoryId)}
+                  variant={selectedCategory === cat.categoryId ? 'solid' : 'ghost'}
+                  onPress={() => setSelectedCategory(cat.categoryId)}
                 >
                   {cat.name}
                 </Button>
@@ -195,54 +210,66 @@ export function ServicesPage() {
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {filteredServices.map(service => (
-          <Card key={service.id} className='hover:shadow-lg'>
+          <Card key={service.serviceId} className='hover:shadow-lg transition-shadow duration-200'>
             <CardHeader className='pb-3'>
-              <div className='flex justify-between'>
-                <div>
-                  <h3 className='text-lg font-semibold'>{service.name}</h3>
-                  {/* <Badge className={`bg-${getCategoryColor(service.category)}`}>
-                    {<FontAwesomeIcon icon={faTag} className='mr-1' />}
-                    {mockCategories.find(c => c.categoryId === service.category)?.name}
-                  </Badge> */}
+              <div className='flex justify-between items-start w-full'>
+                <div className='space-y-1 flex-1 pr-4'>
+                  <h3 className='text-lg font-semibold leading-none'>{service.name}</h3>
+                  {/* <p className='text-sm text-muted-foreground'>{service.description}</p> */}
                 </div>
-                <div className='flex gap-1'>
-                  <Button variant='ghost' size='sm' onPress={() => openEditDialog(service)}>
+                <div className='flex gap-1 shrink-0'>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onPress={() => openEditDialog(service)}
+                    className='h-8 w-8 min-w-[2rem]'
+                  >
                     <FontAwesomeIcon icon={faEdit} />
                   </Button>
                   <Button
                     variant='ghost'
                     size='sm'
-                    className='text-destructive'
-                    onPress={() => handleDeleteService(service.id)}
+                    className='text-destructive h-8 w-8 min-w-[2rem]'
+                    onPress={() => handleDeleteService(service.serviceId)}
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <div>
-              <p className='text-sm text-muted-foreground mb-4'>{service.description}</p>
-              <div className='flex justify-between'>
-                <span className='text-primary font-semibold'>
-                  <FontAwesomeIcon icon={faDollarSign} className='mr-1' />
+            <div className='p-6 pt-0'>
+              <div className='flex justify-between items-center mt-4'>
+                <span className='flex items-center text-primary font-semibold gap-1'>
+                  <p>LKR</p>
                   {service.price}
                 </span>
-                <span className='text-muted-foreground text-sm'>
-                  <FontAwesomeIcon icon={faClock} className='mr-1' />
-                  {service.duration} min
-                </span>
+                <div className='flex items-center gap-3 text-muted-foreground text-sm'>
+                  <span className='flex items-center'>
+                    <FontAwesomeIcon icon={faClock} className='mr-1 h-4 w-4' />
+                    {service.duration} min
+                  </span>
+                  {service.bufferTime > 0 && (
+                    <span className='flex items-center'>
+                      <span className='text-xs mr-1'>+</span>
+                      {service.bufferTime} min buffer
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
         ))}
       </div>
-
       {/* Edit Modal */}
       <SalonServiceModal
         isOpen={!!editingService}
         onOpenChange={() => setEditingService(null)}
-        categories={mockCategories}
-        onAddService={handleEditService}
+        categories={categories || []}
+        onSubmit={handleEditService}
+        formData={formData}
+        setFormData={setFormData}
+        isLoading={serviceUpdating}
+        mode='edit'
       />
     </div>
   )

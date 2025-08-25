@@ -15,7 +15,7 @@ export function CustomCard({ title, footer, className, children }: CustomCardPro
       <CardHeader>
         <h2>{title}</h2>
       </CardHeader>
-      <CardBody>{children}</CardBody>
+      <CardBody className='flex gap-2'>{children}</CardBody>
       {footer && <CardFooter>{footer}</CardFooter>}
     </Card>
   )

@@ -1,40 +1,67 @@
-export interface Salon {
+export interface BaseSalon {
   id: number
   name: string
   ownerName: string
-  services: Service[]
   location: string
   phone: string
   email: string
   description: string
   longitude: string
   latitude: string
-  reviews: Review[]
 }
-
-export interface Service {
-  serviceId: number
-  categories: Category[]
-  name: string
-  price: number
-  duration: number
+export interface Salon extends BaseSalon {
+  services: Service[]
+  reviews: Review[]
 }
 
 export interface ServiceModalProps {
   isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
+  onOpenChange: (open: boolean) => void
   categories: Category[]
-  onAddService: (service: Service) => void
-  // serviceName: string
-  // description: string
-  // price: number
-  // duration: number
-  // category: string
+  onSubmit: (e: React.FormEvent) => void
+  formData: ServiceFormData
+  setFormData: React.Dispatch<React.SetStateAction<ServiceFormData>>
+  isLoading: boolean
+  mode: 'add' | 'edit' // Add this to handle different modal modes
 }
 
 export interface Category {
   categoryId: number
   name: string
+}
+export interface CategorySelection {
+  categoryId: number
+  name: string
+  selected: boolean
+}
+
+export interface Service {
+  serviceId: string
+  salonId: string
+  name: string
+  price: number
+  duration: number
+  bufferTime: number
+  categories: Array<{
+    categoryId: number
+    name: string
+  }>
+}
+export interface ServiceFormData {
+  name: string
+  price: string
+  duration: string
+  bufferTime?: string
+  categoryIds: number[]
+}
+
+export interface CreateServiceDTO {
+  salonId: string
+  name: string
+  price: number
+  duration: number
+  bufferTime: number
+  categoryIds: number[]
 }
 
 export interface Review {
@@ -52,6 +79,7 @@ export interface User {
 
 export type RegisterSalonDTO = {
   email: string
+  password: string
   ownerName: string
   location: string
   latitude: number
@@ -59,11 +87,25 @@ export type RegisterSalonDTO = {
   name: string
   phone: string
   description: string
-  salonImages: string[]
+  salonImages: File[]
 }
 
 export interface DashboardLayoutProps {
   children: React.ReactNode
   currentPage: string
   onPageChange: (page: string) => void
+}
+
+export interface PaymentMethod {
+  id: number
+  name: string
+  identifier: string
+  status: 'connected' | 'disconnected' | 'pending'
+  isDefault: boolean
+}
+
+export interface SalonAdmin {
+  adminId: string
+  email: string
+  salonId: string
 }

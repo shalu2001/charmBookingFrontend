@@ -38,7 +38,7 @@ const BusinessLanding = () => {
         </Button>
         <p className='text-2xl text-center'>
           Already have an account?{' '}
-          <a href='/login' className='text-blue-500'>
+          <a href='/business/login-salon' className='text-blue-500'>
             Log in
           </a>
         </p>

@@ -2,12 +2,13 @@ import { useState } from 'react'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import axios from 'axios'
 import { Button, Input, Spinner } from '@heroui/react'
+import { Customer } from '../types/customer'
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [subLoading, setSubLoading] = useState(false)
-  const signIn = useSignIn()
+  const signIn = useSignIn<Customer>()
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

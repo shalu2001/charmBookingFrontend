@@ -6,6 +6,7 @@ import SalonCard from '../components/Cards/SalonCard'
 import EmblaCarousel from '../components/Carousel'
 import { EmblaOptionsType } from 'embla-carousel'
 import { useEffect, useState } from 'react'
+import HorizontalScroll from '../components/horizontalScroll'
 
 const products = [
   {
@@ -52,7 +53,7 @@ const HomePage = () => {
   useEffect(() => {
     const getSalons = async () => {
       try {
-        const response = await fetch('http://localhost:3000/booking/getSalon')
+        const response = await fetch('http://localhost:3000/salon/getSalons')
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
@@ -83,11 +84,11 @@ const HomePage = () => {
       </div>
       <div className='p-20'>
         <h2 className='font-instrumentSerif text-5xl mb-4'>Salons</h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10'>
+        <HorizontalScroll size={4}>
           {salons?.map(salon => (
             <SalonCard key={salonId} salon={salon} />
           ))}
-        </div>
+        </HorizontalScroll>
       </div>
       <div className='p-20'>
         <h2 className='font-instrumentSerif text-5xl mb-4'>Products</h2>
