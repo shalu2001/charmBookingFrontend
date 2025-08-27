@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { createSearchParams, useNavigate } from 'react-router-dom'
 
 interface ServiceFieldProps {
   salonId?: string
@@ -21,12 +21,17 @@ const ServiceField: React.FC<ServiceFieldProps> = ({
   const navigate = useNavigate()
 
   const handleServiceClick = () => {
-    navigate(`/book/timeslot`, {
-      state: {
-        salonId,
-        serviceId,
-      },
-    })
+    if (salonId && serviceId) {
+      navigate({
+        pathname: '/book/timeslot',
+        search: `?${new URLSearchParams(
+          createSearchParams({
+            salonId: salonId,
+            serviceId: serviceId,
+          }),
+        ).toString()}`,
+      })
+    }
   }
 
   return (

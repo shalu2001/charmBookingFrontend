@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
 import { format, addDays, startOfToday } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { getAvailableTimeSlots } from '../../actions/bookingActions'
@@ -8,10 +7,19 @@ import { Calendar, Modal, ModalBody, ModalContent, ModalHeader, Button } from '@
 import { today, getLocalTimeZone, CalendarDate } from '@internationalized/date'
 import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export const BookTimeAndDate = () => {
-  const location = useLocation()
-  const { salonId, serviceId } = location.state || {}
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const salonId = searchParams.get('salonId') || undefined
+  const serviceId = searchParams.get('serviceId') || undefined
+
+  // Redirect to home if salonId or serviceId is missing
+  if (!salonId || !serviceId) {
+    navigate('/')
+  }
 
   // JS date for backend formatting
   const jsToday = startOfToday()
@@ -33,7 +41,7 @@ export const BookTimeAndDate = () => {
     refetch,
   } = useQuery<TimeSlotResponse>({
     queryKey: ['availableSlots', salonId, serviceId, format(selectedDate, 'yyyy-MM-dd')],
-    queryFn: () => getAvailableTimeSlots(salonId, serviceId, format(selectedDate, 'yyyy-MM-dd')),
+    queryFn: () => getAvailableTimeSlots(salonId!, serviceId!, format(selectedDate, 'yyyy-MM-dd')),
     enabled: !!salonId && !!serviceId,
   })
 
@@ -154,7 +162,7 @@ export const BookTimeAndDate = () => {
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
         >
-          {selectedTime ? 'Proceed to Pay with Payhere' : 'Select a time slot'}
+          {selectedTime ? 'Continue' : 'Select a time slot'}
         </button>
       </div>
 
