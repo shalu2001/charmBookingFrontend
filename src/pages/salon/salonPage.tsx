@@ -10,6 +10,7 @@ import ServiceField from '../../components/ServiceField'
 import { Category, Salon } from '../../types/salon'
 import { calculateRatingAverage } from '../../helpers'
 import ReviewCard from '../../components/Cards/ReviewCard'
+import { FormatTime } from '../../utils/helper'
 
 const SalonPage = () => {
   const { salonId } = useParams()
@@ -23,7 +24,7 @@ const SalonPage = () => {
     try {
       setLoading(true)
       if (salonId) {
-        const response = await fetch(`http://localhost:3000/booking/getSalonById/${salonId}`, {
+        const response = await fetch(`http://localhost:3000/salon/getSalon/${salonId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ const SalonPage = () => {
         <div className='font-instrumentSerif text-xl m-4 flex space-x-4'>
           {salonData?.reviews && salonData.reviews.length > 0 ? (
             <>
-              <span>{calculateRatingAverage(salonData.reviews)}</span>
+              {/* <span>{calculateRatingAverage(salonData.reviews)}</span> */}
               <div className='flex items-center'>
                 <StarRating
                   name='read-only'
@@ -186,17 +187,17 @@ const SalonPage = () => {
                     category => category.categoryId === selectedCategory.categoryId,
                   ),
               )
-              .map((service, index) => (
+              .map(service => (
                 <ServiceField
-                  key={service.serviceId || index}
+                  salonId={salonData?.id}
+                  serviceId={service.serviceId}
                   serviceName={service.name}
                   price={service.price}
                   time={service.duration?.toString() || '30'}
-                  onChange={() => {}}
                 />
               ))}
           </div>
-          <div className='flex flex-row w-1/2 justify-center'>
+          {/* <div className='flex flex-row w-1/2 justify-center'>
             <div className='bg-tertiary p-5 rounded-2xl flex items-center'>
               <img
                 src='/image1.avif'
@@ -220,7 +221,7 @@ const SalonPage = () => {
                 <div className='font-instrumentSerif'>Continue</div>
               </Button>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/*About us section */}
@@ -228,7 +229,7 @@ const SalonPage = () => {
           <div className='flex flex-row items-center gap-4 font-instrumentSerif text-4xl'>
             About Us
           </div>
-          <div className='flex flex-row items-center gap-4 font-instrumentSerif text-xl mt-4'>
+          <div className='flex flex-row items-center gap-4  text-xl mt-4'>
             <div className='flex flex-col w-1/2 space-y-8'>
               <div className='items-start'>
                 {salonData?.description || 'No description available'}
@@ -236,13 +237,27 @@ const SalonPage = () => {
               <div>
                 <h3 className='font-semibold text-2xl mb-4'>Working Hours</h3>
                 <div className='space-y-1 text-lg'>
-                  <div>Monday : 8.00 AM - 5.00 PM</div>
-                  <div>Tuesday : 8.00 AM - 5.00 PM</div>
-                  <div>Wednesday : 8.00 AM - 5.00 PM</div>
-                  <div>Thursday : 8.00 AM - 5.00 PM</div>
-                  <div>Friday : 8.00 AM - 5.00 PM</div>
-                  <div>Saturday : 8.00 AM - 5.00 PM</div>
-                  <div>Sunday : 8.00 AM - 5.00 PM</div>
+                  {salonData?.weeklyHours
+                    .sort((a, b) => {
+                      const days = [
+                        'Monday',
+                        'Tuesday',
+                        'Wednesday',
+                        'Thursday',
+                        'Friday',
+                        'Saturday',
+                        'Sunday',
+                      ]
+                      return days.indexOf(a.day_of_week) - days.indexOf(b.day_of_week)
+                    })
+                    .map(hours => (
+                      <div key={hours.id} className='flex justify-between'>
+                        <span className='font-medium w-32'>{hours.day_of_week}</span>
+                        <span>
+                          {FormatTime(hours.open_time)} - {FormatTime(hours.close_time)}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
@@ -265,7 +280,7 @@ const SalonPage = () => {
           <div className='m-4 mt-20'>
             <div className='flex flex-row items-center gap-4 font-instrumentSerif'>
               <div className='text-4xl'>Reviews</div>
-              <div className='mt-2 text-xl'>{calculateRatingAverage(salonData.reviews)}</div>
+              {/* <div className='mt-2 text-xl'>{calculateRatingAverage(salonData.reviews)}</div> */}
               <div className='mt-3'>
                 <StarRating
                   name='read-only'

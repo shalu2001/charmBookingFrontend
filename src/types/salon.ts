@@ -1,5 +1,5 @@
 export interface BaseSalon {
-  id: number
+  id: string
   name: string
   ownerName: string
   location: string
@@ -12,6 +12,18 @@ export interface BaseSalon {
 export interface Salon extends BaseSalon {
   services: Service[]
   reviews: Review[]
+  weeklyHours: {
+    id: string
+    day_of_week: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+    open_time: string
+    close_time: string
+  }[]
+  images: Array<{
+    id: number
+    salonId: string
+    url: string
+    createdAt: string
+  }>
 }
 
 export interface ServiceModalProps {

@@ -21,19 +21,23 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Booking } from '../../../types/booking'
 import { getBookings } from '../../../actions/bookingActions'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import { SalonAdmin } from '../../../types/salon'
+import CommonModal from '../../../components/commonModal'
+import BookingDetailsView from '../../../components/Booking/BookingDetailsView'
 
 export function BookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [paymentFilter, setPaymentFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const admin = useAuthUser<SalonAdmin>()
 
-  //useQuery to get bookings
-  const { data: bookings, isPending } = useQuery<Booking[]>({
+  const { data: bookings, isPending: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ['bookings'],
-    queryFn: () => getBookings('1'),
+    queryFn: () => getBookings(admin!.salonId),
   })
-  if (!bookings || isPending) {
+  if (!bookings || bookingsLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
         <div className='text-muted-foreground'>Loading bookings...</div>
@@ -137,7 +141,7 @@ export function BookingsPage() {
     ),
     Status: getStatusBadge(booking.status),
     Payment: getPaymentBadge(booking.paymentStatus),
-    Amount: `$${booking.price}`,
+    Amount: `${booking.amount}`,
     Actions: (
       <div className='flex gap-2'>
         <Button variant='ghost' size='sm' onPress={() => setSelectedBooking(booking)}>
@@ -178,7 +182,7 @@ export function BookingsPage() {
     cancelled: bookings.filter(b => b.status === 'cancelled').length,
     totalRevenue: bookings
       .filter(b => b.paymentStatus === 'paid')
-      .reduce((sum, b) => sum + b.price, 0),
+      .reduce((sum, b) => sum + b.amount, 0),
   }
 
   return (
@@ -308,91 +312,50 @@ export function BookingsPage() {
 
       {/* Booking Details Dialog */}
 
-      {/* <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent className='max-w-2xl'>
-          <DialogHeader>
-            <DialogTitle>Booking Details</DialogTitle>
-          </DialogHeader>
-          {selectedBooking && (
-            <div className='space-y-6'>
-              <div className='grid grid-cols-2 gap-6'>
-                <div>
-                  <h3 className='font-semibold mb-3'>Customer Information</h3>
-                  <div className='space-y-2'>
-                    <div className='flex items-center gap-2'>
-                      <FontAwesomeIcon icon={faUser} className='w-4 h-4 text-muted-foreground' />
-                      <span>{selectedBooking.customerName}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <FontAwesomeIcon icon={faEnvelope} className='w-4 h-4 text-muted-foreground' />
-                      <span>{selectedBooking.customerEmail}</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <FontAwesomeIcon icon={faPhone} className='w-4 h-4 text-muted-foreground' />
-                      <span>{selectedBooking.customerPhone}</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className='font-semibold mb-3'>Booking Information</h3>
-                  <div className='space-y-2'>
-                    <div>
-                      <span className='text-muted-foreground'>Service:</span>
-                      <span className='ml-2 font-medium'>{selectedBooking.serviceName}</span>
-                    </div>
-                    <div>
-                      <span className='text-muted-foreground'>Date:</span>
-                      <span className='ml-2'>{selectedBooking.date}</span>
-                    </div>
-                    <div>
-                      <span className='text-muted-foreground'>Time:</span>
-                      <span className='ml-2'>{selectedBooking.time}</span>
-                    </div>
-                    <div>
-                      <span className='text-muted-foreground'>Duration:</span>
-                      <span className='ml-2'>{selectedBooking.duration} minutes</span>
-                    </div>
-                    <div>
-                      <span className='text-muted-foreground'>Price:</span>
-                      <span className='ml-2 font-semibold'>${selectedBooking.price}</span>
-                    </div>
-                  </div>
-                </div>
+      <CommonModal
+        isOpen={!!selectedBooking}
+        onOpenChange={() => setSelectedBooking(null)}
+        title='Booking Details'
+        size='lg'
+        footer={
+          selectedBooking && (
+            <div className='flex justify-between items-center w-full'>
+              <div className='flex gap-2'>
+                {getStatusBadge(selectedBooking.status)}
+                {getPaymentBadge(selectedBooking.paymentStatus)}
               </div>
-              <div className='flex justify-between items-center pt-4 border-t'>
-                <div className='flex gap-2'>
-                  {getStatusBadge(selectedBooking.status)}
-                  {getPaymentBadge(selectedBooking.paymentStatus)}
-                </div>
-                <div className='flex gap-2'>
-                  {selectedBooking.status === 'pending' && (
-                    <Button
-                      onClick={() => {
-                        updateBookingStatus(selectedBooking.id, 'confirmed')
-                        setSelectedBooking(null)
-                      }}
-                      className='bg-success hover:bg-success/90'
-                    >
-                      Confirm Booking
-                    </Button>
-                  )}
-                  {selectedBooking.status !== 'cancelled' && (
-                    <Button
-                      variant='ghost'
-                      onPress={() => {
-                        updateBookingStatus(selectedBooking.id, 'cancelled')
-                        setSelectedBooking(null)
-                      }}
-                    >
-                      Cancel Booking
-                    </Button>
-                  )}
-                </div>
+              <div className='flex gap-2'>
+                {selectedBooking.status === 'pending' && (
+                  <Button
+                    color='primary'
+                    onPress={() => {
+                      updateBookingStatus(selectedBooking.id, 'confirmed')
+                      setSelectedBooking(null)
+                    }}
+                  >
+                    Confirm Booking
+                  </Button>
+                )}
+                {selectedBooking.status !== 'cancelled' && (
+                  <Button
+                    variant='flat'
+                    onPress={() => {
+                      updateBookingStatus(selectedBooking.id, 'cancelled')
+                      setSelectedBooking(null)
+                    }}
+                  >
+                    Cancel Booking
+                  </Button>
+                )}
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog> */}
+          )
+        }
+      >
+        {selectedBooking && (
+          <BookingDetailsView booking={selectedBooking} onStatusUpdate={updateBookingStatus} />
+        )}
+      </CommonModal>
     </div>
   )
 }

@@ -13,6 +13,8 @@ import { AccountPage } from '../pages/salon/salonDashboard/manageSalonProfile'
 import LoginSalon from '../pages/salon/loginSalon'
 import AuthProvider from 'react-auth-kit'
 import { customerStore, salonStore } from '../AuthStore'
+import { BookTimeAndDate } from '../pages/salon/bookSalonDateTimePage'
+import BookingPaymentPage from '../pages/salon/bookingPaymentPage'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -42,6 +44,8 @@ export default function AppRoutes() {
           <Route path='/login' element={<Login />} />
           <Route path='/' element={<HomePage />} />
           <Route path='/salon/:salonId' element={<SalonPage />} />
+          <Route path='/book/timeslot' element={<BookTimeAndDate />} />
+          <Route path='/book/payment' element={<BookingPaymentPage />} />
         </Route>
 
         {/* Salon routes */}

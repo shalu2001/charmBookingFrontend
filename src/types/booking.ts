@@ -9,8 +9,16 @@ export interface Booking {
   date: string
   time: string
   duration: number
-  price: number
+  amount: number
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
   paymentStatus: 'paid' | 'unpaid' | 'refunded'
   notes?: string
+}
+
+export interface TimeSlotResponse {
+  salonId: string
+  serviceId: string
+  date: string
+  isHoliday: boolean
+  times: string[]
 }
