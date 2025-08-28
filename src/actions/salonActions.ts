@@ -40,7 +40,7 @@ export async function loginSalon(
 }
 
 const mockSalonProfile: BaseSalon = {
-  id: 1,
+  id: '1',
   name: 'Charm Salon',
   ownerName: 'Linda Smith',
   location: '123 Main St, Cityville',
@@ -102,4 +102,9 @@ export async function updateSalonService(
 
 export async function deleteSalonService(serviceId: string): Promise<void> {
   await axiosInstance.delete(`salonService/remove/${serviceId}`)
+}
+
+export async function getServiceById(serviceId: string): Promise<Service> {
+  const response = await axiosInstance.get(`salonService/findOne/${serviceId}`)
+  return response.data
 }

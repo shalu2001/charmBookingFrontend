@@ -1,4 +1,4 @@
-import { Booking, TimeSlotResponse } from '../types/booking'
+import { AvailableWorkersResponse, Booking, TimeSlotResponse } from '../types/booking'
 import axiosInstance from './axiosInstance'
 
 export async function getBookings(salonId: string): Promise<Booking[]> {
@@ -15,4 +15,27 @@ export async function getAvailableTimeSlots(
     `/booking/${salonId}/getAvailableSlots?serviceId=${serviceId}&date=${date}`,
   )
   return response.data
+}
+
+export async function getAvailableWorkers(
+  salonId: string,
+  serviceId: string,
+  date: string,
+  startTime: string,
+): Promise<AvailableWorkersResponse> {
+  const response = await axiosInstance.get(
+    `/booking/${salonId}/checkServiceTimeAvailability?serviceId=${serviceId}&date=${date}&startTime=${startTime}`,
+  )
+  return response.data
+}
+
+export async function bookSlot(data: {
+  salonId: string
+  userId: string
+  serviceId: string
+  date: string
+  startTime: string
+  workerId: string
+}): Promise<void> {
+  await axiosInstance.post(`/booking/${data.salonId}/book`, data)
 }

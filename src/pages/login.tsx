@@ -3,8 +3,11 @@ import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import axios from 'axios'
 import { Button, Input, Spinner } from '@heroui/react'
 import { Customer } from '../types/customer'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function Login() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [subLoading, setSubLoading] = useState(false)
@@ -28,7 +31,11 @@ export default function Login() {
           })
         ) {
           console.log('Sign in successful')
-          window.location.href = '/'
+          if (location.state?.returnUrl) {
+            navigate(location.state.returnUrl, { replace: true })
+          } else {
+            navigate('/', { replace: true })
+          }
         } else {
           console.log('Sign in failed')
         }

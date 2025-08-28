@@ -22,3 +22,27 @@ export interface TimeSlotResponse {
   isHoliday: boolean
   times: string[]
 }
+
+export interface SalonWorker {
+  workerId: string
+  name: string
+  salonId: string
+  services: Array<{
+    serviceId: string
+    salonId: string
+    name: string
+  }>
+}
+
+export interface WorkerSlot {
+  serviceId: string
+  date: string
+  startTime: string
+  duration: number
+  buffer: number
+  worker: SalonWorker
+}
+
+export interface AvailableWorkersResponse {
+  slots: WorkerSlot[]
+}
