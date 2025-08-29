@@ -13,7 +13,7 @@ import { AccountPage } from '../pages/salon/salonDashboard/manageSalonProfile'
 import LoginSalon from '../pages/salon/loginSalon'
 import AuthProvider from 'react-auth-kit'
 import { customerStore, salonStore } from '../AuthStore'
-import { BookTimeAndDate } from '../pages/salon/bookSalonDateTimePage'
+import { BookTimeAndDate } from '../pages/booking/BookingForm'
 import DashboardProfile from '../pages/customer/cutomerDashboard/manageCustomerProfile'
 import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/dashboardLayoutWrapper'
 

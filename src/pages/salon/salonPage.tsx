@@ -10,7 +10,7 @@ import ServiceField from '../../components/ServiceField'
 import { Category, Salon } from '../../types/salon'
 import { calculateRatingAverage } from '../../helpers'
 import ReviewCard from '../../components/Cards/ReviewCard'
-import { FormatTime } from '../../utils/helper'
+import { formatTime } from '../../utils/helper'
 
 const SalonPage = () => {
   const { salonId } = useParams()
@@ -254,7 +254,7 @@ const SalonPage = () => {
                       <div key={hours.id} className='flex justify-between'>
                         <span className='font-medium w-32'>{hours.day_of_week}</span>
                         <span>
-                          {FormatTime(hours.open_time)} - {FormatTime(hours.close_time)}
+                          {formatTime(hours.open_time)} - {formatTime(hours.close_time)}
                         </span>
                       </div>
                     ))}
