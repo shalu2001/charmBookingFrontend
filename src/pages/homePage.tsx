@@ -69,8 +69,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Header />
-      <div className='relative w-screen h-screen'>
+      <div className='relative'>
         <EmblaCarousel slides={SLIDES} options={OPTIONS} />
         <div className='w-fit h-fit absolute inset-0 bg-clip-text text-transparent bg-gradient-to-br from-black to-quaternary drop-shadow-lg'>
           <p className='text-8xl font-instrumentSerif text-left pr-20 pl-20 pt-20 pb-0'>
@@ -147,7 +146,6 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   )
 }

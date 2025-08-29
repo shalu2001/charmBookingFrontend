@@ -36,6 +36,8 @@ export async function bookSlot(data: {
   date: string
   startTime: string
   workerId: string
-}): Promise<void> {
-  await axiosInstance.post(`/booking/${data.salonId}/book`, data)
+}): Promise<Booking> {
+  console.log('Booking appointment:', data)
+  const response = await axiosInstance.post(`/booking/${data.salonId}/book`, data)
+  return response.data
 }
