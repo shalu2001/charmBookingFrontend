@@ -1,6 +1,14 @@
 import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, Calendar } from '@heroui/react'
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Calendar,
+  ScrollShadow,
+} from '@heroui/react'
 import { format } from 'date-fns'
 import { today, CalendarDate } from '@internationalized/date'
 import { TimeSlotResponse, SalonWorker } from '../../types/booking'
@@ -73,7 +81,10 @@ export function DateTimeStep({
             This date is marked as a holiday. No slots available.
           </div>
         ) : (
-          <div className='flex flex-col items-center gap-4 max-h-[700px] overflow-y-auto p-2'>
+          <ScrollShadow
+            hideScrollBar
+            className='flex flex-col items-center gap-4 w-full max-h-[500px] overflow-y-auto p-2'
+          >
             {availableSlots?.times?.length ? (
               availableSlots.times.map(time => {
                 const [h, m] = time.split(':').map(Number)
@@ -85,7 +96,7 @@ export function DateTimeStep({
                       setSelectedTime(time)
                       setSelectedWorker(null)
                     }}
-                    className={`w-72 rounded-lg px-6 py-3 border text-sm font-medium transition-all text-center
+                    className={`w-full rounded-lg px-6 py-3 border text-sm font-medium transition-all text-center
                       ${
                         selectedTime === time
                           ? 'bg-primary text-white border-primary shadow-md'
@@ -99,7 +110,7 @@ export function DateTimeStep({
             ) : (
               <div className='text-gray-500 p-6'>No slots available for this day</div>
             )}
-          </div>
+          </ScrollShadow>
         )}
       </div>
       {/* Calendar Modal */}

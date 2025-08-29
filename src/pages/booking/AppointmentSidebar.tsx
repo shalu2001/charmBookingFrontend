@@ -21,7 +21,7 @@ export function AppointmentSidebar({
   handleContinue: () => void
 }) {
   return (
-    <div className='w-full lg:w-1/3 bg-white shadow-lg border-l border-gray-200 p-8 flex flex-col'>
+    <div className='mt-2 w-full h-[60vh] lg:w-1/3 bg-white shadow-lg border-l border-gray-200 p-8 flex flex-col'>
       <h2 className='text-xl font-semibold mb-4'>Appointment Details</h2>
       <div className='space-y-3 flex-1'>
         <div className='pb-4 border-b'>

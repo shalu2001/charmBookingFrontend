@@ -16,12 +16,17 @@ import { customerStore, salonStore } from '../AuthStore'
 import { BookTimeAndDate } from '../pages/booking/BookingForm'
 import DashboardProfile from '../pages/customer/cutomerDashboard/manageCustomerProfile'
 import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/dashboardLayoutWrapper'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+import Layout from '../layout/layout'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
   return (
     <AuthProvider store={customerStore}>
-      <Outlet />
+      <Layout>
+        <Outlet />
+      </Layout>
     </AuthProvider>
   )
 }

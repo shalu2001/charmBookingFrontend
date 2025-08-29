@@ -110,7 +110,7 @@ export const BookTimeAndDate = () => {
   }
 
   return (
-    <div className='flex h-screen w-screen bg-gray-50'>
+    <div className='flex h-fit'>
       <div className='flex flex-col flex-1 items-center px-10 py-8'>
         {selectedStep === 0 && (
           <DateTimeStep
