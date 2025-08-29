@@ -29,6 +29,7 @@ const Header = () => {
             description={customer?.email}
             onClick={() => navigate('/customer/profile')}
             isFocusable
+            className='cursor-pointer'
           />
         ) : (
           <>
