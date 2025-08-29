@@ -6,7 +6,8 @@ import { Customer } from '../types/customer'
 
 const Header = () => {
   const navigate = useNavigate()
-  const user = useAuthUser<Customer>()
+  const customer = useAuthUser<Customer>()
+  console.log('customer details:', customer)
   return (
     <Navbar>
       <NavbarBrand>
@@ -23,11 +24,11 @@ const Header = () => {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify='end' className=''>
-        {user ? (
+        {customer ? (
           <User
-            name={user?.firstName}
-            description={user?.email}
-            onClick={() => navigate('/#')}
+            name={customer?.firstName}
+            description={customer?.email}
+            onClick={() => navigate('/customer/profile')}
             isFocusable
           />
         ) : (

@@ -19,6 +19,7 @@ export default function Login() {
     setError('')
     try {
       const res = await axios.post('http://localhost:3000/user/login', formData)
+      console.log('Login response:', res)
       if (res.status === 201) {
         if (
           signIn({
@@ -27,7 +28,7 @@ export default function Login() {
               type: 'Bearer',
             },
             // refresh: res.data.refreshToken,
-            userState: res.data.customer,
+            userState: res.data,
           })
         ) {
           console.log('Sign in successful')
