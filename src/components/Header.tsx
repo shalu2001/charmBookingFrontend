@@ -16,12 +16,11 @@ const Header = () => {
         </Link>
       </NavbarBrand>
       <NavbarContent className='hidden sm:flex gap-4' justify='center'>
-        {/* <NavbarItem>
-                    <Link href="#">For Booking</Link>
-                </NavbarItem> */}
-        <NavbarItem>
-          <Link href='/business'>For Business</Link>
-        </NavbarItem>
+        {!customer && (
+          <NavbarItem>
+            <Link href='/business'>For Business</Link>
+          </NavbarItem>
+        )}
       </NavbarContent>
       <NavbarContent justify='end' className=''>
         {customer ? (

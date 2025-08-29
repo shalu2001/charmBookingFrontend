@@ -4,6 +4,8 @@ import axios from 'axios'
 import { Button, Input, Spinner } from '@heroui/react'
 import { Customer } from '../types/customer'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { loginCustomer } from '../actions/customerActions'
 
 export default function Login() {
   const location = useLocation()
@@ -13,49 +15,35 @@ export default function Login() {
   const [subLoading, setSubLoading] = useState(false)
   const signIn = useSignIn<Customer>()
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSubLoading(true)
-    setError('')
-    try {
-      const res = await axios.post('http://localhost:3000/user/login', formData)
-      console.log('Login response:', res)
-      if (res.status === 201) {
-        if (
-          signIn({
-            auth: {
-              token: res.data.token,
-              type: 'Bearer',
-            },
-            // refresh: res.data.refreshToken,
-            userState: res.data,
-          })
-        ) {
-          console.log('Sign in successful')
-          if (location.state?.returnUrl) {
-            navigate(location.state.returnUrl, { replace: true })
-          } else {
-            navigate('/', { replace: true })
-          }
-        } else {
-          console.log('Sign in failed')
-        }
-      }
-    } catch (error: unknown) {
-      // Handle Axios errors separately from other errors
-      if (axios.isAxiosError(error)) {
-        const backendMessage = error.response?.data?.error?.message || 'An error occurred'
-        setError(backendMessage)
-      } else if (error instanceof Error) {
-        // Handle other errors
-        setError(error.message)
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      const res = await loginCustomer(email, password)
+      return res
+    },
+    onSuccess: data => {
+      signIn({
+        auth: {
+          token: data.token,
+          type: 'Bearer',
+        },
+        userState: data.customer,
+      })
+      // Handle navigation with return URL
+      if (location.state?.returnUrl) {
+        navigate(location.state.returnUrl, { replace: true })
       } else {
-        // Fallback for any other unknown error types
-        setError('An unknown error occurred')
+        navigate('/', { replace: true })
       }
-    } finally {
-      setSubLoading(false) // Stop loading spinner
-    }
+    },
+    onError: error => {
+      console.error('Login failed:', error)
+      setError('Login failed. Please try again.')
+    },
+  })
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    mutate(formData)
   }
 
   return (

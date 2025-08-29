@@ -14,7 +14,7 @@ import LoginSalon from '../pages/salon/loginSalon'
 import AuthProvider from 'react-auth-kit'
 import { customerStore, salonStore } from '../AuthStore'
 import { BookTimeAndDate } from '../pages/salon/bookSalonDateTimePage'
-import DashboardProfile from '../pages/customer/cutomerDashboard/manageCustomerProfile'
+import { ManageCustomerProfile } from '../pages/customer/cutomerDashboard/manageCustomerProfile'
 import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/dashboardLayoutWrapper'
 
 // Auth wrapper for customer routes
@@ -46,11 +46,10 @@ export default function AppRoutes() {
           <Route path='/' element={<HomePage />} />
           <Route path='/salon/:salonId' element={<SalonPage />} />
           <Route path='/book/timeslot' element={<BookTimeAndDate />} />
-          <Route path='customerDashboard' element={<DashboardLayoutWrapperCustomer />}>
-            <Route path='customerProfile' element={<DashboardProfile />} />
-            <Route path='customerBookings' element={<div>Bookings</div>} />
-            <Route path='customerPayments' element={<div>Payments</div>} />
-            <Route path='customerDashboard' element={<div>Dashboard</div>} />
+          <Route path='customer' element={<DashboardLayoutWrapperCustomer />}>
+            <Route path='profile' element={<ManageCustomerProfile />} />
+            <Route path='bookings' element={<div>Bookings</div>} />
+            <Route path='payments' element={<div>Payments</div>} />
           </Route>
         </Route>
 

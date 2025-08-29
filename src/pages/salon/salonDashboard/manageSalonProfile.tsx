@@ -44,7 +44,8 @@ export function AccountPage() {
 
   //mutation for create/update/delete
   const { mutate, isPending: isUpdating } = useMutation({
-    mutationFn: (profileData: Partial<BaseSalon>) => updateSalonProfile('1', profileData),
+    mutationFn: (profileData: Partial<BaseSalon>) =>
+      updateSalonProfile(admin!.salonId, profileData),
     onSuccess: data => {
       // Handle success, e.g., show a toast or update state
       console.log('Profile updated successfully:', data)

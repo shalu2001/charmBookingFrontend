@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { DashboardLayout } from './dashboardLayout'
 
-const dashboardPages = ['customerProfile', 'customerBookings', 'customerPayments']
+const dashboardPages = ['profile', 'bookings', 'payments']
 
 export default function DashboardLayoutWrapperCustomer() {
   const location = useLocation()
@@ -12,7 +12,7 @@ export default function DashboardLayoutWrapperCustomer() {
     dashboardPages.find(page => location.pathname.includes(page)) || 'customerDashboard'
 
   const handlePageChange = (page: string) => {
-    navigate(`/customerDashboard/${page}`)
+    navigate(`/customer/${page}`)
   }
 
   return (

@@ -1,31 +1,31 @@
 import axiosInstance from './axiosInstance'
-import { Customer } from '../types/customer'
+import { Customer, LoginResponse, UpdatePassword } from '../types/customer'
 
 export const getCustomerProfile = async (customerId: string): Promise<Customer> => {
-  const response = await axiosInstance.get(`/user/getCustomerByID/${customerId}`)
+  const response = await axiosInstance.get('/user/getCustomerByID', {
+    params: {
+      id: customerId,
+    },
+  })
   return response.data
 }
 
 export const updateCustomerByID = async (
   customerId: string,
-  data: Partial<Customer>,
-): Promise<Customer> => {
+  data: Partial<LoginResponse>,
+): Promise<LoginResponse> => {
   const response = await axiosInstance.put(`/user/updateCustomerByID/${customerId}`, data)
   return response.data
 }
 
 export const updateCustomerPassword = async (
   customerId: string,
-  currentPassword: string,
-  newPassword: string,
+  passwordData: UpdatePassword,
 ): Promise<void> => {
-  await axiosInstance.put(`/user/updateCustomerPassword/${customerId}`, {
-    currentPassword,
-    newPassword,
-  })
+  await axiosInstance.put(`/user/updateCustomerPassword/${customerId}`, passwordData)
 }
 
-export const loginCustomer = async (email: string, password: string): Promise<Customer> => {
+export const loginCustomer = async (email: string, password: string): Promise<LoginResponse> => {
   const response = await axiosInstance.post('/user/login', { email, password })
   return response.data
 }

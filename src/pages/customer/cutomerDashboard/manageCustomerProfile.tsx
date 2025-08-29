@@ -1,253 +1,182 @@
 import { useState } from 'react'
 import {
   faUser,
-  faEnvelope,
-  faPhone,
-  faMapMarkerAlt,
-  faCamera,
-  faShieldAlt,
-  faEdit,
-  faSave,
-  faTimes,
-  faCalendarAlt,
-  faStar,
   faLock,
+  faCreditCard,
+  faPhone,
+  faEnvelope,
+  faCamera,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Card, CardHeader, CardBody, Input, Textarea, Avatar, Badge } from '@heroui/react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { Button, Input, Tabs, Tab, Avatar, Spinner } from '@heroui/react'
+import { CustomCard } from '../../../components/Cards/CustomCard'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  getCustomerProfile,
+  updateCustomerByID,
+  updateCustomerPassword,
+} from '../../../actions/customerActions'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import { Customer, LoginResponse, UpdatePassword } from '../../../types/customer'
+import useSignIn from 'react-auth-kit/hooks/useSignIn'
 
-export default function DashboardProfile() {
-  const [isEditing, setIsEditing] = useState(false)
-
-  interface Profile {
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
-    address: string
-    bio: string
-    dateJoined: string
-    totalBookings: number
-    favoriteSalons: number
-    avatar: string
-  }
-
-  const [formData, setFormData] = useState<Profile>({
+export function ManageCustomerProfile() {
+  const [selected, setSelected] = useState('profile')
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [editedFields, setEditedFields] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    address: '',
-    bio: '',
-    dateJoined: '',
-    totalBookings: 0,
-    favoriteSalons: 0,
-    avatar: '',
   })
 
-  // Dummy query for fetching profile
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      // fake API delay
-      await new Promise(resolve => setTimeout(resolve, 500))
-      return {
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        email: 'sarah.johnson@example.com',
-        phone: '+1 (555) 123-4567',
-        address: '123 Main Street, New York, NY 10001',
-        bio: 'Beauty enthusiast who loves trying new treatments and discovering amazing salons.',
-        dateJoined: 'January 2023',
-        totalBookings: 24,
-        favoriteSalons: 8,
-        avatar: 'https://i.pravatar.cc/150?img=5',
-      }
+  const customer = useAuthUser<Customer>()
+  const queryClient = useQueryClient()
+  const signIn = useSignIn()
+
+  // Get customer profile data
+  const { data: profile, isPending } = useQuery({
+    queryKey: ['customerProfile', customer!.customerId],
+    enabled: !!customer!.customerId,
+    queryFn: () => getCustomerProfile(customer!.customerId!),
+  })
+
+  // Update profile mutation
+  const { mutate: updateProfile, isPending: isUpdating } = useMutation({
+    mutationFn: (profileData: Partial<LoginResponse>) =>
+      updateCustomerByID(customer!.customerId!, profileData),
+    onSuccess: data => {
+      console.log('Profile updated successfully:', data)
+      // Add toast notification here
+    },
+    onError: error => {
+      console.error('Error updating profile:', error)
+      // Add error notification here
     },
   })
 
-  // Dummy mutation for updating profile
-  //   const updateProfile = useMutation(async (updated: any) => {
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //     return updated;
-  //   });
+  //update password
+  const { mutate: updatePassword, isPending: isPasswordUpdating } = useMutation({
+    mutationFn: (passwordData: UpdatePassword) =>
+      updateCustomerPassword(customer!.customerId!, passwordData),
+    onSuccess: data => {
+      console.log('Password updated successfully:', data)
+      // Add toast notification here
+    },
+    onError: error => {
+      console.error('Error updating password:', error)
+      // Add error notification here
+    },
+  })
 
-  const handleSave = () => {
-    // updateProfile.mutate(formData)
-    setIsEditing(false)
+  if (!profile || isPending || isUpdating || isPasswordUpdating) {
+    return (
+      <Spinner label='Loading profile...' className='flex items-center justify-center h-screen' />
+    )
   }
 
-  const handleCancel = () => {
-    if (profile) setFormData(profile)
-    setIsEditing(false)
-  }
-
-  if (isLoading) return <div>Loading...</div>
+  const commonInput = (
+    label: string,
+    value: string,
+    fieldName: keyof typeof editedFields,
+    type: string = 'text',
+  ) => (
+    <Input
+      label={label}
+      type={type}
+      defaultValue={value}
+      onChange={e => {
+        const newValue = e.currentTarget.value
+        setEditedFields(prev => ({
+          ...prev,
+          [fieldName]: newValue !== value ? newValue : '',
+        }))
+      }}
+    />
+  )
 
   return (
-    <div className='space-y-8'>
-      {/* Header */}
-      <div className='flex items-center justify-between'>
-        <div>
-          <h1 className='text-3xl font-bold text-primary'>Profile Settings</h1>
-          <p className='text-default-500 mt-2'>Manage your account information and preferences.</p>
-        </div>
-        {!isEditing ? (
-          <Button
-            color='primary'
-            onPress={() => {
-              if (profile) setFormData(profile)
-              setIsEditing(true)
-            }}
-          >
-            <FontAwesomeIcon icon={faEdit} className='mr-2' />
-            Edit Profile
-          </Button>
-        ) : (
-          <div className='flex gap-2'>
-            {/* <Button color="primary" onPress={handleSave} isLoading={updateProfile.isLoading}>
-              <FontAwesomeIcon icon={faSave} className="mr-2" />
-              Save
-            </Button>
-            <Button variant="bordered" onPress={handleCancel}>
-              <FontAwesomeIcon icon={faTimes} className="mr-2" />
-              Cancel
-            </Button> */}
-          </div>
-        )}
-      </div>
-
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-        {/* Profile Picture & Stats */}
-        <Card shadow='sm'>
-          <CardHeader className='font-semibold'>Profile Picture</CardHeader>
-          <CardBody className='space-y-6'>
-            <div className='flex flex-col items-center gap-4'>
-              <div className='relative'>
+    <div className='space-y-6'>
+      <Tabs selectedKey={selected} onSelectionChange={k => setSelected(String(k))}>
+        <Tab
+          key='profile'
+          title={
+            <span className='flex items-center gap-2'>
+              <FontAwesomeIcon icon={faUser} /> Profile
+            </span>
+          }
+        >
+          <div className='grid lg:grid-cols-2 gap-6'>
+            <CustomCard title='Personal Information' icon={<FontAwesomeIcon icon={faCamera} />}>
+              <div className='flex justify-center mb-6'>
                 <Avatar
-                  src={profile?.avatar}
-                  name={`${profile?.firstName} ${profile?.lastName}`}
+                  name={`${profile.firstName[0] ?? ''}${profile.lastName[0] ?? ''}`}
+                  size='lg'
                   className='w-24 h-24'
                 />
-                {isEditing && (
-                  <Button
-                    isIconOnly
-                    size='sm'
-                    color='primary'
-                    className='absolute -bottom-2 -right-2 rounded-full'
-                  >
-                    <FontAwesomeIcon icon={faCamera} />
-                  </Button>
-                )}
               </div>
-              <div className='text-center'>
-                <h3 className='text-lg font-semibold'>
-                  {profile?.firstName} {profile?.lastName}
-                </h3>
-                <p className='text-sm text-default-500'>{profile?.email}</p>
-                <Badge variant='flat' color='primary' className='mt-2'>
-                  Member since {profile?.dateJoined}
-                </Badge>
-              </div>
-            </div>
+              {commonInput('First Name', profile.firstName, 'firstName')}
+              {commonInput('Last Name', profile.lastName, 'lastName')}
+              {commonInput('Email', profile.email, 'email', 'email')}
+              {commonInput('Phone', profile.phone, 'phone')}
+              <Button
+                color='primary'
+                className='mt-4 w-full'
+                isDisabled={!Object.values(editedFields).some(Boolean)}
+                onPress={() => {
+                  const updatedFields = Object.fromEntries(
+                    Object.entries(editedFields).filter(([_, value]) => value !== ''),
+                  )
+                  updateProfile(updatedFields as Partial<LoginResponse>)
+                  setEditedFields({ firstName: '', lastName: '', email: '', phone: '' })
+                }}
+              >
+                Update Profile
+              </Button>
+            </CustomCard>
 
-            {/* Quick Stats */}
-            <div className='grid grid-cols-2 gap-4 border-t pt-4'>
-              <div className='text-center'>
-                <div className='text-2xl font-bold text-primary'>{profile?.totalBookings}</div>
-                <div className='text-xs text-default-500'>Total Bookings</div>
-              </div>
-              <div className='text-center'>
-                <div className='text-2xl font-bold text-primary'>{profile?.favoriteSalons}</div>
-                <div className='text-xs text-default-500'>Favorite Salons</div>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Contact Information */}
-        <div className='lg:col-span-2 space-y-6'>
-          <Card shadow='sm'>
-            <CardHeader className='font-semibold flex items-center gap-2'>
-              <FontAwesomeIcon icon={faUser} className='text-primary' />
-              Personal Information
-            </CardHeader>
-            <CardBody className='space-y-4'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <Input
-                  label='First Name'
-                  value={isEditing ? formData.firstName : profile?.firstName}
-                  onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                  isDisabled={!isEditing}
-                />
-                <Input
-                  label='Last Name'
-                  value={isEditing ? formData.lastName : profile?.lastName}
-                  onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                  isDisabled={!isEditing}
-                />
-              </div>
+            <CustomCard title='Change Password' icon={<FontAwesomeIcon icon={faLock} />}>
               <Input
-                label='Email'
-                value={isEditing ? formData.email : profile?.email}
-                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                isDisabled={!isEditing}
-                startContent={<FontAwesomeIcon icon={faEnvelope} />}
+                label='Current Password'
+                type='password'
+                value={passwordData.currentPassword}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPasswordData(pd => ({ ...pd, currentPassword: e.currentTarget.value }))
+                }
               />
               <Input
-                label='Phone'
-                value={isEditing ? formData.phone : profile?.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                isDisabled={!isEditing}
-                startContent={<FontAwesomeIcon icon={faPhone} />}
+                label='New Password'
+                type='password'
+                value={passwordData.newPassword}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPasswordData(pd => ({ ...pd, newPassword: e.currentTarget.value }))
+                }
               />
-              <Textarea
-                label='Address'
-                value={isEditing ? formData.address : profile?.address}
-                onChange={e => setFormData({ ...formData, address: e.target.value })}
-                isDisabled={!isEditing}
+              <Input
+                label='Confirm Password'
+                type='password'
+                value={passwordData.confirmPassword}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPasswordData(pd => ({ ...pd, confirmPassword: e.currentTarget.value }))
+                }
               />
-              <Textarea
-                label='Bio'
-                value={isEditing ? formData.bio : profile?.bio}
-                onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                isDisabled={!isEditing}
-              />
-            </CardBody>
-          </Card>
-
-          {/* Security */}
-          <Card shadow='sm'>
-            <CardHeader className='font-semibold flex items-center gap-2'>
-              <FontAwesomeIcon icon={faShieldAlt} className='text-primary' />
-              Security
-            </CardHeader>
-            <CardBody className='space-y-4'>
-              <div className='flex items-center justify-between p-4 bg-default-100 rounded-lg'>
-                <div>
-                  <h4 className='font-medium'>Password</h4>
-                  <p className='text-sm text-default-500'>Last changed 3 months ago</p>
-                </div>
-                <Button variant='bordered' size='sm'>
-                  <FontAwesomeIcon icon={faLock} className='mr-2' />
-                  Change Password
-                </Button>
-              </div>
-
-              <div className='flex items-center justify-between p-4 bg-default-100 rounded-lg'>
-                <div>
-                  <h4 className='font-medium'>Two-Factor Authentication</h4>
-                  <p className='text-sm text-default-500'>Add an extra layer of security</p>
-                </div>
-                <Button variant='bordered' size='sm'>
-                  Enable 2FA
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-      </div>
+              <Button
+                color='primary'
+                className='mt-4 w-full'
+                onPress={() => {
+                  /* change password logic */
+                }}
+              >
+                Change Password
+              </Button>
+            </CustomCard>
+          </div>
+        </Tab>
+      </Tabs>
     </div>
   )
 }
