@@ -1,117 +1,184 @@
-import { Image } from '@heroui/react'
-import { SalonRanked } from '../types/salon'
-import StarRating from './StarRating'
-import { calculateRatingAverage } from '../helpers'
-import { Link } from 'react-router-dom'
+import { Review, SalonRanked, ServiceWithAvailability } from '../types/salon'
+import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { Image } from '@heroui/react'
+import StarRating from './StarRating'
+import { calculateRatingAverage } from '../helpers'
+import { formatTime } from '../utils/helper'
 
 const SalonGrid = ({
   salons,
   categoryId,
   setHoveredSalon,
+  date,
+  time,
 }: {
   salons: SalonRanked[]
   categoryId: string
+  date: string
+  time: string
   setHoveredSalon: React.Dispatch<React.SetStateAction<string | undefined>>
+}) => (
+  <div className='flex-col p-2'>
+    {salons
+      .sort((a, b) => a.rank - b.rank)
+      .map(salon => (
+        <SalonCard
+          key={salon.id}
+          salon={salon}
+          categoryId={categoryId}
+          date={date}
+          time={time}
+          onHover={() => setHoveredSalon(salon.id)}
+        />
+      ))}
+  </div>
+)
+
+const SalonCard = ({
+  salon,
+  categoryId,
+  onHover,
+  date,
+  time,
+}: {
+  salon: SalonRanked
+  categoryId: string
+  onHover: () => void
+  date: string
+  time: string
+}) => (
+  <div className='mb-4 rounded-xl bg-white p-4 w-full shadow-md' onMouseEnter={onHover}>
+    <SalonHeader name={salon.name} location={salon.location} />
+    <div className='flex-col gap-2 py-2'>
+      <SalonImage images={salon.images} name={salon.name} />
+      <SalonReviewInfo reviews={salon.reviews} distanceKm={salon.distanceKm} />
+      <SalonDescription description={salon.description} />
+      <SalonServices services={salon.services} categoryId={categoryId} date={date} time={time} />
+      <SalonSeeMoreLink salonId={salon.id} />
+    </div>
+  </div>
+)
+
+const SalonHeader = ({ name, location }: { name: string; location: string }) => (
+  <div className='flex-col items-start'>
+    <h4 className='font-bold text-large'>{name}</h4>
+    <small className='text-default-500'>{location || 'Location not specified'}</small>
+  </div>
+)
+
+const SalonImage = ({ images, name }: { images: Array<{ url: string }>; name: string }) => (
+  <Image
+    alt={`${name} image`}
+    className='rounded-xl'
+    src={images.length > 0 ? images[0].url : ''}
+    fallbackSrc='/image1.avif'
+    isZoomed
+    width={'100%'}
+    height={200}
+  />
+)
+
+const SalonReviewInfo = ({ reviews, distanceKm }: { reviews: Review[]; distanceKm: number }) => (
+  <div className='flex items-center gap-2 mt-3 w-full'>
+    {reviews.length === 0 ? (
+      <div className='text-default-500 text-sm'>No Reviews</div>
+    ) : (
+      <>
+        <div className='flex items-center'>
+          {calculateRatingAverage(reviews).toFixed(1)}
+          <StarRating name='read-only' value={calculateRatingAverage(reviews)} readOnly={true} />
+        </div>
+        <div className='text-default-500 text-sm'>({reviews.length} reviews)</div>
+      </>
+    )}
+    <div className='text-default-500 text-sm ml-auto'>{distanceKm.toFixed(2)} km away</div>
+  </div>
+)
+
+const SalonDescription = ({ description }: { description: string }) => (
+  <div className='text-default-500 text-xs'>{description || 'Description not available'}</div>
+)
+
+const SalonServices = ({
+  services,
+  categoryId,
+  date,
+  time,
+}: {
+  services: ServiceWithAvailability[]
+  categoryId: string
+  date: string
+  time: string
 }) => {
+  const navigate = useNavigate()
   return (
-    <div className='flex-col p-2'>
-      {salons
-        .sort((a, b) => a.rank - b.rank)
-        .map(salon => (
-          <div
-            key={salon.id}
-            className='mb-4 rounded-xl bg-white p-4 w-full shadow-sm hover:shadow-lg transition-shadow duration-200'
-            onMouseEnter={() => {
-              setHoveredSalon(salon.id)
-            }}
-            onMouseLeave={() => {
-              setHoveredSalon(undefined)
-            }}
-          >
-            <div className='flex-col items-start'>
-              <h4 className='font-bold text-large'>{salon.name}</h4>
-              <small className='text-default-500'>
-                {salon.location || 'Location not specified'}
-              </small>
-            </div>
-            <div className='flex-col gap-2 py-2'>
-              <Image
-                alt={`${salon.name} image`}
-                className='rounded-xl'
-                src={salon.images.length > 0 ? salon.images[0].url : ''}
-                fallbackSrc='/image1.avif'
-                isZoomed
-                width={'100%'}
-                height={200}
-              />
-              <div className='flex items-center gap-2 mt-3 w-full'>
-                {salon.reviews.length === 0 ? (
-                  <div className='text-default-500 text-sm'>No Reviews</div>
-                ) : (
-                  <>
-                    <div className='flex items-center'>
-                      {calculateRatingAverage(salon.reviews).toFixed(1)}
-                      <StarRating
-                        name='read-only'
-                        value={calculateRatingAverage(salon.reviews)}
-                        readOnly={true}
-                      />
+    <div className='mt-2 border-t border-default-200'>
+      {services.length > 0 && (
+        <>
+          {services
+            .filter(service =>
+              service.categories.some(category => category.categoryId === Number(categoryId)),
+            )
+            .map(service => (
+              <div
+                className='rounded-lg flex items-center justify-between border-b border-default-200 p-2 hover:bg-quaternary transition-all duration-200 group relative cursor-pointer'
+                key={service.serviceId}
+                onClick={() =>
+                  navigate({
+                    pathname: '/book/timeslot',
+                    search: `?salonId=${service.salonId}&serviceId=${service.serviceId}&date=${date}&time=${time}`,
+                  })
+                }
+              >
+                <div className='flex-col w-full' key={service.serviceId}>
+                  <div className='flex items-center'>
+                    <div className='flex-1'>
+                      <div>{service.name}</div>
+                      <div className='text-default-500 text-sm'>
+                        {service.duration + service.bufferTime} mins
+                      </div>
                     </div>
-                    <div className='text-default-500 text-sm'>({salon.reviews.length} reviews)</div>
-                  </>
-                )}
-                <div className='text-default-500 text-sm ml-auto'>
-                  {salon.distanceKm.toFixed(2)} km away
+                  </div>
+                  <div>
+                    {service.slots.length > 0 ? (
+                      <div className='text-success-600 text-sm'>
+                        Available at {formatTime(service.slots[0].startTime)}
+                      </div>
+                    ) : (
+                      <div className='text-warning-600 text-sm'>
+                        Next available slot: {formatTime(service.nextAvailableSlot!.startTime)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className='text-default-500 text-xs'>
-                {salon.description || 'Description not available'}
-              </div>
-              <div className='mt-2 border-t border-default-200'>
-                {salon.services.length > 0 && (
-                  <>
-                    {salon.services
-                      .filter(service =>
-                        service.categories.some(
-                          category => category.categoryId === Number(categoryId),
-                        ),
-                      )
-                      .map(service => (
-                        <div
-                          key={service.serviceId}
-                          className='flex justify-between items-center border-b border-default-200 py-2'
-                        >
-                          <div>
-                            <div>{service.name}</div>
-                            <div className='text-default-500 text-sm'>
-                              {service.duration + service.bufferTime} mins
-                            </div>
-                          </div>
-                          {service.price.toLocaleString('en-LK', {
-                            style: 'currency',
-                            currency: 'LKR',
-                            minimumFractionDigits: 0,
-                          })}
-                        </div>
-                      ))}
-                  </>
-                )}
-              </div>
-              <div className='flex justify-end mt-4 hover:*:text-primary-600'>
-                <Link
-                  to={`/salon/${salon.id}`}
-                  className='text-primary-500 hover:border-b-1 border-blue-500'
+                {service.price.toLocaleString('en-LK', {
+                  style: 'currency',
+                  currency: 'LKR',
+                  minimumFractionDigits: 0,
+                })}
+                <button
+                  className='opacity-0 overflow-hidden w-0 group-hover:opacity-100 group-hover:w-10 transition-all'
+                  tabIndex={-1}
+                  type='button'
                 >
-                  See More <FontAwesomeIcon icon={faChevronRight} />
-                </Link>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
               </div>
-            </div>
-          </div>
-        ))}
+            ))}
+        </>
+      )}
     </div>
   )
 }
+
+const SalonSeeMoreLink = ({ salonId }: { salonId: string }) => (
+  <div className='flex justify-end mt-4 hover:*:text-primary-600'>
+    <Link to={`/salon/${salonId}`} className='text-primary-500 hover:border-b-1 border-blue-500'>
+      See More <FontAwesomeIcon icon={faChevronRight} />
+    </Link>
+  </div>
+)
 
 export default SalonGrid

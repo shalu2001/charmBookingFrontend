@@ -1,3 +1,5 @@
+import { SalonWorker } from './booking'
+
 export interface BaseSalon {
   id: string
   name: string
@@ -27,6 +29,7 @@ export interface Salon extends BaseSalon {
 }
 
 export interface SalonRanked extends Salon {
+  services: ServiceWithAvailability[]
   rank: number
   distanceKm: number
 }
@@ -64,6 +67,21 @@ export interface Service {
     name: string
   }>
 }
+
+export interface BookingSlot {
+  serviceId: string
+  date: string
+  startTime: string
+  duration: number
+  buffer: number
+  worker: SalonWorker
+}
+
+export type ServiceWithAvailability = Service & {
+  slots: BookingSlot[]
+  nextAvailableSlot?: BookingSlot
+}
+
 export interface ServiceFormData {
   name: string
   price: string

@@ -20,6 +20,8 @@ export const BookTimeAndDate = () => {
   const navigate = useNavigate()
   const salonId = searchParams.get('salonId') || undefined
   const serviceId = searchParams.get('serviceId') || undefined
+  const dateParam = searchParams.get('date') || undefined
+  const timeParam = searchParams.get('time') || undefined
   const [selectedStep, setSelectedStep] = useState(0)
   const [selectedWorker, setSelectedWorker] = useState<SalonWorker | null>(null)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
@@ -43,10 +45,10 @@ export const BookTimeAndDate = () => {
   }, [salonId, serviceId])
 
   const jsToday = startOfToday()
-  const [selectedDate, setSelectedDate] = useState<Date>(jsToday)
+  const [selectedDate, setSelectedDate] = useState<Date>(dateParam ? new Date(dateParam) : jsToday)
   const tz = getLocalTimeZone()
   const [calendarValue, setCalendarValue] = useState(today(tz))
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(timeParam || null)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const dates = Array.from({ length: 7 }, (_, i) => addDays(jsToday, i))
 

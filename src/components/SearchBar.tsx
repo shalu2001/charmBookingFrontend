@@ -15,14 +15,38 @@ import { getLocalTimeZone, today, CalendarDate, Time } from '@internationalized/
 import cities from '../data/lk.json'
 import { useNavigate } from 'react-router-dom'
 
-const SearchBar = () => {
+const SearchBar = ({
+  categoryId,
+  initialLocation,
+  initialDate,
+  initialTime,
+}: {
+  categoryId?: string
+  initialLocation?: string
+  initialDate?: string
+  initialTime?: string
+}) => {
   const navigate = useNavigate()
-  const [category, setCategory] = useState<string>('')
-  const [location, setLocation] = useState<Key | null>(null)
+  const [category, setCategory] = useState<string>(categoryId ? categoryId : '')
+  const [location, setLocation] = useState<Key | null | undefined>(initialLocation)
   const [latitude, setLatitude] = useState<number | null>(null)
   const [longitude, setLongitude] = useState<number | null>(null)
-  const [date, setDate] = useState<CalendarDate | null>(today(getLocalTimeZone()))
-  const [time, setTime] = useState<Time | null>(null)
+  const [date, setDate] = useState<CalendarDate | null | undefined>(
+    initialDate
+      ? (() => {
+          const [year, month, day] = initialDate.split('-').map(Number)
+          return new CalendarDate(year, month, day)
+        })()
+      : undefined,
+  )
+  const [time, setTime] = useState<Time | null | undefined>(
+    initialTime
+      ? (() => {
+          const [hour, minute] = initialTime.split(':').map(Number)
+          return new Time(hour, minute)
+        })()
+      : undefined,
+  )
 
   // Error states
   const [categoryError, setCategoryError] = useState<string | null>(null)
@@ -76,7 +100,7 @@ const SearchBar = () => {
     })
     navigate({
       pathname: '/salon/search',
-      search: `?category=${category}&latitude=${latitude}&longitude=${longitude}&date=${date}&time=${time}`,
+      search: `?category=${category}&location=${location}&latitude=${latitude}&longitude=${longitude}&date=${date}&time=${time}`,
     })
   }
 
@@ -133,6 +157,7 @@ const SearchBar = () => {
           { key: 'current-location', label: 'Current Location' },
           ...cities.map(city => ({ key: city.city, label: city.city })),
         ]}
+        defaultSelectedKey={initialLocation}
         onSelectionChange={handleLocationSelect}
         isInvalid={!!locationError}
         errorMessage={locationError}

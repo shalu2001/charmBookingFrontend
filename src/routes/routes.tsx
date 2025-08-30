@@ -51,7 +51,6 @@ export default function AppRoutes() {
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
           <Route path='/' element={<HomePage />} />
-          <Route path='/salon/search' element={<SearchSalons />} />
           <Route path='/salon/:salonId' element={<SalonPage />} />
           <Route path='/book/timeslot' element={<BookTimeAndDate />} />
           <Route path='customer' element={<DashboardLayoutWrapperCustomer />}>
@@ -60,6 +59,7 @@ export default function AppRoutes() {
             <Route path='payments' element={<div>Payments</div>} />
           </Route>
         </Route>
+        <Route path='/salon/search' element={<SearchSalons />} />
 
         {/* Salon routes */}
         <Route path='/business' element={<SalonAuth />}>
