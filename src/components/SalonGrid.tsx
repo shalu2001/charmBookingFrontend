@@ -22,7 +22,7 @@ const SalonGrid = ({
         .map(salon => (
           <div
             key={salon.id}
-            className='rounded-xl bg-white p-4 w-full shadow-sm hover:shadow-lg transition-shadow duration-200'
+            className='mb-4 rounded-xl bg-white p-4 w-full shadow-sm hover:shadow-lg transition-shadow duration-200'
             onMouseEnter={() => {
               setHoveredSalon(salon.id)
             }}
@@ -40,7 +40,7 @@ const SalonGrid = ({
               <Image
                 alt={`${salon.name} image`}
                 className='rounded-xl'
-                src={salon.images[0].url}
+                src={salon.images.length > 0 ? salon.images[0].url : ''}
                 fallbackSrc='/image1.avif'
                 isZoomed
                 width={'100%'}
