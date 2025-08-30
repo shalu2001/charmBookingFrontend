@@ -28,7 +28,7 @@ export function CustomTable({
   tableHeaders,
   tableData,
   pagination,
-  pageSize = 2,
+  pageSize = 7,
   onPageChange,
 }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1)

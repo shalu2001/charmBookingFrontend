@@ -19,6 +19,7 @@ import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/d
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Layout from '../layout/layout'
+import { CustomerBookingsPage } from '../pages/customer/cutomerDashboard/manageBookings'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -53,7 +54,7 @@ export default function AppRoutes() {
           <Route path='/book/timeslot' element={<BookTimeAndDate />} />
           <Route path='customer' element={<DashboardLayoutWrapperCustomer />}>
             <Route path='profile' element={<ManageCustomerProfile />} />
-            <Route path='bookings' element={<div>Bookings</div>} />
+            <Route path='bookings' element={<CustomerBookingsPage />} />
             <Route path='payments' element={<div>Payments</div>} />
           </Route>
         </Route>

@@ -1,15 +1,43 @@
-export interface Booking {
+export enum BookingStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+}
+
+export enum PaymentStatus {
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+  PENDING = 'PENDING',
+  CANCELLED = 'CANCELLED',
+}
+export interface BaseBooking {
   id: string
   user_id: string
   salon_id: string
-  worker_id: string
   salon_service_id: string
+  worker_id: string
   amount: number
   booking_date: string
   start_time: string
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+  status: BookingStatus
   payment_id: string | null
   created_at: string
+  duration: number
+  serviceName: string
+  paymentStatus: PaymentStatus
+}
+
+export interface Booking extends BaseBooking {
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+}
+
+export interface CustomerBooking extends BaseBooking {
+  salonName: string
+  salonLocation?: string
 }
 
 export interface TimeSlotResponse {

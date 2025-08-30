@@ -19,7 +19,7 @@ import { CustomCard } from '../../../components/Cards/CustomCard'
 import { Badge, Button, Input } from '@heroui/react'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Booking } from '../../../types/booking'
+import { Booking, BookingStatus, PaymentStatus } from '../../../types/booking'
 import { getBookings } from '../../../actions/bookingActions'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { SalonAdmin } from '../../../types/salon'
@@ -131,11 +131,11 @@ export function BookingsPage() {
       <div>
         <div className='flex items-center gap-1'>
           <FontAwesomeIcon icon={faCalendar} className='w-4 h-4 text-muted-foreground' />
-          <span>{booking.date}</span>
+          <span>{booking.booking_date}</span>
         </div>
         <div className='flex items-center gap-1'>
           <FontAwesomeIcon icon={faClock} className='w-4 h-4 text-muted-foreground' />
-          <span>{booking.time}</span>
+          <span>{booking.start_time}</span>
         </div>
       </div>
     ),
@@ -154,20 +154,20 @@ export function BookingsPage() {
             </Button>
           }
           dropdownItems={[
-            ...(booking.status === 'pending'
+            ...(booking.status === 'PENDING'
               ? [{ label: 'Confirm Booking', value: 'Confirm Booking' }]
               : []),
-            ...(booking.status !== 'cancelled'
+            ...(booking.status !== 'CANCELLED'
               ? [{ label: 'Cancel Booking', value: 'Cancel Booking' }]
               : []),
-            ...(booking.paymentStatus === 'unpaid'
+            ...(booking.paymentStatus === 'PAID'
               ? [{ label: 'Mark as Paid', value: 'Mark as Paid' }]
               : []),
           ]}
           onItemSelect={item => {
-            if (item === 'Confirm Booking') updateBookingStatus(booking.id, 'confirmed')
-            if (item === 'Cancel Booking') updateBookingStatus(booking.id, 'cancelled')
-            if (item === 'Mark as Paid') updatePaymentStatus(booking.id, 'paid')
+            if (item === 'Confirm Booking') updateBookingStatus(booking.id, BookingStatus.CONFIRMED)
+            if (item === 'Cancel Booking') updateBookingStatus(booking.id, BookingStatus.CANCELLED)
+            if (item === 'Mark as Paid') updatePaymentStatus(booking.id, PaymentStatus.PAID)
           }}
         />
       </div>
@@ -177,11 +177,11 @@ export function BookingsPage() {
   // Statistics
   const stats = {
     total: bookings.length,
-    confirmed: bookings.filter(b => b.status === 'confirmed').length,
-    pending: bookings.filter(b => b.status === 'pending').length,
-    cancelled: bookings.filter(b => b.status === 'cancelled').length,
+    confirmed: bookings.filter(b => b.status === 'CONFIRMED').length,
+    pending: bookings.filter(b => b.status === 'PENDING').length,
+    cancelled: bookings.filter(b => b.status === 'CANCELLED').length,
     totalRevenue: bookings
-      .filter(b => b.paymentStatus === 'paid')
+      .filter(b => b.paymentStatus === 'PAID')
       .reduce((sum, b) => sum + b.amount, 0),
   }
 
@@ -325,22 +325,22 @@ export function BookingsPage() {
                 {getPaymentBadge(selectedBooking.paymentStatus)}
               </div>
               <div className='flex gap-2'>
-                {selectedBooking.status === 'pending' && (
+                {selectedBooking.status === 'PENDING' && (
                   <Button
                     color='primary'
                     onPress={() => {
-                      updateBookingStatus(selectedBooking.id, 'confirmed')
+                      updateBookingStatus(selectedBooking.id, BookingStatus.CONFIRMED)
                       setSelectedBooking(null)
                     }}
                   >
                     Confirm Booking
                   </Button>
                 )}
-                {selectedBooking.status !== 'cancelled' && (
+                {selectedBooking.status !== 'CANCELLED' && (
                   <Button
                     variant='flat'
                     onPress={() => {
-                      updateBookingStatus(selectedBooking.id, 'cancelled')
+                      updateBookingStatus(selectedBooking.id, BookingStatus.CANCELLED)
                       setSelectedBooking(null)
                     }}
                   >
@@ -353,7 +353,11 @@ export function BookingsPage() {
         }
       >
         {selectedBooking && (
-          <BookingDetailsView booking={selectedBooking} onStatusUpdate={updateBookingStatus} />
+          <BookingDetailsView
+            booking={selectedBooking}
+            onStatusUpdate={updateBookingStatus}
+            viewMode='salon'
+          />
         )}
       </CommonModal>
     </div>
