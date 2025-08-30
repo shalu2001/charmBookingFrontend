@@ -2,10 +2,10 @@ import { useState } from 'react'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import axios from 'axios'
 import { Button, Input, Spinner } from '@heroui/react'
-import { Customer } from '../types/customer'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { loginCustomer } from '../actions/customerActions'
+import { LoginResponse } from '../types/customer'
 
 export default function Login() {
   const location = useLocation()
@@ -13,11 +13,12 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [subLoading, setSubLoading] = useState(false)
-  const signIn = useSignIn<Customer>()
+  const signIn = useSignIn<LoginResponse>()
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       const res = await loginCustomer(email, password)
+      console.log('logged in customer', res)
       return res
     },
     onSuccess: data => {
@@ -26,7 +27,13 @@ export default function Login() {
           token: data.token,
           type: 'Bearer',
         },
-        userState: data.customer,
+        userState: {
+          customerId: data.customerId,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          token: '',
+        },
       })
       // Handle navigation with return URL
       if (location.state?.returnUrl) {
