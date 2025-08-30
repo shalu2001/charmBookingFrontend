@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getSalonsRanked } from '../../actions/salonActions'
 import CustomMapContainer from '../../components/Leaflet/CustomMapContainer'
 import SalonGrid from '../../components/SalonGrid'
-import { Spinner } from '@heroui/react'
+import { ScrollShadow, Spinner } from '@heroui/react'
 
 const SearchSalons = () => {
   const navigate = useNavigate()
@@ -41,9 +41,9 @@ const SearchSalons = () => {
         <Spinner />
       ) : (
         <>
-          <div className='flex-1 p-2'>
+          <ScrollShadow className='flex-1 p-2 w-full h-full' hideScrollBar>
             <SalonGrid salons={salons!} categoryId={category!} setHoveredSalon={setHoveredSalon} />
-          </div>
+          </ScrollShadow>
           <div className='w-[70vw]'>
             {salons && (
               <CustomMapContainer
