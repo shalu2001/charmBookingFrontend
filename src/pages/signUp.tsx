@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import { Button, Input, Spinner } from '@heroui/react'
 
@@ -10,12 +10,12 @@ export default function SignUp() {
     firstName: '',
     lastName: '',
     dateOfBirth: new Date(),
-    // userName: "",
+    phone: '',
     email: '',
     password: '',
   })
 
-  const hanldeSignUp = async () => {
+  const handleSignUp = async () => {
     setSubLoading(true)
     setError('')
     try {
@@ -23,7 +23,7 @@ export default function SignUp() {
         !formData.firstName ||
         !formData.lastName ||
         !formData.dateOfBirth ||
-        // !formData.userName ||
+        !formData.phone ||
         !formData.email ||
         !formData.password
       ) {
@@ -40,7 +40,7 @@ export default function SignUp() {
           firstName: '',
           lastName: '',
           dateOfBirth: new Date(),
-          // userName: "",
+          phone: '',
           email: '',
           password: '',
         })
@@ -90,7 +90,11 @@ export default function SignUp() {
               label='Date of Birth'
               onChange={e => setFormData({ ...formData, dateOfBirth: new Date(e.target.value) })}
             />
-            {/* <Input type="username" label="User Name" onChange={(e)=>setFormData({...formData, userName: e.target.value})}/> */}
+            <Input
+              type='tel'
+              label='Phone Number'
+              onChange={e => setFormData({ ...formData, phone: e.target.value })}
+            />
             <Input
               type='email'
               label='Email'
@@ -120,7 +124,7 @@ export default function SignUp() {
                 </a>
               </p>
               <Button
-                onClick={hanldeSignUp}
+                onPress={handleSignUp}
                 color='secondary'
                 radius='lg'
                 variant='shadow'
