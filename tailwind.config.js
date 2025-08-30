@@ -9,6 +9,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
         birthstone: ['Birthstone', 'serif'],
         instrumentSerif: ['Instrument Serif', 'serif'],
       },

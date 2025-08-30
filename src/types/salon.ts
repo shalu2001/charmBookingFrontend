@@ -26,6 +26,11 @@ export interface Salon extends BaseSalon {
   }>
 }
 
+export interface SalonRanked extends Salon {
+  rank: number
+  distanceKm: number
+}
+
 export interface ServiceModalProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void

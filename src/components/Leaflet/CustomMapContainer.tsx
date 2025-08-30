@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Typography } from '@mui/material'
 import L from 'leaflet'
 import { Salon } from '../../types/salon'
+import { calculateRatingAverage } from '../../helpers'
 
 const defaultIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -18,6 +19,7 @@ interface CustomMapContainerProps {
   salons: Salon[]
   hoverId: string | undefined
   scrollWheelZoom?: boolean
+  userLocation: LatLngExpression
 }
 
 const FitBounds = ({ bounds, center }: { bounds: LatLngBounds; center?: LatLngExpression }) => {
@@ -42,14 +44,15 @@ export default function CustomMapContainer({
   salons,
   hoverId,
   scrollWheelZoom = false,
+  userLocation,
 }: CustomMapContainerProps) {
   const bounds = new LatLngBounds([
+    userLocation,
     ...salons.map(salon => [Number(salon.latitude), Number(salon.longitude)] as [number, number]),
   ])
   const [center, setCenter] = useState<LatLngExpression>(bounds.getCenter())
-  console.log('Hover ID in Map:', hoverId)
+
   useEffect(() => {
-    console.log('hoverId changed:', hoverId)
     if (hoverId) {
       const salon = salons.find(salon => salon.id === hoverId)
       console.log(salon)
@@ -58,12 +61,6 @@ export default function CustomMapContainer({
       }
     }
   }, [hoverId, salons])
-
-  useEffect(() => {
-    // Do something when hoverId changes
-    console.log('hoverId changed:', hoverId)
-    // ...update marker highlight, etc.
-  }, [hoverId])
 
   return (
     <MapContainer minZoom={5} scrollWheelZoom={scrollWheelZoom}>
@@ -77,11 +74,26 @@ export default function CustomMapContainer({
           key={salon.id}
           position={[Number(salon.latitude), Number(salon.longitude)]}
         >
-          <Tooltip direction='top' offset={[-15, -15]} permanent>
-            <Typography variant='subtitle2'>{salon.name}</Typography>
+          <Tooltip direction='top' offset={[1, -30]} permanent>
+            <div className='flex items-center p-2 gap-2'>
+              <div className='font-poppins font-semibold'>{salon.name}</div>
+              <div className='flex items-center justify-center gap-1 bg-primary rounded-full text-white px-2'>
+                <span className='text-tertiary text-base'>★</span>
+                <span className='font-poppins mt-[2px]'>
+                  {calculateRatingAverage(salon.reviews).toFixed(1)}
+                </span>
+              </div>
+            </div>
           </Tooltip>
         </Marker>
       ))}
+      {userLocation && (
+        <Marker position={userLocation} icon={defaultIcon}>
+          <Tooltip direction='top' offset={[1, -30]} permanent>
+            <div className='font-poppins font-semibold p-2'>Your Location</div>
+          </Tooltip>
+        </Marker>
+      )}
       <FitBounds bounds={bounds} center={center} />
     </MapContainer>
   )

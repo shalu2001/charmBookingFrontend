@@ -46,7 +46,12 @@ const SearchSalons = () => {
           </div>
           <div className='w-[70vw]'>
             {salons && (
-              <CustomMapContainer salons={salons} hoverId={hoveredSalon} scrollWheelZoom={true} />
+              <CustomMapContainer
+                salons={salons}
+                hoverId={hoveredSalon}
+                userLocation={[Number(latitude), Number(longitude)]}
+                scrollWheelZoom={true}
+              />
             )}
           </div>
         </>

@@ -5,6 +5,7 @@ import {
   PaymentMethod,
   Salon,
   SalonAdmin,
+  SalonRanked,
   SalonRankedRequestDto,
   Service,
 } from '../types/salon'
@@ -15,7 +16,7 @@ export async function getSalons(): Promise<Salon[]> {
   return response.data
 }
 
-export async function getSalonsRanked(params: SalonRankedRequestDto): Promise<Salon[]> {
+export async function getSalonsRanked(params: SalonRankedRequestDto): Promise<SalonRanked[]> {
   const response = await axiosInstance.get('salon/getSalonsRanked', {
     params: {
       categoryId: params.categoryId,
