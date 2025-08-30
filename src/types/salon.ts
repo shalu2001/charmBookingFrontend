@@ -121,3 +121,11 @@ export interface SalonAdmin {
   email: string
   salonId: string
 }
+
+export interface SalonRankedRequestDto {
+  categoryId: number
+  longitude: number
+  latitude: number
+  date: string
+  time: string
+}

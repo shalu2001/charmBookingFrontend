@@ -20,6 +20,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Layout from '../layout/layout'
 import { CustomerBookingsPage } from '../pages/customer/cutomerDashboard/manageBookings'
+import SearchSalons from '../pages/salon/searchSalons'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -50,6 +51,7 @@ export default function AppRoutes() {
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
           <Route path='/' element={<HomePage />} />
+          <Route path='/salon/search' element={<SearchSalons />} />
           <Route path='/salon/:salonId' element={<SalonPage />} />
           <Route path='/book/timeslot' element={<BookTimeAndDate />} />
           <Route path='customer' element={<DashboardLayoutWrapperCustomer />}>

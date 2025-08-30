@@ -1,6 +1,6 @@
 import { Form, Input, Button, Textarea } from '@heroui/react'
 import ImageUpload from '../../components/ImageUpload'
-import CustomLocationPicker from '../../components/CustomLocationPicker'
+import CustomLocationPicker from '../../components/Leaflet/CustomLocationPicker'
 import React, { useCallback, useState } from 'react'
 import { RegisterSalonDTO } from '../../types/salon'
 import { registerSalon } from '../../actions/salonActions'

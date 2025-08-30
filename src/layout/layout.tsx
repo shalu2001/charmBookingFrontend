@@ -8,7 +8,7 @@ const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div>
       <Header />
-      <main className='h-fit min-h-[calc(100vh-64px-243px-8px)]'>{children}</main>
+      <main className='h-fit min-h-[calc(100vh-64px-243px-2px)]'>{children}</main>
       <Footer />
     </div>
   )

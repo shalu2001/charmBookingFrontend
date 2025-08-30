@@ -111,6 +111,7 @@ export const BookTimeAndDate = () => {
 
   return (
     <div className='flex h-fit'>
+      <script type='text/javascript' src='https://www.payhere.lk/lib/payhere.js'></script>
       <div className='flex flex-col flex-1 items-center px-10 py-8'>
         {selectedStep === 0 && (
           <DateTimeStep

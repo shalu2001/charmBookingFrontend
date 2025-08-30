@@ -1,67 +1,173 @@
-import { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faMapMarkerAlt, faCalendarAlt, faClock } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '@heroui/react'
+import {
+  Button,
+  DatePicker,
+  Select,
+  SelectItem,
+  TimeInput,
+  Autocomplete,
+  AutocompleteItem,
+} from '@heroui/react'
+import { Key, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getAllCategories } from '../actions/salonActions'
+import { Category } from '../types/salon'
+import { getLocalTimeZone, today, CalendarDate, Time } from '@internationalized/date'
+import cities from '../data/lk.json'
+import { useNavigate } from 'react-router-dom'
 
 const SearchBar = () => {
-  const [location, setLocation] = useState('')
-  const [date, setDate] = useState('')
-  const [time, setTime] = useState('')
-  const [service, setService] = useState('')
+  const navigate = useNavigate()
+  const [category, setCategory] = useState<string>('')
+  const [location, setLocation] = useState<Key | null>(null)
+  const [latitude, setLatitude] = useState<number | null>(null)
+  const [longitude, setLongitude] = useState<number | null>(null)
+  const [date, setDate] = useState<CalendarDate | null>(today(getLocalTimeZone()))
+  const [time, setTime] = useState<Time | null>(null)
+
+  // Error states
+  const [categoryError, setCategoryError] = useState<string | null>(null)
+  const [locationError, setLocationError] = useState<string | null>(null)
+  const [dateError, setDateError] = useState<string | null>(null)
+  const [timeError, setTimeError] = useState<string | null>(null)
+
+  const { data: categories, isLoading } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: getAllCategories,
+  })
 
   const handleSearch = (): void => {
-    console.log('searching...')
-    console.log('service:', service)
-    console.log('location:', location)
-    console.log('date:', date)
-    console.log('time:', time)
+    let hasError = false
+
+    if (!category) {
+      setCategoryError('Please select a category')
+      hasError = true
+    } else {
+      setCategoryError(null)
+    }
+
+    if (!location) {
+      setLocationError('Please select a location')
+      hasError = true
+    } else {
+      setLocationError(null)
+    }
+
+    if (!date) {
+      setDateError('Please select a date')
+      hasError = true
+    } else {
+      setDateError(null)
+    }
+
+    if (!time) {
+      setTimeError('Please select a time')
+      hasError = true
+    } else {
+      setTimeError(null)
+    }
+
+    if (hasError) return
+    console.log('Navigating to search with params:', {
+      category,
+      latitude,
+      longitude,
+      date,
+      time,
+    })
+    navigate({
+      pathname: '/salon/search',
+      search: `?category=${category}&latitude=${latitude}&longitude=${longitude}&date=${date}&time=${time}`,
+    })
+  }
+
+  const handleLocationSelect = (key: Key | null) => {
+    setLocation(key)
+    setLocationError(null)
+    if (key === 'current-location') {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        },
+        error => {
+          console.error('Error getting location:', error)
+        },
+      )
+    } else {
+      // Find the city in cities data
+      const selectedCity = cities.find(city => city.city === key)
+      if (selectedCity) {
+        setLatitude(Number(selectedCity.lat))
+        setLongitude(Number(selectedCity.lng))
+      }
+    }
   }
 
   return (
-    <div className='p-4 bg-quaternary border-0 shadow-md flex space-x-4 rounded-xl'>
-      <div className='flex items-center space-x-2 w-1/4'>
-        <FontAwesomeIcon icon={faSearch} />
-        <input
-          type='text'
-          placeholder='Service or Venue'
-          className='w-full p-2 rounded-xl focus:outline-none text-center'
-          onChange={e => setService(e.target.value)}
-        />
-      </div>
-      <div className='flex items-center space-x-2 w-1/4'>
-        <FontAwesomeIcon icon={faMapMarkerAlt} />
-        <input
-          type='text'
-          placeholder='Location'
-          className='w-full p-2 rounded-xl focus:outline-none text-center'
-          onChange={e => setLocation(e.target.value)}
-        />
-      </div>
-      <div className='flex items-center space-x-2 w-1/4'>
-        <FontAwesomeIcon icon={faCalendarAlt} />
-        <input
-          type='date'
-          className='w-full p-2 rounded-xl focus:outline-none text-center'
-          onChange={e => setDate(e.target.value)}
-        />
-      </div>
-      <div className='flex items-center space-x-2 w-1/4'>
-        <FontAwesomeIcon icon={faClock} />
-        <input
-          type='time'
-          className='w-full p-2 rounded-xl focus:outline-none'
-          onChange={e => setTime(e.target.value)}
-        />
-      </div>
-      <Button
-        color='secondary'
-        radius='lg'
-        variant='shadow'
-        className='text-center text-black'
-        onClick={() => handleSearch()}
+    <div className='flex justify-center items-center w-2/3 p-4 bg-quaternary border-0 shadow-md space-x-4 rounded-xl'>
+      <Select
+        className='max-w-sm'
+        label='Select a category'
+        placeholder='Select a category'
+        isLoading={isLoading}
+        defaultSelectedKeys={[category]}
+        onSelectionChange={key => {
+          console.log('Selected category:', key.currentKey)
+          setCategory(key.currentKey as string)
+          setCategoryError(null)
+        }}
+        isInvalid={!!categoryError}
+        errorMessage={categoryError}
       >
-        <FontAwesomeIcon icon={faSearch} />
-        <div>Search</div>
+        {(categories ?? []).map(category => (
+          <SelectItem key={category.categoryId}>{category.name}</SelectItem>
+        ))}
+      </Select>
+
+      <Autocomplete
+        className='max-w-sm'
+        label='Select your location'
+        placeholder='Select your location'
+        allowsCustomValue={false}
+        defaultItems={[
+          { key: 'current-location', label: 'Current Location' },
+          ...cities.map(city => ({ key: city.city, label: city.city })),
+        ]}
+        onSelectionChange={handleLocationSelect}
+        isInvalid={!!locationError}
+        errorMessage={locationError}
+      >
+        {item => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+      </Autocomplete>
+
+      <DatePicker
+        className='max-w-sm'
+        label='Select a date'
+        minValue={today(getLocalTimeZone())}
+        value={date}
+        onChange={d => {
+          setDate(d)
+          setDateError(null)
+        }}
+        isInvalid={!!dateError}
+        errorMessage={dateError}
+      />
+
+      <TimeInput
+        className='max-w-sm'
+        label='Select a time'
+        granularity='minute'
+        value={time}
+        onChange={t => {
+          setTime(t)
+          setTimeError(null)
+        }}
+        isInvalid={!!timeError}
+        errorMessage={timeError}
+      />
+
+      <Button size='lg' color='secondary' radius='lg' variant='shadow' onPress={handleSearch}>
+        Search
       </Button>
     </div>
   )

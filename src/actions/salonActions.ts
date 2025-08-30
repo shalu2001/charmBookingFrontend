@@ -5,12 +5,26 @@ import {
   PaymentMethod,
   Salon,
   SalonAdmin,
+  SalonRankedRequestDto,
   Service,
 } from '../types/salon'
 import axiosInstance from './axiosInstance'
 
 export async function getSalons(): Promise<Salon[]> {
   const response = await axiosInstance.get('/getSalons')
+  return response.data
+}
+
+export async function getSalonsRanked(params: SalonRankedRequestDto): Promise<Salon[]> {
+  const response = await axiosInstance.get('salon/getSalonsRanked', {
+    params: {
+      categoryId: params.categoryId,
+      longitude: params.longitude,
+      latitude: params.latitude,
+      date: params.date,
+      time: params.time,
+    },
+  })
   return response.data
 }
 
