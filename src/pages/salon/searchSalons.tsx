@@ -36,7 +36,7 @@ const SearchSalons = () => {
   })
   console.log(salons)
   return (
-    <div className='flex h-[calc(100vh-64px-243px-8px)]'>
+    <div className='flex h-[calc(100vh-64px-8px)]'>
       {isLoading && !salons ? (
         <Spinner />
       ) : (
