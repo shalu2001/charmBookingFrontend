@@ -9,12 +9,23 @@ export interface BaseSalon {
   longitude: string
   latitude: string
 }
+
+export enum DayOfWeek {
+  Sunday = 'Sunday',
+  Monday = 'Monday',
+  Tuesday = 'Tuesday',
+  Wednesday = 'Wednesday',
+  Thursday = 'Thursday',
+  Friday = 'Friday',
+  Saturday = 'Saturday',
+}
+
 export interface Salon extends BaseSalon {
   services: Service[]
   reviews: Review[]
   weeklyHours: {
     id: string
-    day_of_week: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+    day_of_week: DayOfWeek
     open_time: string
     close_time: string
   }[]

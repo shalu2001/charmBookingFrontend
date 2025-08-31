@@ -27,7 +27,7 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon }) => {
           alt='Card background'
           src={salon.images && salon.images.length > 0 ? salon.images[0].url : ''}
           onError={e => {
-            e.currentTarget.src = 'signup-drawing.avif'
+            e.currentTarget.src = '/signup-drawing.avif'
           }}
         />
         <div className='flex w-full'>

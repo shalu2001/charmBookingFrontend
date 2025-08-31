@@ -37,7 +37,7 @@ const ServiceField: React.FC<ServiceFieldProps> = ({
   return (
     <div
       onClick={handleServiceClick}
-      className='mb-4 h-20 rounded-lg flex items-center justify-between bg-white py-2 px-4 border border-gray-300 shadow-sm transition-all duration-200 group relative cursor-pointer hover:shadow-lg hover:bg-tertiary hover:text-primary'
+      className='mb-4 h-20 rounded-lg flex items-center justify-between bg-white py-2 px-4 border border-gray-300 shadow-sm transition-all duration-200 group relative cursor-pointer hover:shadow-lg hover:bg-gray-100 hover:text-primary'
     >
       <div className='flex-col w-full'>
         <div className='flex items-center'>
