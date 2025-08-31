@@ -1,5 +1,3 @@
-import { SalonWorker } from './booking'
-
 export interface BaseSalon {
   id: string
   name: string
@@ -20,12 +18,14 @@ export interface Salon extends BaseSalon {
     open_time: string
     close_time: string
   }[]
-  images: Array<{
-    id: number
-    salonId: string
-    url: string
-    createdAt: string
-  }>
+  images: SalonImage[]
+}
+
+export interface SalonImage {
+  id: number
+  salonId: string
+  url: string
+  createdAt: string
 }
 
 export interface SalonRanked extends Salon {
@@ -151,4 +151,61 @@ export interface SalonRankedRequestDto {
   latitude: number
   date: string
   time: string
+}
+
+export interface WeeklyHours {
+  id: string
+  salon_id: string
+  day_of_week: DaysOfWeek
+  open_time: string
+  close_time: string
+}
+
+export enum DaysOfWeek {
+  Monday = 'Monday',
+  Tuesday = 'Tuesday',
+  Wednesday = 'Wednesday',
+  Thursday = 'Thursday',
+  Friday = 'Friday',
+  Saturday = 'Saturday',
+  Sunday = 'Sunday',
+}
+
+export interface BaseSalonWorker {
+  name: string
+  salonId: string
+  services: {
+    id: string
+    name: string
+  }[]
+}
+
+export interface SalonWorker extends BaseSalonWorker {
+  workerId: string
+  status: 'active' | 'on-leave'
+}
+export interface WorkerLeave {
+  id: string
+  workerId: string
+  worker: {
+    workerId: string
+    name: string
+    salonId: string
+  }
+  date: string
+  startTime: string
+  endTime: string
+}
+
+export interface WorkersLeaves {
+  workerId: string
+  name: string
+  leaves: WorkerLeave[]
+}
+
+export interface WorkerLeaveRequest {
+  workerId: string
+  date: string
+  startTime: string
+  endTime: string
 }

@@ -21,6 +21,7 @@ import Footer from '../components/Footer'
 import Layout from '../layout/layout'
 import { CustomerBookingsPage } from '../pages/customer/cutomerDashboard/manageBookings'
 import SearchSalons from '../pages/salon/searchSalons'
+import { WorkersPage } from '../pages/salon/salonDashboard/manageSalonWorkers'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -71,6 +72,7 @@ export default function AppRoutes() {
             <Route path='services' element={<ServicesPage />} />
             <Route path='bookings' element={<BookingsPage />} />
             <Route path='account' element={<AccountPage />} />
+            <Route path='workers' element={<WorkersPage />} />
           </Route>
         </Route>
       </Routes>

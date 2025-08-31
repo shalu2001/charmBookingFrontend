@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance'
 import { Customer, LoginResponse, UpdatePassword } from '../types/customer'
 import { CustomerBooking } from '../types/booking'
+import { Salon } from '../types/salon'
 
 export const getCustomerProfile = async (customerId: string): Promise<Customer> => {
   const response = await axiosInstance.get('/user/getCustomerByID', {
@@ -40,4 +41,9 @@ export const getCustomerBookingsById = async (customerId: string): Promise<Custo
 
 export const cancelBookingById = async (bookingId: string): Promise<void> => {
   await axiosInstance.put(`/user/cancelBooking/${bookingId}`)
+}
+
+export const getSalonById = async (salonId: string): Promise<Salon> => {
+  const response = await axiosInstance.get(`salon/getSalon/${salonId}`)
+  return response.data
 }

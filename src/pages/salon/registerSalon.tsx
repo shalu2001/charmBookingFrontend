@@ -75,10 +75,11 @@ const RegisterSalon = () => {
     // Add password
     finalFormData.append('password', password)
 
+    //TODO:fix the multiple image sending
     // Add images
     if (salonImages.length > 0) {
-      salonImages.forEach((file, index) => {
-        finalFormData.append(`salonImages`, file)
+      salonImages.forEach(file => {
+        finalFormData.append('salonImages', file)
       })
     }
 
@@ -89,7 +90,7 @@ const RegisterSalon = () => {
     mutationFn: (formData: FormData) => registerSalon(formData),
     onSuccess: data => {
       console.log('Salon registered successfully:', data)
-      navigate('/login')
+      navigate('/business/login-salon')
     },
     onError: error => {
       console.error('Failed to register salon:', error)
@@ -103,7 +104,7 @@ const RegisterSalon = () => {
         <FontAwesomeIcon icon={faChevronLeft} size='2x' className='self-center' />
         <div className='text-2xl font-medium'>For Register</div>
       </div>
-      <div className='min-h-screen flex flex-col items-center justify-center px-6 py-10 font-serif'>
+      <div className='min-h-screen flex flex-col items-center justify-center px-6 py-10 font-sans'>
         <h1 className='text-4xl font-semibold mb-8 text-center'>REGISTER FORM</h1>
         {step === 1 && (
           <Form

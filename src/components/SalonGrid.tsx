@@ -123,13 +123,20 @@ const SalonServices = ({
             )
             .map(service => (
               <div
-                className='rounded-lg flex items-center justify-between border-b border-default-200 p-2 hover:bg-quaternary transition-all duration-200 group relative cursor-pointer'
+                className={`rounded-lg flex items-center justify-between border-b border-default-200 p-2 transition-all duration-200 group relative cursor-pointer ${
+                  service.slots.length === 0 && !service.nextAvailableSlot
+                    ? 'bg-gray-100 cursor-not-allowed pointer-events-none opacity-60 hover:bg-gray-100'
+                    : 'hover:bg-quaternary'
+                }`}
                 key={service.serviceId}
-                onClick={() =>
-                  navigate({
-                    pathname: '/book/timeslot',
-                    search: `?salonId=${service.salonId}&serviceId=${service.serviceId}&date=${date}&time=${time}`,
-                  })
+                onClick={
+                  service.slots.length === 0 && !service.nextAvailableSlot
+                    ? undefined
+                    : () =>
+                        navigate({
+                          pathname: '/book/timeslot',
+                          search: `?salonId=${service.salonId}&serviceId=${service.serviceId}&date=${date}&time=${time}`,
+                        })
                 }
               >
                 <div className='flex-col w-full' key={service.serviceId}>
@@ -146,10 +153,12 @@ const SalonServices = ({
                       <div className='text-success-600 text-sm'>
                         Available at {formatTime(service.slots[0].startTime)}
                       </div>
-                    ) : (
+                    ) : service.nextAvailableSlot ? (
                       <div className='text-warning-600 text-sm'>
-                        Next available slot: {formatTime(service.nextAvailableSlot!.startTime)}
+                        Next available slot: {formatTime(service.nextAvailableSlot.startTime)}
                       </div>
+                    ) : (
+                      <div className='text-warning-600 text-sm'>No available slots</div>
                     )}
                   </div>
                 </div>
@@ -159,9 +168,14 @@ const SalonServices = ({
                   minimumFractionDigits: 0,
                 })}
                 <button
-                  className='opacity-0 overflow-hidden w-0 group-hover:opacity-100 group-hover:w-10 transition-all'
+                  className={`overflow-hidden w-0 transition-all ${
+                    service.slots.length === 0 && !service.nextAvailableSlot
+                      ? 'opacity-0'
+                      : 'opacity-0 group-hover:opacity-100 group-hover:w-10'
+                  }`}
                   tabIndex={-1}
                   type='button'
+                  disabled={service.slots.length === 0 && !service.nextAvailableSlot}
                 >
                   <FontAwesomeIcon icon={faChevronRight} />
                 </button>
