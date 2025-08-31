@@ -19,7 +19,7 @@ const SalonPage = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
 
-  const { data: salonData, isPending: LoadingSalonData } = useQuery({
+  const { data: salonData, isPending: loadingSalonData } = useQuery({
     queryKey: ['salon', salonId],
     queryFn: () => getSalonById(salonId!),
     enabled: !!salonId,
@@ -39,7 +39,7 @@ const SalonPage = () => {
     if (scrollRef.current) scrollRef.current.scrollBy({ left: 100, behavior: 'smooth' })
   }
 
-  if (LoadingSalonData) return <CircularProgress />
+  if (loadingSalonData) return <CircularProgress />
 
   return (
     <div className='p-20'>
@@ -214,27 +214,28 @@ const SalonPage = () => {
             >
               <h3 className='font-semibold text-2xl mb-4'>Working Hours</h3>
               <div className='space-y-1 text-lg'>
-                {salonData?.weeklyHours
-                  .sort((a, b) => {
-                    const days = [
-                      'Monday',
-                      'Tuesday',
-                      'Wednesday',
-                      'Thursday',
-                      'Friday',
-                      'Saturday',
-                      'Sunday',
-                    ]
-                    return days.indexOf(a.day_of_week) - days.indexOf(b.day_of_week)
-                  })
-                  .map(hours => (
-                    <div key={hours.id} className='flex justify-start'>
-                      <span className='font-medium w-32'>{hours.day_of_week}</span>
-                      <span>
-                        {formatTime(hours.open_time)} - {formatTime(hours.close_time)}
-                      </span>
-                    </div>
-                  ))}
+                {salonData?.weeklyHours &&
+                  salonData?.weeklyHours
+                    .sort((a, b) => {
+                      const days = [
+                        'Monday',
+                        'Tuesday',
+                        'Wednesday',
+                        'Thursday',
+                        'Friday',
+                        'Saturday',
+                        'Sunday',
+                      ]
+                      return days.indexOf(a.day_of_week) - days.indexOf(b.day_of_week)
+                    })
+                    .map(hours => (
+                      <div key={hours.id} className='flex justify-start'>
+                        <span className='font-medium w-32'>{hours.day_of_week}</span>
+                        <span>
+                          {formatTime(hours.open_time)} - {formatTime(hours.close_time)}
+                        </span>
+                      </div>
+                    ))}
               </div>
             </div>
           </div>
