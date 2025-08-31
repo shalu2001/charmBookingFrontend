@@ -42,12 +42,16 @@ const SalonPage = () => {
   if (loadingSalonData) return <CircularProgress />
 
   return (
-    <div className='p-20'>
+    <div className='p-10'>
       <div className='grid grid-cols-2 grid-rows-2 gap-2 w-full h-96'>
         {salonData?.images && salonData.images.length > 0 ? (
           <>
             {/* First image spans both columns in the first row */}
-            <div className='col-span-1 row-span-2'>
+            <div
+              className={`${
+                salonData.images.length == 1 ? 'col-span-2 row-span-2' : 'col-span-1row-span-2'
+              } relative`}
+            >
               <img
                 src={salonData.images[0].url}
                 alt={`${salonData.name} - Image 1`}

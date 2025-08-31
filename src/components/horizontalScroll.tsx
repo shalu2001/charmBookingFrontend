@@ -34,7 +34,7 @@ export default function HorizontalScroll({
       {/* Scrollable Content */}
       <div
         ref={scrollRef}
-        className='flex overflow-x-auto scroll-smooth no-scrollbar space-x-4 p-12 z-0'
+        className='flex overflow-x-auto scroll-smooth scrollbar-hide space-x-4 p-12 z-0'
       >
         {Children.map(children, child => (
           <div style={{ flex: `0 0 calc(${100 / size}% - 1rem)` }}>{child}</div>
