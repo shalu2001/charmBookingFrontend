@@ -2,7 +2,7 @@
 import { Booking, PayHerePayload, SalonWorker } from '../../types/booking'
 import { Service } from '../../types/salon'
 import { useEffect, useState } from 'react'
-import { bookSlot } from '../../actions/bookingActions'
+import { bookSlot, cancelBooking } from '../../actions/bookingActions'
 import { paymentInitiate } from '../../actions/paymentActions'
 import { useMutation } from '@tanstack/react-query'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
@@ -25,23 +25,37 @@ export function PaymentStep({
 }) {
   const user = useAuthUser<Customer>()
   const navigate = useNavigate()
-  const [bookingResponse, setBookingResponse] = useState<Booking | null>(null)
   const [billingInfo, setBillingInfo] = useState({
     address1: '',
     address2: '',
     city: '',
   })
-  const [paymentPayload, setPaymentPayload] = useState<PayHerePayload | null>(null)
-  const [showPaymentForm, setShowPaymentForm] = useState(false)
+  const [bookingResponse, setBookingResponse] = useState<Booking | null>(null)
 
   const bookSlotMutation = useMutation({
     mutationFn: (params: Parameters<typeof bookSlot>[0]) => bookSlot(params),
+    onSuccess: data => {
+      setBookingResponse(data)
+      paymentMutation.mutate({
+        bookingId: data!.id,
+        address1: billingInfo.address1,
+        address2: billingInfo.address2,
+        city: billingInfo.city,
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Booking Error',
+        description: 'This Booking is no longer available.',
+        color: 'danger',
+      })
+      console.error('Booking error:', error)
+    },
   })
 
   const paymentMutation = useMutation({
     mutationFn: (params: Parameters<typeof paymentInitiate>[0]) => paymentInitiate(params),
     onSuccess: data => {
-      setPaymentPayload(data)
       const payhere = (window as any).payhere
       if (payhere) {
         const payHerePayload = {
@@ -54,6 +68,10 @@ export function PaymentStep({
         console.error('PayHere SDK not loaded')
       }
     },
+  })
+  const cancelBookingMutation = useMutation({
+    mutationFn: ({ bookingId, userId }: { bookingId: string; userId: string }) =>
+      cancelBooking(bookingId, userId),
   })
 
   useEffect(() => {
@@ -68,6 +86,9 @@ export function PaymentStep({
 
       // Called when user closes the popup without paying
       payhere.onDismissed = function onDismissed() {
+        if (bookingResponse && user?.customerId) {
+          cancelBookingMutation.mutate({ bookingId: bookingResponse.id, userId: user.customerId })
+        }
         addToast({
           title: 'Payment Cancelled',
           description: 'You have cancelled the payment.',
@@ -78,6 +99,9 @@ export function PaymentStep({
 
       // Called if an error occurs
       payhere.onError = function onError(error: string) {
+        if (bookingResponse && user?.customerId) {
+          cancelBookingMutation.mutate({ bookingId: bookingResponse.id, userId: user.customerId })
+        }
         addToast({
           title: 'Payment Error',
           description: 'An error occurred during payment.',
@@ -86,59 +110,32 @@ export function PaymentStep({
         console.error('Payment error:', error)
       }
     }
-  }, [])
-
-  useEffect(() => {
-    if (!user) return
-    bookSlotMutation.mutate(
-      {
-        salonId: salonId,
-        userId: user?.customerId,
-        serviceId: service.serviceId,
-        date: date.toLocaleDateString('en-CA'),
-        startTime,
-        workerId: worker.workerId,
-      },
-      {
-        onSuccess: data => {
-          setBookingResponse(data)
-          setShowPaymentForm(true)
-        },
-      },
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  if (bookSlotMutation.isPending) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <Spinner className='animate-spin h-10 w-10 text-gray-500' />
-      </div>
-    )
-  }
-
-  if (paymentMutation.isPending) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <Spinner className='animate-spin h-10 w-10 text-gray-500' />
-      </div>
-    )
-  }
+  }, [bookingResponse, cancelBookingMutation, navigate, user?.customerId])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    paymentMutation.mutate({
-      bookingId: bookingResponse!.id,
-      address1: billingInfo.address1,
-      address2: billingInfo.address2,
-      city: billingInfo.city,
+    if (!user) {
+      addToast({
+        title: 'Authentication Required',
+        description: 'Please log in to book a slot.',
+        color: 'warning',
+      })
+      return
+    }
+    bookSlotMutation.mutate({
+      salonId: salonId,
+      userId: user?.customerId,
+      serviceId: service.serviceId,
+      date: date.toLocaleDateString('en-CA'),
+      startTime,
+      workerId: worker.workerId,
     })
   }
 
   return (
     <div className='w-full flex flex-col items-center'>
       <h1 className='text-2xl font-semibold mb-6'>Payment</h1>
-      {showPaymentForm && bookingResponse && (
+      {
         <form
           className='space-y-4 w-2/3 flex flex-col bg-white p-8 rounded-lg shadow'
           onSubmit={handleSubmit}
@@ -178,6 +175,11 @@ export function PaymentStep({
             size='lg'
             className='mt-4 w-full max-w-72 self-center bg-quaternary border border-blue-600 hover:shadow-lg transition-all duration-250'
             disabled={paymentMutation.isPending}
+            isLoading={
+              bookSlotMutation.isPending ||
+              paymentMutation.isPending ||
+              cancelBookingMutation.isPending
+            }
           >
             Pay With
             <img
@@ -187,7 +189,7 @@ export function PaymentStep({
             />
           </Button>
         </form>
-      )}
+      }
     </div>
   )
 }

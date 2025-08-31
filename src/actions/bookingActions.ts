@@ -41,3 +41,8 @@ export async function bookSlot(data: {
   const response = await axiosInstance.post(`/booking/${data.salonId}/book`, data)
   return response.data
 }
+
+export async function cancelBooking(bookingId: string, userId: string): Promise<void> {
+  console.log('Cancelling booking:', bookingId)
+  await axiosInstance.post(`/booking/cancel/${bookingId}`, { userId })
+}
