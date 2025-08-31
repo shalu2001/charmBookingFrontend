@@ -14,6 +14,7 @@ export enum PaymentStatus {
 }
 export interface BaseBooking {
   id: string
+  bookingId: string
   user_id: string
   salon_id: string
   salon_service_id: string

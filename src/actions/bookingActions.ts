@@ -42,7 +42,31 @@ export async function bookSlot(data: {
   return response.data
 }
 
+//cancel pending bookings
 export async function cancelBooking(bookingId: string, userId: string): Promise<void> {
   console.log('Cancelling booking:', bookingId)
   await axiosInstance.post(`/booking/cancel/${bookingId}`, { userId })
+}
+
+//cancel confirmed bookings - salon
+export async function cancelConfirmedBookingSalon(
+  bookingId: string,
+): Promise<{ refund: boolean; refund_amount: number }> {
+  console.log('Cancelling confirmed booking:', bookingId)
+  const response = await axiosInstance.post(`/booking/salonCancel/${bookingId}`)
+  return response.data
+}
+
+//cancel confirmed bookings - customer
+export async function cancelConfirmedBookingCustomer(
+  bookingId: string,
+  userId: string,
+): Promise<void> {
+  console.log('Cancelling confirmed booking (customer):', bookingId)
+  await axiosInstance.post(`/booking/userCancel/${bookingId}`, { userId })
+}
+
+export async function updateCompletedBookingStatus(bookingId: string): Promise<void> {
+  console.log('Updating completed booking status:', bookingId)
+  await axiosInstance.post(`/booking/updateCompletedBookingStatus/${bookingId}`)
 }

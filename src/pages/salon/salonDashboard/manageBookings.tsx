@@ -16,11 +16,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomDropdown } from '../../../components/Dropdown'
 import { CustomTable } from '../../../components/Table'
 import { CustomCard } from '../../../components/Cards/CustomCard'
-import { Chip, Button, Input } from '@heroui/react'
+import { Chip, Button, Input, toast, addToast } from '@heroui/react'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Booking, BookingStatus, PaymentStatus } from '../../../types/booking'
-import { getBookings } from '../../../actions/bookingActions'
+import {
+  cancelConfirmedBookingSalon,
+  getBookings,
+  updateCompletedBookingStatus,
+} from '../../../actions/bookingActions'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { SalonAdmin } from '../../../types/salon'
 import CommonModal from '../../../components/commonModal'
@@ -32,11 +36,53 @@ export function BookingsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const admin = useAuthUser<SalonAdmin>()
+  const queryClient = useQueryClient()
 
   const { data: bookings, isPending: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ['bookings'],
     queryFn: () => getBookings(admin!.salonId),
   })
+
+  const { mutate: cancelBooking, isPending: isCancelling } = useMutation({
+    mutationFn: ({ bookingId }: { bookingId: string }) => cancelConfirmedBookingSalon(bookingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+      addToast({
+        title: 'Booking cancelled successfully',
+        description: 'The booking has been cancelled.',
+        color: 'success',
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Error cancelling booking',
+        description: 'Failed to cancel booking',
+        color: 'danger',
+      })
+      console.error('Error cancelling booking:', error)
+    },
+  })
+
+  const { mutate: updateBookingStatus } = useMutation({
+    mutationFn: (bookingId: string) => updateCompletedBookingStatus(bookingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+      addToast({
+        title: 'Booking status updated successfully',
+        description: 'The booking status has been updated.',
+        color: 'success',
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Error updating booking status',
+        description: 'Failed to update booking status',
+        color: 'danger',
+      })
+      console.error('Error updating booking status:', error)
+    },
+  })
+
   if (!bookings || bookingsLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -102,8 +148,6 @@ export function BookingsPage() {
     }
   }
 
-  const updateBookingStatus = (bookingId: string, newStatus: Booking['status']) => {}
-
   const updatePaymentStatus = (bookingId: string, newPaymentStatus: Booking['paymentStatus']) => {}
 
   const tableHeaders = [
@@ -112,13 +156,13 @@ export function BookingsPage() {
     { key: 'Service', label: 'Service' },
     { key: 'Date & Time', label: 'Date & Time' },
     { key: 'Status', label: 'Status' },
-    { key: 'Payment', label: 'Payment' },
+    // { key: 'Payment', label: 'Payment' },
     { key: 'Amount', label: 'Amount' },
     { key: 'Actions', label: 'Actions' },
   ]
 
   const tableData = filteredBookings?.map(booking => ({
-    key: booking.id,
+    key: booking.bookingId,
     'Booking ID': booking.id,
     Customer: (
       <div>
@@ -154,20 +198,16 @@ export function BookingsPage() {
             </Button>
           }
           dropdownItems={[
-            ...(booking.status === 'PENDING'
-              ? [{ label: 'Confirm Booking', value: 'Confirm Booking' }]
+            ...(booking.status === 'COMPLETED'
+              ? [{ label: 'Booking Completed', value: 'Booking Completed' }]
               : []),
             ...(booking.status !== 'CANCELLED'
               ? [{ label: 'Cancel Booking', value: 'Cancel Booking' }]
               : []),
-            ...(booking.paymentStatus === 'PAID'
-              ? [{ label: 'Mark as Paid', value: 'Mark as Paid' }]
-              : []),
           ]}
           onItemSelect={item => {
-            if (item === 'Confirm Booking') updateBookingStatus(booking.id, BookingStatus.CONFIRMED)
-            if (item === 'Cancel Booking') updateBookingStatus(booking.id, BookingStatus.CANCELLED)
-            if (item === 'Mark as Paid') updatePaymentStatus(booking.id, PaymentStatus.PAID)
+            if (item === 'Booking Completed') updateBookingStatus(booking.bookingId)
+            if (item === 'Cancel Booking') cancelBooking({ bookingId: booking.bookingId })
           }}
         />
       </div>
@@ -255,10 +295,9 @@ export function BookingsPage() {
             }
             dropdownItems={[
               { label: 'All Status', value: 'all' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Confirmed', value: 'confirmed' },
-              { label: 'Cancelled', value: 'cancelled' },
-              { label: 'Completed', value: 'completed' },
+              { label: 'Confirmed', value: BookingStatus.CONFIRMED },
+              { label: 'Cancelled', value: BookingStatus.CANCELLED },
+              { label: 'Completed', value: BookingStatus.COMPLETED },
             ]}
             onItemSelect={value => setStatusFilter(value)}
           />
@@ -271,9 +310,9 @@ export function BookingsPage() {
             }
             dropdownItems={[
               { label: 'All Payments', value: 'all' },
-              { label: 'Paid', value: 'paid' },
-              { label: 'Unpaid', value: 'unpaid' },
-              { label: 'Refunded', value: 'refunded' },
+              { label: 'Paid', value: PaymentStatus.PAID },
+              // { label: 'Pending', value: PaymentStatus.PENDING },
+              { label: 'Refunded', value: PaymentStatus.REFUNDED },
             ]}
             onItemSelect={value => setPaymentFilter(value)}
           />
@@ -308,7 +347,12 @@ export function BookingsPage() {
       {/* Bookings Table */}
       {/* <Card>
         <CardBody className='p-0'> */}
-      <CustomTable tableHeaders={tableHeaders} tableData={tableData} pagination />
+      <CustomTable
+        tableHeaders={tableHeaders}
+        tableData={tableData}
+        pagination
+        aria-label='Bookings table'
+      />
 
       {/* Booking Details Dialog */}
 
@@ -325,28 +369,31 @@ export function BookingsPage() {
                 {getPaymentBadge(selectedBooking.paymentStatus)}
               </div>
               <div className='flex gap-2'>
-                {selectedBooking.status === 'PENDING' && (
+                {selectedBooking.status === 'CONFIRMED' && (
                   <Button
                     color='primary'
                     onPress={() => {
-                      updateBookingStatus(selectedBooking.id, BookingStatus.CONFIRMED)
+                      updateBookingStatus(selectedBooking.id)
                       setSelectedBooking(null)
                     }}
                   >
-                    Confirm Booking
+                    Booking Completed
                   </Button>
                 )}
-                {selectedBooking.status !== 'CANCELLED' && (
-                  <Button
-                    variant='flat'
-                    onPress={() => {
-                      updateBookingStatus(selectedBooking.id, BookingStatus.CANCELLED)
-                      setSelectedBooking(null)
-                    }}
-                  >
-                    Cancel Booking
-                  </Button>
-                )}
+                {selectedBooking.status !== 'CANCELLED' &&
+                  selectedBooking.status !== 'COMPLETED' && (
+                    <Button
+                      color='danger'
+                      variant='flat'
+                      isDisabled={isCancelling}
+                      onPress={() => {
+                        cancelBooking({ bookingId: selectedBooking.id })
+                        setSelectedBooking(null)
+                      }}
+                    >
+                      Cancel Booking
+                    </Button>
+                  )}
               </div>
             </div>
           )
@@ -355,7 +402,7 @@ export function BookingsPage() {
         {selectedBooking && (
           <BookingDetailsView
             booking={selectedBooking}
-            onStatusUpdate={updateBookingStatus}
+            // onStatusUpdate={updateBookingStatus}
             viewMode='salon'
           />
         )}

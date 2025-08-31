@@ -16,7 +16,7 @@ import { Outlet } from 'react-router-dom'
 import { DashboardLayoutProps } from '../../../types/salon'
 
 const sidebarItems = [
-  { id: 'overview', label: 'Overview', icon: faHome },
+  // { id: 'overview', label: 'Overview', icon: faHome },
   { id: 'services', label: 'Services', icon: faCut },
   { id: 'bookings', label: 'Bookings', icon: faCalendarAlt },
   { id: 'account', label: 'Account', icon: faUser },

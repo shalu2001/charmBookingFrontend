@@ -14,26 +14,50 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomCard } from '../../../components/Cards/CustomCard'
 import { CustomTable } from '../../../components/Table'
-import { Badge, Button, Input } from '@heroui/react'
-import { useQuery } from '@tanstack/react-query'
+import { addToast, Badge, Button, Chip, Input } from '@heroui/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { Customer } from '../../../types/customer'
 import CommonModal from '../../../components/commonModal'
 import BookingDetailsView from '../../../components/Booking/BookingDetailsView'
 import { getCustomerBookingsById } from '../../../actions/customerActions'
 import { CustomerBooking, BookingStatus } from '../../../types/booking'
+import { cancelConfirmedBookingCustomer } from '../../../actions/bookingActions'
 
 export function CustomerBookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedBooking, setSelectedBooking] = useState<CustomerBooking | null>(null)
   const customer = useAuthUser<Customer>()
+  const queryClient = useQueryClient()
 
   // Fetch customer bookings
   const { data: bookings, isPending } = useQuery<CustomerBooking[]>({
     queryKey: ['customerBookings', customer!.customerId],
     enabled: !!customer!.customerId,
     queryFn: () => getCustomerBookingsById(customer!.customerId),
+  })
+
+  // Add cancel booking mutation
+  const { mutate: cancelBooking, isPending: isCancelling } = useMutation({
+    mutationFn: (bookingId: string) =>
+      cancelConfirmedBookingCustomer(bookingId, customer!.customerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customerBookings'] })
+      addToast({
+        title: 'Booking cancelled successfully',
+        description: 'Your booking has been cancelled.',
+        color: 'success',
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Error cancelling booking',
+        description: 'Failed to cancel booking. Please try again.',
+        color: 'danger',
+      })
+      console.error('Error cancelling booking:', error)
+    },
   })
 
   if (!bookings || isPending) {
@@ -56,27 +80,27 @@ export function CustomerBookingsPage() {
     switch (status) {
       case 'confirmed':
         return (
-          <Badge className='bg-success/10 text-success border-success/20'>
+          <Chip className='bg-success/10 text-success border-success/20'>
             <FontAwesomeIcon icon={faCircleCheck} className='w-3 h-3 mr-1' />
             Confirmed
-          </Badge>
+          </Chip>
         )
       case 'pending':
         return (
-          <Badge className='bg-pending/10 text-pending border-pending/20'>
+          <Chip className='bg-pending/10 text-pending border-pending/20'>
             <FontAwesomeIcon icon={faCircleExclamation} className='w-3 h-3 mr-1' />
             Pending
-          </Badge>
+          </Chip>
         )
       case 'cancelled':
         return (
-          <Badge className='bg-cancelled/10 text-cancelled border-cancelled/20'>
+          <Chip className='bg-cancelled/10 text-cancelled border-cancelled/20'>
             <FontAwesomeIcon icon={faCircleXmark} className='w-3 h-3 mr-1' />
             Cancelled
-          </Badge>
+          </Chip>
         )
       default:
-        return <Badge variant='flat'>{status}</Badge>
+        return <Chip variant='flat'>{status}</Chip>
     }
   }
 
@@ -120,9 +144,26 @@ export function CustomerBookingsPage() {
     'Booking Status': getStatusBadge(booking.status),
     Amount: `LKR ${booking.amount}`,
     Actions: (
-      <Button variant='ghost' size='sm' onPress={() => setSelectedBooking(booking)}>
-        <FontAwesomeIcon icon={faEye} className='w-4 h-4' />
-      </Button>
+      <div className='flex gap-2'>
+        <Button variant='ghost' size='sm' onPress={() => setSelectedBooking(booking)}>
+          <FontAwesomeIcon icon={faEye} className='w-4 h-4' />
+        </Button>
+        {booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED' && (
+          <Button
+            variant='ghost'
+            size='sm'
+            color='danger'
+            isDisabled={isCancelling}
+            onPress={() => {
+              cancelBooking(booking.id)
+              // if (window.confirm('Are you sure you want to cancel this booking?')) {
+              // }
+            }}
+          >
+            <FontAwesomeIcon icon={faCircleXmark} className='w-4 h-4' />
+          </Button>
+        )}
+      </div>
     ),
   }))
 

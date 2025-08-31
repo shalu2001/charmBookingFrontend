@@ -22,7 +22,6 @@ interface DashboardLayoutProps {
 const sidebarItems = [
   { id: 'profile', label: 'Profile', icon: faUser },
   { id: 'bookings', label: 'Bookings', icon: faCalendarAlt },
-  { id: 'payments', label: 'Payments', icon: faCreditCard },
 ]
 
 export function DashboardLayout({ currentPage, onPageChange, children }: DashboardLayoutProps) {

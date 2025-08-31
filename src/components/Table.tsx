@@ -22,6 +22,7 @@ interface TableProps {
   currentPage?: number
   pageSize?: number
   onPageChange?: (page: number) => void
+  'aria-label'?: string
 }
 
 export function CustomTable({

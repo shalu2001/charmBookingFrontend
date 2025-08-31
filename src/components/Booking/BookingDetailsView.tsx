@@ -41,7 +41,7 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
   const canCancel = () => {
     if (booking.status === BookingStatus.CANCELLED) return false
 
-    const bookingDate = new Date(`${booking.booking_date}T${booking.start_time}`)
+    const bookingDate = new Date(`${booking.date}T${booking.time}`)
     const now = new Date()
     const hoursUntilBooking = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60)
 
@@ -91,11 +91,11 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
         <div className='space-y-3'>
           <div className='flex items-center gap-2'>
             <FontAwesomeIcon icon={faCalendar} className='w-4 h-4 text-muted-foreground' />
-            <span>{booking.booking_date}</span>
+            <span>{booking.date}</span>
           </div>
           <div className='flex items-center gap-2'>
             <FontAwesomeIcon icon={faClock} className='w-4 h-4 text-muted-foreground' />
-            <span>{booking.start_time}</span>
+            <span>{booking.time}</span>
             <span className='text-sm text-muted-foreground'>({booking.duration} minutes)</span>
           </div>
           <div className='flex items-center gap-2'>
