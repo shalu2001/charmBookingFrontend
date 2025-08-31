@@ -27,7 +27,6 @@ const Modal: React.FC<ModalProps> = ({
   children,
   footer,
   size = 'md',
-  hideCloseButton = false,
   preventClose = false,
   className = '',
 }) => {
@@ -49,14 +48,7 @@ const Modal: React.FC<ModalProps> = ({
       }}
     >
       <ModalContent className={`${sizeClasses[size]} ${className}`}>
-        <ModalHeader className='flex justify-between items-center'>
-          {title}
-          {!hideCloseButton && (
-            <Button variant='light' onPress={() => onOpenChange(false)} className='min-w-0 p-0'>
-              ×
-            </Button>
-          )}
-        </ModalHeader>
+        <ModalHeader className='flex justify-between items-center'>{title}</ModalHeader>
         <ModalBody>{children}</ModalBody>
         {footer && <ModalFooter>{footer}</ModalFooter>}
       </ModalContent>

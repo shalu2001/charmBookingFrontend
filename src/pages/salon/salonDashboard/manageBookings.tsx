@@ -37,6 +37,7 @@ export function BookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const admin = useAuthUser<SalonAdmin>()
   const queryClient = useQueryClient()
+  const [cancelConfirmation, setCancelConfirmation] = useState<string | null>(null)
 
   const { data: bookings, isPending: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ['bookings'],
@@ -52,6 +53,7 @@ export function BookingsPage() {
         description: 'The booking has been cancelled.',
         color: 'success',
       })
+      setCancelConfirmation(null)
     },
     onError: error => {
       addToast({
@@ -102,28 +104,28 @@ export function BookingsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'CONFIRMED':
         return (
           <Chip className='bg-success/10 text-success border-success/20'>
             <FontAwesomeIcon icon={faCheckCircle} className='w-3 h-3 mr-1' />
             Confirmed
           </Chip>
         )
-      case 'pending':
+      case 'PENDING':
         return (
           <Chip className='bg-pending/10 text-pending border-pending/20'>
             <FontAwesomeIcon icon={faCircleExclamation} className='w-3 h-3 mr-1' />
             Pending
           </Chip>
         )
-      case 'cancelled':
+      case 'CANCELLED':
         return (
           <Chip className='bg-cancelled/10 text-cancelled border-cancelled/20'>
             <FontAwesomeIcon icon={faCircleXmark} className='w-3 h-3 mr-1' />
             Cancelled
           </Chip>
         )
-      case 'completed':
+      case 'COMPLETED':
         return (
           <Chip className='bg-accent/10 text-accent border-accent/20'>
             <FontAwesomeIcon icon={faCheckCircle} className='w-3 h-3 mr-1' />
@@ -207,7 +209,7 @@ export function BookingsPage() {
           ]}
           onItemSelect={item => {
             if (item === 'Booking Completed') updateBookingStatus(booking.bookingId)
-            if (item === 'Cancel Booking') cancelBooking({ bookingId: booking.bookingId })
+            if (item === 'Cancel Booking') setCancelConfirmation(booking.bookingId)
           }}
         />
       </div>
@@ -406,6 +408,33 @@ export function BookingsPage() {
             viewMode='salon'
           />
         )}
+      </CommonModal>
+      {/*Cancel confirmation modal*/}
+      <CommonModal
+        isOpen={cancelConfirmation !== null}
+        onOpenChange={() => setCancelConfirmation(null)}
+        title='Confirm Cancellation'
+        size='sm'
+      >
+        <p>Are you sure you want to cancel this booking?</p>
+        <div className='flex justify-end mt-4'>
+          <Button variant='shadow' onPress={() => setCancelConfirmation(null)}>
+            Cancel
+          </Button>
+          <Button
+            variant='solid'
+            color='danger'
+            onPress={() => {
+              console.log('Confirming cancellation for bookingId:', cancelConfirmation)
+              if (cancelConfirmation) {
+                cancelBooking({ bookingId: cancelConfirmation })
+              }
+            }}
+            className='ml-2'
+          >
+            Confirm
+          </Button>
+        </div>
       </CommonModal>
     </div>
   )

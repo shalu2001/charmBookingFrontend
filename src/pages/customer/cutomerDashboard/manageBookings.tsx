@@ -23,6 +23,7 @@ import BookingDetailsView from '../../../components/Booking/BookingDetailsView'
 import { getCustomerBookingsById } from '../../../actions/customerActions'
 import { CustomerBooking, BookingStatus } from '../../../types/booking'
 import { cancelConfirmedBookingCustomer } from '../../../actions/bookingActions'
+import { set } from 'date-fns'
 
 export function CustomerBookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -30,6 +31,7 @@ export function CustomerBookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<CustomerBooking | null>(null)
   const customer = useAuthUser<Customer>()
   const queryClient = useQueryClient()
+  const [cancelConfirmation, setCancelConfirmation] = useState<string | null>(null)
 
   // Fetch customer bookings
   const { data: bookings, isPending } = useQuery<CustomerBooking[]>({
@@ -49,6 +51,7 @@ export function CustomerBookingsPage() {
         description: 'Your booking has been cancelled.',
         color: 'success',
       })
+      setCancelConfirmation(null)
     },
     onError: error => {
       addToast({
@@ -78,21 +81,21 @@ export function CustomerBookingsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'CONFIRMED':
         return (
           <Chip className='bg-success/10 text-success border-success/20'>
             <FontAwesomeIcon icon={faCircleCheck} className='w-3 h-3 mr-1' />
             Confirmed
           </Chip>
         )
-      case 'pending':
+      case 'PENDING':
         return (
           <Chip className='bg-pending/10 text-pending border-pending/20'>
             <FontAwesomeIcon icon={faCircleExclamation} className='w-3 h-3 mr-1' />
             Pending
           </Chip>
         )
-      case 'cancelled':
+      case 'CANCELLED':
         return (
           <Chip className='bg-cancelled/10 text-cancelled border-cancelled/20'>
             <FontAwesomeIcon icon={faCircleXmark} className='w-3 h-3 mr-1' />
@@ -155,9 +158,8 @@ export function CustomerBookingsPage() {
             color='danger'
             isDisabled={isCancelling}
             onPress={() => {
-              cancelBooking(booking.id)
-              // if (window.confirm('Are you sure you want to cancel this booking?')) {
-              // }
+              console.log('Initiating cancellation for bookingId:', booking.id)
+              setCancelConfirmation(booking.id)
             }}
           >
             <FontAwesomeIcon icon={faCircleXmark} className='w-4 h-4' />
@@ -260,6 +262,34 @@ export function CustomerBookingsPage() {
             viewMode='customer'
           />
         )}
+      </CommonModal>
+
+      {/*Cancel confirmation modal*/}
+      <CommonModal
+        isOpen={cancelConfirmation !== null}
+        onOpenChange={() => setCancelConfirmation(null)}
+        title='Confirm Cancellation'
+        size='sm'
+      >
+        <p>Are you sure you want to cancel this booking?</p>
+        <div className='flex justify-end mt-4'>
+          <Button variant='shadow' onPress={() => setCancelConfirmation(null)}>
+            Cancel
+          </Button>
+          <Button
+            variant='solid'
+            color='danger'
+            onPress={() => {
+              console.log('Confirming cancellation for bookingId:', cancelConfirmation)
+              if (cancelConfirmation) {
+                cancelBooking(cancelConfirmation)
+              }
+            }}
+            className='ml-2'
+          >
+            Confirm
+          </Button>
+        </div>
       </CommonModal>
     </div>
   )
