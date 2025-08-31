@@ -9,7 +9,7 @@ const Header = () => {
   const customer = useAuthUser<Customer>()
   console.log('customer details:', customer)
   return (
-    <Navbar>
+    <Navbar maxWidth='full'>
       <NavbarBrand>
         <Link href='/'>
           <p className='font-birthstone text-5xl'>CharmBooking</p>

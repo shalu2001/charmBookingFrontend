@@ -19,8 +19,8 @@ export interface BaseBooking {
   salon_service_id: string
   worker_id: string
   amount: number
-  booking_date: string
-  start_time: string
+  date: string
+  time: string
   status: BookingStatus
   payment_id: string | null
   created_at: string

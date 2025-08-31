@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomDropdown } from '../../../components/Dropdown'
 import { CustomTable } from '../../../components/Table'
 import { CustomCard } from '../../../components/Cards/CustomCard'
-import { Badge, Button, Input } from '@heroui/react'
+import { Chip, Button, Input } from '@heroui/react'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Booking, BookingStatus, PaymentStatus } from '../../../types/booking'
@@ -58,47 +58,47 @@ export function BookingsPage() {
     switch (status) {
       case 'confirmed':
         return (
-          <Badge className='bg-success/10 text-success border-success/20'>
+          <Chip className='bg-success/10 text-success border-success/20'>
             <FontAwesomeIcon icon={faCheckCircle} className='w-3 h-3 mr-1' />
             Confirmed
-          </Badge>
+          </Chip>
         )
       case 'pending':
         return (
-          <Badge className='bg-pending/10 text-pending border-pending/20'>
+          <Chip className='bg-pending/10 text-pending border-pending/20'>
             <FontAwesomeIcon icon={faCircleExclamation} className='w-3 h-3 mr-1' />
             Pending
-          </Badge>
+          </Chip>
         )
       case 'cancelled':
         return (
-          <Badge className='bg-cancelled/10 text-cancelled border-cancelled/20'>
+          <Chip className='bg-cancelled/10 text-cancelled border-cancelled/20'>
             <FontAwesomeIcon icon={faCircleXmark} className='w-3 h-3 mr-1' />
             Cancelled
-          </Badge>
+          </Chip>
         )
       case 'completed':
         return (
-          <Badge className='bg-accent/10 text-accent border-accent/20'>
+          <Chip className='bg-accent/10 text-accent border-accent/20'>
             <FontAwesomeIcon icon={faCheckCircle} className='w-3 h-3 mr-1' />
             Completed
-          </Badge>
+          </Chip>
         )
       default:
-        return <Badge variant='flat'>{status}</Badge>
+        return <Chip variant='flat'>{status}</Chip>
     }
   }
 
   const getPaymentBadge = (paymentStatus: string) => {
     switch (paymentStatus) {
       case 'paid':
-        return <Badge className='bg-success/10 text-success border-success/20'>Paid</Badge>
+        return <Chip className='bg-success/10 text-success border-success/20'>Paid</Chip>
       case 'unpaid':
-        return <Badge className='bg-warning/10 text-warning border-warning/20'>Unpaid</Badge>
+        return <Chip className='bg-warning/10 text-warning border-warning/20'>Unpaid</Chip>
       case 'refunded':
-        return <Badge className='bg-muted/10 text-muted-foreground border-muted/20'>Refunded</Badge>
+        return <Chip className='bg-muted/10 text-muted-foreground border-muted/20'>Refunded</Chip>
       default:
-        return <Badge variant='flat'>{paymentStatus}</Badge>
+        return <Chip variant='flat'>{paymentStatus}</Chip>
     }
   }
 
@@ -131,11 +131,11 @@ export function BookingsPage() {
       <div>
         <div className='flex items-center gap-1'>
           <FontAwesomeIcon icon={faCalendar} className='w-4 h-4 text-muted-foreground' />
-          <span>{booking.booking_date}</span>
+          <span>{booking.date}</span>
         </div>
         <div className='flex items-center gap-1'>
           <FontAwesomeIcon icon={faClock} className='w-4 h-4 text-muted-foreground' />
-          <span>{booking.start_time}</span>
+          <span>{booking.time}</span>
         </div>
       </div>
     ),
