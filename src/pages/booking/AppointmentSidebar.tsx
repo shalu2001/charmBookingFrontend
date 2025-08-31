@@ -21,7 +21,7 @@ export function AppointmentSidebar({
   handleContinue: () => void
 }) {
   return (
-    <div className='mt-2 w-full h-[60vh] lg:w-1/3 bg-white shadow-lg border-l border-gray-200 p-8 flex flex-col'>
+    <div className='mt-8 mr-4 h-[60vh] rounded-lg lg:w-1/3 bg-white shadow-lg border-l border-gray-200 p-8 flex flex-col'>
       <h2 className='text-xl font-semibold mb-4'>Appointment Details</h2>
       <div className='space-y-3 flex-1'>
         <div className='pb-4 border-b'>
@@ -62,25 +62,27 @@ export function AppointmentSidebar({
             Back
           </Button>
         )}
-        <Button
-          color='primary'
-          className='w-full'
-          isDisabled={
-            (selectedStep === 0 && !selectedTime) || (selectedStep === 1 && !selectedWorker)
-          }
-          onClick={handleContinue}
-        >
-          {(() => {
-            switch (selectedStep) {
-              case 2:
-                return 'Continue to Payment'
-              case 1:
-                return 'Show Booking Confirmation'
-              default:
-                return 'Continue to Select Worker'
+        {selectedStep < 3 ? (
+          <Button
+            color='primary'
+            className='w-full'
+            isDisabled={
+              (selectedStep === 0 && !selectedTime) || (selectedStep === 1 && !selectedWorker)
             }
-          })()}
-        </Button>
+            onClick={handleContinue}
+          >
+            {(() => {
+              switch (selectedStep) {
+                case 2:
+                  return 'Proceed to Billing Information'
+                case 1:
+                  return 'Show Booking Confirmation'
+                default:
+                  return 'Continue to Select Worker'
+              }
+            })()}
+          </Button>
+        ) : null}
       </div>
     </div>
   )

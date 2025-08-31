@@ -6,8 +6,9 @@ import {
   TimeInput,
   Autocomplete,
   AutocompleteItem,
+  addToast,
 } from '@heroui/react'
-import { Key, useState } from 'react'
+import { Key, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAllCategories } from '../actions/salonActions'
 import { Category } from '../types/salon'
@@ -54,10 +55,23 @@ const SearchBar = ({
   const [dateError, setDateError] = useState<string | null>(null)
   const [timeError, setTimeError] = useState<string | null>(null)
 
-  const { data: categories, isLoading } = useQuery<Category[]>({
+  const {
+    data: categories,
+    isLoading,
+    isError,
+  } = useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: getAllCategories,
   })
+
+  useEffect(() => {
+    if (isError)
+      addToast({
+        title: 'Error fetching categories',
+        description: 'There was an error fetching the categories. Please try again later.',
+        color: 'warning',
+      })
+  }, [isError])
 
   const handleSearch = (): void => {
     let hasError = false
