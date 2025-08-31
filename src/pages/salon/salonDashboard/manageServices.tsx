@@ -27,6 +27,7 @@ import {
   updateSalonService,
 } from '../../../actions/salonActions'
 import SalonServiceModal from '../../../components/salonServiceModal'
+import { CircularProgress } from '@heroui/react'
 
 export function ServicesPage() {
   const [selectedCategory, setSelectedCategory] = useState<number>(0)
@@ -92,17 +93,26 @@ export function ServicesPage() {
       queryClient.invalidateQueries({ queryKey: ['salonServices'] })
     },
   })
+  let filteredServices: Service[] = []
+  if (services) {
+    filteredServices = services.filter(service => {
+      const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesCategory =
+        selectedCategory === 0 ||
+        service.categories.some(cat => cat.categoryId === selectedCategory)
+      return matchesSearch && matchesCategory
+    })
+  }
 
-  if (servicesFetching) return <div>Loading...</div>
-  if (!services || services.length === 0) return <div>No services found</div>
-
-  const filteredServices = services.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory =
-      selectedCategory === 0 || service.categories.some(cat => cat.categoryId === selectedCategory)
-    return matchesSearch && matchesCategory
-  })
-
+  if (
+    categoriesFetching ||
+    servicesFetching ||
+    serviceCreating ||
+    serviceUpdating ||
+    serviceDeleting
+  ) {
+    return <CircularProgress />
+  }
   const handleAddService = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -207,59 +217,70 @@ export function ServicesPage() {
           </div>
         </div>
       </Card>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {filteredServices.map(service => (
-          <Card key={service.serviceId} className='hover:shadow-lg transition-shadow duration-200'>
-            <CardHeader className='pb-3'>
-              <div className='flex justify-between items-start w-full'>
-                <div className='space-y-1 flex-1 pr-4'>
-                  <h3 className='text-lg font-semibold leading-none'>{service.name}</h3>
-                  {/* <p className='text-sm text-muted-foreground'>{service.description}</p> */}
+      {services && services.length > 0 ? (
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {filteredServices.map(service => (
+            <Card
+              key={service.serviceId}
+              className='hover:shadow-lg transition-shadow duration-200'
+            >
+              <CardHeader className='pb-3'>
+                <div className='flex justify-between items-start w-full'>
+                  <div className='space-y-1 flex-1 pr-4'>
+                    <h3 className='text-lg font-semibold leading-none'>{service.name}</h3>
+                    {/* <p className='text-sm text-muted-foreground'>{service.description}</p> */}
+                  </div>
+                  <div className='flex gap-1 shrink-0'>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onPress={() => openEditDialog(service)}
+                      className='h-8 w-8 min-w-[2rem]'
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </Button>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      className='text-destructive h-8 w-8 min-w-[2rem]'
+                      onPress={() => handleDeleteService(service.serviceId)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </div>
                 </div>
-                <div className='flex gap-1 shrink-0'>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onPress={() => openEditDialog(service)}
-                    className='h-8 w-8 min-w-[2rem]'
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </Button>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='text-destructive h-8 w-8 min-w-[2rem]'
-                    onPress={() => handleDeleteService(service.serviceId)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <div className='p-6 pt-0'>
-              <div className='flex justify-between items-center mt-4'>
-                <span className='flex items-center text-primary font-semibold gap-1'>
-                  <p>LKR</p>
-                  {service.price}
-                </span>
-                <div className='flex items-center gap-3 text-muted-foreground text-sm'>
-                  <span className='flex items-center'>
-                    <FontAwesomeIcon icon={faClock} className='mr-1 h-4 w-4' />
-                    {service.duration} min
+              </CardHeader>
+              <div className='p-6 pt-0'>
+                <div className='flex justify-between items-center mt-4'>
+                  <span className='flex items-center text-primary font-semibold gap-1'>
+                    <p>LKR</p>
+                    {service.price}
                   </span>
-                  {service.bufferTime > 0 && (
+                  <div className='flex items-center gap-3 text-muted-foreground text-sm'>
                     <span className='flex items-center'>
-                      <span className='text-xs mr-1'>+</span>
-                      {service.bufferTime} min buffer
+                      <FontAwesomeIcon icon={faClock} className='mr-1 h-4 w-4' />
+                      {service.duration} min
                     </span>
-                  )}
+                    {service.bufferTime > 0 && (
+                      <span className='flex items-center'>
+                        <span className='text-xs mr-1'>+</span>
+                        {service.bufferTime} min buffer
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className='text-center p-8 bg-gray-50 rounded-lg'>
+          <p className='text-lg text-gray-600 mb-2'>No services found.</p>
+          <p className='text-sm text-muted-foreground'>
+            Click the "Add Service" button to create your first service.
+          </p>
+        </div>
+      )}
       {/* Edit Modal */}
       <SalonServiceModal
         isOpen={!!editingService}

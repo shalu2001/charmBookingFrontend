@@ -4,20 +4,21 @@ import {
   faLock,
   faCreditCard,
   faImage,
-  faTrash,
-  faUpload,
+  faClock,
   faGear,
   faCamera,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Input, Tabs, Tab, Avatar, Badge, Spinner, Textarea } from '@heroui/react'
+import { Button, Input, Tabs, Tab, Avatar, Badge, Spinner, Textarea, Checkbox } from '@heroui/react'
 import { CustomCard } from '../../../components/Cards/CustomCard'
-import { BaseSalon, SalonAdmin } from '../../../types/salon'
+import { BaseSalon, DaysOfWeek, SalonAdmin, WeeklyHours } from '../../../types/salon'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   getSalonPaymentMethod,
   getSalonProfile,
+  getSalonWeeklyHours,
   updateSalonProfile,
+  updateSalonWeeklyHours,
 } from '../../../actions/salonActions'
 import CustomUpload from '../../../components/ImageUpload'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
@@ -31,18 +32,12 @@ export function AccountPage() {
   })
   const admin = useAuthUser<SalonAdmin>()
 
-  //useQuery for get
+  //salon profile
   const { data: profile, isPending } = useQuery({
     queryKey: ['salonProfile'],
     enabled: !!admin?.salonId,
     queryFn: () => getSalonProfile(admin!.salonId),
   })
-  const { data: paymentMethodsData } = useQuery({
-    queryKey: ['salonPaymentMethods'],
-    queryFn: () => getSalonPaymentMethod('1'),
-  })
-
-  //mutation for create/update/delete
   const { mutate, isPending: isUpdating } = useMutation({
     mutationFn: (profileData: Partial<BaseSalon>) =>
       updateSalonProfile(admin!.salonId, profileData),
@@ -56,11 +51,48 @@ export function AccountPage() {
     },
   })
 
+  //weeklyHours
+  const { data: weeklyHours, isPending: hoursLoading } = useQuery({
+    queryKey: ['salonWeeklyHours', admin?.salonId],
+    enabled: !!admin?.salonId,
+    queryFn: () => getSalonWeeklyHours(admin!.salonId),
+  })
+
+  console.log('weekly hours', weeklyHours)
+
+  const { mutate: updateWeeklyHours } = useMutation({
+    mutationFn: (weeklyHours: WeeklyHours[]) => updateSalonWeeklyHours(admin!.salonId, weeklyHours),
+    onSuccess: data => {
+      // Handle success, e.g., show a toast or update state
+      console.log('Weekly hours updated successfully:', data)
+    },
+    onError: error => {
+      // Handle error, e.g., show an error message
+      console.error('Error updating weekly hours:', error)
+    },
+  })
+
+  //payment
+  const { data: paymentMethodsData } = useQuery({
+    queryKey: ['salonPaymentMethods'],
+    queryFn: () => getSalonPaymentMethod('1'),
+  })
+
   if (!profile || isPending || isUpdating) {
     return (
       <Spinner label='Loading profile...' className='flex items-center justify-center h-screen' />
     )
   }
+
+  const days = [
+    { key: 'monday', label: 'Monday' },
+    { key: 'tuesday', label: 'Tuesday' },
+    { key: 'wednesday', label: 'Wednesday' },
+    { key: 'thursday', label: 'Thursday' },
+    { key: 'friday', label: 'Friday' },
+    { key: 'saturday', label: 'Saturday' },
+    { key: 'sunday', label: 'Sunday' },
+  ]
   const commonInput = (
     label: string,
     value: string,
@@ -74,6 +106,14 @@ export function AccountPage() {
       onChange={e => onChange(e.currentTarget.value)}
     />
   )
+
+  // const updateDayHours = (day: keyof WeeklyHours, updates: Partial<WeeklyHours[keyof WeeklyHours]>) => {
+  //   if (!weeklyHours) return
+  //   saveWeeklyHours({
+  //     ...weeklyHours,
+  //     [day]: { ...weeklyHours[day], ...updates },
+  //   })
+  // }
 
   return (
     <div className='space-y-6'>
@@ -193,7 +233,100 @@ export function AccountPage() {
             </CustomCard>
           </div>
         </Tab>
+        <Tab
+          key='weeklyHours'
+          title={
+            <span className='flex items-center gap-2'>
+              <FontAwesomeIcon icon={faClock} /> Weekly Hours
+            </span>
+          }
+        >
+          <div className='space-y-6'>
+            <CustomCard title='Weekly Hours' icon={<FontAwesomeIcon icon={faClock} />}>
+              {hoursLoading || !weeklyHours ? (
+                <Spinner label='Loading weekly hours...' />
+              ) : (
+                <div className='grid gap-4'>
+                  {days.map(({ key, label }) => {
+                    const dayHours = weeklyHours.find(
+                      wh => wh.day_of_week.toLowerCase() === label.toLowerCase(),
+                    )
 
+                    const isOpen = !!(dayHours && dayHours.open_time && dayHours.close_time)
+
+                    return (
+                      <div
+                        key={key}
+                        className={`p-4 border rounded-lg ${!isOpen ? 'bg-gray-100' : 'bg-white'}`}
+                      >
+                        <div className='flex items-center justify-between mb-3'>
+                          <h4 className='font-medium'>{label}</h4>
+                          <Checkbox
+                            isSelected={isOpen}
+                            onValueChange={val => {
+                              const updated = weeklyHours.map(wh =>
+                                wh.day_of_week === label
+                                  ? {
+                                      ...wh,
+                                      open_time: val ? wh.open_time || '09:00' : '',
+                                      close_time: val ? wh.close_time || '17:00' : '',
+                                    }
+                                  : wh,
+                              )
+                              updateWeeklyHours(updated)
+                            }}
+                          >
+                            Open
+                          </Checkbox>
+                        </div>
+
+                        {isOpen ? (
+                          <div className='grid grid-cols-2 gap-4'>
+                            <Input
+                              type='time'
+                              label='Opening'
+                              value={dayHours?.open_time || ''}
+                              onChange={e => {
+                                const updated = weeklyHours.map(wh =>
+                                  wh.day_of_week === label
+                                    ? { ...wh, open_time: e.target.value }
+                                    : wh,
+                                )
+                                updateWeeklyHours(updated)
+                              }}
+                            />
+                            <Input
+                              type='time'
+                              label='Closing'
+                              value={dayHours?.close_time || ''}
+                              onChange={e => {
+                                const updated = weeklyHours.map(wh =>
+                                  wh.day_of_week === label
+                                    ? { ...wh, closeTime: e.target.value }
+                                    : wh,
+                                )
+                                updateWeeklyHours(updated)
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <p className='text-gray-400 text-sm'>Closed</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              <Button
+                className='mt-6 w-full'
+                color='primary'
+                onPress={() => weeklyHours && updateWeeklyHours(weeklyHours)}
+              >
+                Save Weekly Hours
+              </Button>
+            </CustomCard>
+          </div>
+        </Tab>
         <Tab
           key='gallery'
           title={

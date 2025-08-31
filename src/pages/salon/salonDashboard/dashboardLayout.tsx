@@ -8,6 +8,7 @@ import {
   faTimes,
   faSearch,
   faBell,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Input } from '@heroui/react'
@@ -19,6 +20,7 @@ const sidebarItems = [
   { id: 'services', label: 'Services', icon: faCut },
   { id: 'bookings', label: 'Bookings', icon: faCalendarAlt },
   { id: 'account', label: 'Account', icon: faUser },
+  { id: 'workers', label: 'Workers', icon: faUsers },
 ]
 
 export default function DashboardLayout({ currentPage, onPageChange }: DashboardLayoutProps) {

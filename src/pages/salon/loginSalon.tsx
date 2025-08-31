@@ -49,40 +49,49 @@ const LoginSalon = () => {
   }
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center px-6 py-10 font-serif'>
-      <h1 className='text-4xl font-semibold mb-8 text-center'>Login to Your Salon</h1>
-      <Form
-        onSubmit={handleLogin}
-        className='w-1/3 bg-white p-10 rounded-xl shadow-md flex flex-col items-center'
-      >
-        <Input
-          label='Email'
-          name='email'
-          type='email'
-          placeholder='Enter your email'
-          value={form.email}
-          onChange={handleChange}
-          required
+    <div className='flex h-screen'>
+      <div className=' flex flex-col w-1/2 h-full items-center justify-center font-sans'>
+        <h1 className='text-4xl font-semibold mb-8 text-center'>Login to Your Salon</h1>
+        <Form
+          onSubmit={handleLogin}
+          className=' bg-white w-2/3 p-10 rounded-xl shadow-md flex flex-col items-center'
+        >
+          <Input
+            label='Email'
+            name='email'
+            type='email'
+            placeholder='Enter your email'
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <Input
+            label='Password'
+            name='password'
+            type='password'
+            placeholder='Enter your password'
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          {error && <div className='text-red-500 text-sm mb-2'>{error.message}</div>}
+          <div className='flex justify-between gap-4 mt-8 w-full'>
+            <Button color='primary' type='submit' className='flex-1'>
+              Login
+            </Button>
+            <Button type='reset' variant='flat' onPress={handleReset} className='flex-1'>
+              Reset
+            </Button>
+          </div>
+        </Form>
+      </div>
+      <div className='w-1/2 h-full'>
+        <img
+          className='object-cover w-full h-full'
+          src='/signup-drawing.avif'
+          alt='Salon Login Illustration'
         />
-        <Input
-          label='Password'
-          name='password'
-          type='password'
-          placeholder='Enter your password'
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        {error && <div className='text-red-500 text-sm mb-2'>{error.message}</div>}
-        <div className='flex justify-between gap-4 mt-8 w-full'>
-          <Button color='primary' type='submit' className='flex-1'>
-            Login
-          </Button>
-          <Button type='reset' variant='flat' onPress={handleReset} className='flex-1'>
-            Reset
-          </Button>
-        </div>
-      </Form>
+      </div>
     </div>
   )
 }

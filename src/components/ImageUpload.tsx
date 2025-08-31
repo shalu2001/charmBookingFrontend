@@ -8,8 +8,8 @@ interface CustomUploadProps {
   multiple?: boolean
   description?: string
   onChange?: (files: File[]) => void
-  className?: string // Optional className for custom styling
-  style?: React.CSSProperties // Optional inline styles
+  maxFiles?: number
+  className?: string
 }
 
 const CustomUpload = ({
@@ -18,33 +18,56 @@ const CustomUpload = ({
   multiple = false,
   description,
   onChange,
+  maxFiles = 5,
 }: CustomUploadProps) => {
-  const [previews, setPreviews] = useState<string[]>([])
+  const [previews, setPreviews] = useState<Array<{ url: string; file: File }>>([])
   const [isDragging, setIsDragging] = useState(false)
-  const [files, setFiles] = useState<File[]>([])
+  const [error, setError] = useState<string>('')
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const handleFiles = (fileList: FileList) => {
     const imageFiles = Array.from(fileList).filter(file => file.type.startsWith('image/'))
 
-    // Create preview URLs
-    const previewUrls = imageFiles.map(file => URL.createObjectURL(file))
-    setPreviews(previewUrls)
+    // Check if adding new files would exceed the limit
+    if (previews.length + imageFiles.length > maxFiles) {
+      setError(`Maximum ${maxFiles} images allowed`)
+      return
+    }
 
-    // Store the actual files
-    setFiles(imageFiles)
+    setError('')
 
-    // Notify parent component
+    // Create preview URLs and store files
+    const newPreviews = imageFiles.map(file => ({
+      url: URL.createObjectURL(file),
+      file: file,
+    }))
+
+    setPreviews(prev => [...prev, ...newPreviews])
+
+    // Notify parent component with all files
     if (onChange) {
-      onChange(imageFiles)
+      onChange([...previews.map(p => p.file), ...imageFiles])
     }
   }
 
   useEffect(() => {
     return () => {
-      previews.forEach(URL.revokeObjectURL)
+      // Cleanup preview URLs
+      previews.forEach(preview => URL.revokeObjectURL(preview.url))
     }
   }, [previews])
+
+  const handleDelete = (index: number) => {
+    setPreviews(prev => {
+      const newPreviews = prev.filter((_, i) => i !== index)
+      // Update parent component
+      if (onChange) {
+        onChange(newPreviews.map(p => p.file))
+      }
+      return newPreviews
+    })
+    setError('')
+  }
 
   const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault()
@@ -61,14 +84,18 @@ const CustomUpload = ({
     }
   }
 
-  const handleDelete = (index: number) => {
-    setPreviews(prev => prev.filter((_, i) => i !== index))
-  }
-
   return (
-    <div className='w-full flex flex-col items-center gap-4 mt-6'>
-      {label && <p className='text-lg font-medium'>{label}</p>}
-      {description && <p className='text-gray-500 text-sm'>{description}</p>}
+    <div className='w-full flex flex-col items-start gap-4'>
+      {label && (
+        <div className='flex items-center gap-2'>
+          <p className='text-base'>{label}</p>
+          <span className='text-sm text-muted-foreground'>
+            ({previews.length}/{maxFiles})
+          </span>
+        </div>
+      )}
+
+      {error && <p className='text-sm text-red-500'>{error}</p>}
 
       <label
         htmlFor={name}
@@ -78,14 +105,20 @@ const CustomUpload = ({
           setIsDragging(true)
         }}
         onDragLeave={() => setIsDragging(false)}
-        className={`w-full max-w-xl p-6 text-left border-2 rounded-lg cursor-pointer transition
-                    ${
-                      isDragging
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-dashed border-gray-400 hover:border-blue-500'
-                    }`}
+        className={`w-full p-6 text-center border-2 rounded-lg cursor-pointer transition
+          ${
+            isDragging
+              ? 'border-primary bg-primary/5'
+              : 'border-dashed border-border hover:border-primary'
+          }
+          ${previews.length >= maxFiles ? 'opacity-50 cursor-not-allowed' : ''}
+        `}
       >
-        <p className='text-gray-600'>Click or drag image{multiple ? 's' : ''} here to upload</p>
+        <p className='text-muted-foreground'>
+          {previews.length >= maxFiles
+            ? 'Maximum images reached'
+            : `Click or drag image${multiple ? 's' : ''} here to upload`}
+        </p>
         <input
           ref={inputRef}
           id={name}
@@ -95,30 +128,37 @@ const CustomUpload = ({
           multiple={multiple}
           className='hidden'
           onChange={handleInputChange}
+          disabled={previews.length >= maxFiles}
         />
       </label>
 
       {previews.length > 0 && (
-        <div className='w-full max-w-xl flex flex-col gap-3 mt-6'>
-          {previews.map((src, idx) => (
+        <div className='w-full grid grid-cols-2 gap-4 mt-4'>
+          {previews.map((preview, idx) => (
             <div
               key={idx}
-              className='flex items-center justify-between bg-white border rounded-md shadow-sm p-3'
+              className='group relative bg-card border rounded-lg overflow-hidden shadow-sm'
             >
-              <div className='flex items-center gap-3'>
-                <img
-                  src={src}
-                  alt={`Preview ${idx}`}
-                  className='w-16 h-16 object-cover rounded border'
-                />
-                <p className='text-sm text-gray-700'>Image {idx + 1}</p>
+              <img
+                src={preview.url}
+                alt={`Preview ${idx + 1}`}
+                className='w-full h-48 object-cover'
+              />
+              <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity'>
+                <button
+                  onClick={e => {
+                    e.preventDefault()
+                    handleDelete(idx)
+                  }}
+                  className='absolute top-2 right-2 p-2 bg-white/10 rounded-full text-white 
+                    hover:bg-white/20 transition-colors'
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
               </div>
-              <button
-                onClick={() => handleDelete(idx)}
-                className='text-red-500 hover:text-red-700 transition'
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+              <div className='absolute bottom-0 left-0 right-0 p-2 bg-black/40 text-white text-sm'>
+                {preview.file.name}
+              </div>
             </div>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import DashboardLayout from './dashboardLayout'
 
-const dashboardPages = ['services', 'appointments', 'customers', 'analytics', 'account']
+const dashboardPages = ['services', 'appointments', 'workers', 'account']
 
 export default function DashboardLayoutWrapper() {
   const location = useLocation()

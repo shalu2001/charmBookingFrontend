@@ -1,5 +1,6 @@
 import {
   BaseSalon,
+  SalonWorker,
   Category,
   CreateServiceDTO,
   PaymentMethod,
@@ -8,6 +9,11 @@ import {
   SalonRanked,
   SalonRankedRequestDto,
   Service,
+  WeeklyHours,
+  WorkerLeave,
+  WorkerLeaveRequest,
+  WorkersLeaves,
+  BaseSalonWorker,
 } from '../types/salon'
 import axiosInstance from './axiosInstance'
 
@@ -121,5 +127,43 @@ export async function deleteSalonService(serviceId: string): Promise<void> {
 
 export async function getServiceById(serviceId: string): Promise<Service> {
   const response = await axiosInstance.get(`salonService/findOne/${serviceId}`)
+  return response.data
+}
+
+export async function getSalonWeeklyHours(salonId: string): Promise<WeeklyHours[]> {
+  const response = await axiosInstance.get(`/salon/${salonId}/getSalonWeeklyHours`)
+  return response.data
+}
+
+export async function updateSalonWeeklyHours(
+  salonId: string,
+  weeklyHours: WeeklyHours[],
+): Promise<WeeklyHours[]> {
+  const response = await axiosInstance.put(`/salon/${salonId}/updateWeeklyHours`, {
+    weeklyHours,
+  })
+  return response.data
+}
+
+export async function getSalonWorkers(salonId: string): Promise<SalonWorker[]> {
+  const response = await axiosInstance.get(`/salonWorker/getWorkers/${salonId}`)
+  return response.data
+}
+
+export async function addSalonWorker(workerData: BaseSalonWorker): Promise<SalonWorker> {
+  const response = await axiosInstance.post('/salonWorker/createWorker', workerData)
+  return response.data
+}
+
+export async function getSalonLeaves(salonId: string): Promise<WorkersLeaves[]> {
+  const response = await axiosInstance.get(`/salonWorker/${salonId}/getWorkersLeaves`)
+  return response.data
+}
+
+export async function addWorkerLeaves(
+  workerId: string,
+  leaveData: WorkerLeaveRequest,
+): Promise<WorkersLeaves> {
+  const response = await axiosInstance.post(`/salon/worker/${workerId}/leaves`, leaveData)
   return response.data
 }
