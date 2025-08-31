@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 
 interface ServiceFieldProps {
@@ -37,18 +37,28 @@ const ServiceField: React.FC<ServiceFieldProps> = ({
   return (
     <div
       onClick={handleServiceClick}
-      className='flex flex-col pt-2 pr-4 pl-4 pb-2 border-collapse rounded-2xl bg-tertiary text-black m-4 shadow-md'
+      className='mb-4 h-20 rounded-lg flex items-center justify-between bg-white py-2 px-4 border border-gray-300 shadow-sm transition-all duration-200 group relative cursor-pointer hover:shadow-lg hover:bg-tertiary hover:text-primary'
     >
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-col'>
-          <div className='text-medium'>{serviceName}</div>
-          <div className='text-xs mb-3'>{time} minutes</div>
-          <div className='text-xs'>LKR {price}</div>
+      <div className='flex-col w-full'>
+        <div className='flex items-center'>
+          <div className='flex-1'>
+            <div>{serviceName}</div>
+            <div className='text-default-500 group-hover:text-default-600 text-sm'>{time} mins</div>
+          </div>
         </div>
-        <button className='ml-auto'>
-          <FontAwesomeIcon icon={faCirclePlus} />
-        </button>
       </div>
+      {price.toLocaleString('en-LK', {
+        style: 'currency',
+        currency: 'LKR',
+        minimumFractionDigits: 0,
+      })}
+      <button
+        className='overflow-hidden w-0 transition-all opacity-0 group-hover:opacity-100 group-hover:w-10'
+        tabIndex={-1}
+        type='button'
+      >
+        <FontAwesomeIcon icon={faChevronRight} />
+      </button>
     </div>
   )
 }

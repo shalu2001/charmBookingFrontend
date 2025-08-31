@@ -139,13 +139,13 @@ const SalonPage = () => {
             </button>
             <div
               ref={scrollRef}
-              className='flex overflow-x-auto no-scrollbar w-full whitespace-nowrap mx-10 scrollbar-hide'
+              className='flex overflow-x-auto no-scrollbar w-full p-2 whitespace-nowrap mx-10 scrollbar-hide'
             >
               {/* Add "All" button */}
               <button
                 key='all-categories'
-                className={`px-4 py-2 mx-2 text-sm font-semibold rounded-lg ${
-                  !selectedCategory ? 'bg-tertiary text-white' : 'bg-gray-200'
+                className={`px-4 py-2 mx-2 text-sm font-semibold rounded-lg hover:shadow-md hover:cursor-pointer transition-all duration-200 ${
+                  !selectedCategory ? 'bg-secondary text-white' : 'bg-gray-100'
                 }`}
                 onClick={() => setSelectedCategory(null)}
               >
@@ -160,10 +160,10 @@ const SalonPage = () => {
               ].map((category, index) => (
                 <button
                   key={category.categoryId || `category-${index}`}
-                  className={`px-4 py-2 mx-2 text-sm font-semibold rounded-lg ${
+                  className={`px-4 py-2 mx-2 text-sm font-semibold rounded-lg hover:shadow-md cursor-pointer transition-all duration-200 ${
                     selectedCategory?.categoryId === category?.categoryId
-                      ? 'bg-tertiary text-white'
-                      : 'bg-gray-200'
+                      ? 'bg-secondary text-white'
+                      : 'bg-gray-100'
                   }`}
                   onClick={() => setSelectedCategory(category)}
                 >

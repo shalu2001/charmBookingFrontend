@@ -65,6 +65,29 @@ const SearchBar = ({
   })
 
   useEffect(() => {
+    if (initialLocation) {
+      if (initialLocation === 'current-location') {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            setLatitude(position.coords.latitude)
+            setLongitude(position.coords.longitude)
+          },
+          error => {
+            console.error('Error getting location:', error)
+          },
+        )
+      } else {
+        // Find the city in cities data
+        const selectedCity = cities.find(city => city.city === initialLocation)
+        if (selectedCity) {
+          setLatitude(Number(selectedCity.lat))
+          setLongitude(Number(selectedCity.lng))
+        }
+      }
+    }
+  }, [initialLocation])
+
+  useEffect(() => {
     if (isError)
       addToast({
         title: 'Error fetching categories',
@@ -142,7 +165,7 @@ const SearchBar = ({
   }
 
   return (
-    <div className='flex justify-center items-center w-2/3 p-4 bg-quaternary border-0 shadow-md space-x-4 rounded-xl'>
+    <div className='flex justify-center items-center w-2/3 p-4 bg-orange-100/50 backdrop-blur-lg border-0 shadow-md space-x-4 rounded-xl'>
       <Select
         className='max-w-sm'
         label='Select a category'

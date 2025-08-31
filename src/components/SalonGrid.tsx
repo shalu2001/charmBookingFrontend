@@ -51,7 +51,7 @@ const SalonCard = ({
 }) => (
   <div className='mb-4 rounded-xl bg-white p-4 w-full shadow-md' onMouseEnter={onHover}>
     <SalonHeader name={salon.name} location={salon.location} />
-    <div className='flex-col gap-2 py-2'>
+    <div className='flex flex-col gap-2 py-2'>
       <SalonImage images={salon.images} name={salon.name} />
       <SalonReviewInfo reviews={salon.reviews} distanceKm={salon.distanceKm} />
       <SalonDescription description={salon.description} />

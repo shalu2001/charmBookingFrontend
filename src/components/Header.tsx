@@ -33,7 +33,7 @@ const Header = () => {
           />
         ) : (
           <>
-            <NavbarItem className='hidden lg:flex rounded-lg mr-4'>
+            <NavbarItem className='flex rounded-lg mr-4'>
               <Button
                 color='secondary'
                 radius='lg'
@@ -44,7 +44,7 @@ const Header = () => {
                 Sign Up
               </Button>
             </NavbarItem>
-            <NavbarItem className='hidden lg:flex rounded-lg mr-4'>
+            <NavbarItem className='flex rounded-lg mr-4'>
               <Link href='/login'>
                 <Button
                   color='secondary'

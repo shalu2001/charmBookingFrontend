@@ -6,6 +6,7 @@ import CustomMapContainer from '../../components/Leaflet/CustomMapContainer'
 import SalonGrid from '../../components/SalonGrid'
 import { ScrollShadow, Spinner, Link } from '@heroui/react'
 import SearchBar from '../../components/SearchBar'
+import { checkURLParam } from '../../utils/helper'
 
 const SearchSalons = () => {
   const navigate = useNavigate()
@@ -20,7 +21,15 @@ const SearchSalons = () => {
   const [hoveredSalon, setHoveredSalon] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (!category || !location || !latitude || !longitude || !date || !time) {
+    console.log({ category, location, latitude, longitude, date, time })
+    if (
+      !checkURLParam(category) ||
+      !checkURLParam(location) ||
+      !checkURLParam(latitude) ||
+      !checkURLParam(longitude) ||
+      !checkURLParam(date) ||
+      !checkURLParam(time)
+    ) {
       navigate('/')
     }
   }, [category, location, latitude, longitude, date, time, navigate])
