@@ -19,7 +19,7 @@ import {
   Tabs,
   Tab,
   Avatar,
-  Badge,
+  Chip,
   Spinner,
   Checkbox,
   Select,
@@ -160,18 +160,18 @@ export function WorkersPage() {
                         <h4 className='font-semibold'>{worker.name}</h4>
                       </div>
                     </div>
-                    <Badge color={worker.status === 'active' ? 'success' : 'warning'}>
+                    <Chip color={worker.status === 'active' ? 'success' : 'warning'}>
                       {worker.status}
-                    </Badge>
+                    </Chip>
                   </CardHeader>
                   <CardBody>
                     <div className='mt-2'>
                       <p className='text-sm font-medium'>Services:</p>
                       <div className='flex flex-wrap gap-1 mt-1'>
                         {worker.services.map(s => (
-                          <Badge key={typeof s === 'string' ? s : s.id ?? s.name} variant='flat'>
+                          <Chip key={typeof s === 'string' ? s : s.id ?? s.name} variant='flat'>
                             {typeof s === 'string' ? s : s.name}
-                          </Badge>
+                          </Chip>
                         ))}
                       </div>
                     </div>
@@ -215,8 +215,8 @@ export function WorkersPage() {
                 <Card key={workerLeave.workerId} className='overflow-hidden'>
                   <CardHeader className='bg-gray-50'>
                     <div className='flex items-center justify-between'>
-                      <h3 className='text-lg font-semibold'>{workerLeave.name}</h3>
-                      <Badge color='primary'>{workerLeave.leaves.length} leaves</Badge>
+                      <h3 className='text-lg font-semibold mr-2'>{workerLeave.name}</h3>
+                      <Chip color='primary'>{workerLeave.leaves.length} leaves</Chip>
                     </div>
                   </CardHeader>
                   <CardBody>
