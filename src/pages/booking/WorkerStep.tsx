@@ -1,4 +1,5 @@
 import { AvailableWorkersResponse, SalonWorker } from '../../types/booking'
+import { formatTime } from '../../utils/helper'
 
 export function WorkerStep({
   availableWorkers,
@@ -41,7 +42,7 @@ export function WorkerStep({
               </div>
               <div className='flex flex-col items-start'>
                 <span className='font-medium'>{slot.worker.name}</span>
-                <span className='text-sm text-gray-500'>{slot.startTime}</span>
+                <span className='text-sm text-gray-500'>{formatTime(slot.startTime)}</span>
               </div>
             </button>
           ))}

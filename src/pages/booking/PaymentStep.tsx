@@ -7,7 +7,8 @@ import { paymentInitiate } from '../../actions/paymentActions'
 import { useMutation } from '@tanstack/react-query'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { Customer } from '../../types/customer'
-import { Button, Input, Spinner } from '@heroui/react'
+import { addToast, Button, Input, Spinner } from '@heroui/react'
+import { useNavigate } from 'react-router-dom'
 
 export function PaymentStep({
   salonId,
@@ -23,6 +24,7 @@ export function PaymentStep({
   worker: SalonWorker
 }) {
   const user = useAuthUser<Customer>()
+  const navigate = useNavigate()
   const [bookingResponse, setBookingResponse] = useState<Booking | null>(null)
   const [billingInfo, setBillingInfo] = useState({
     address1: '',
@@ -40,6 +42,17 @@ export function PaymentStep({
     mutationFn: (params: Parameters<typeof paymentInitiate>[0]) => paymentInitiate(params),
     onSuccess: data => {
       setPaymentPayload(data)
+      const payhere = (window as any).payhere
+      if (payhere) {
+        const payHerePayload = {
+          ...data,
+          return_url: window.location.origin + '/payment/success',
+          cancel_url: window.location.origin + '/payment/cancel',
+        }
+        payhere.startPayment(payHerePayload)
+      } else {
+        console.error('PayHere SDK not loaded')
+      }
     },
   })
 
@@ -50,17 +63,27 @@ export function PaymentStep({
       // Called when payment is completed successfully
       payhere.onCompleted = function onCompleted(orderId: string) {
         console.log('Payment completed. OrderID:', orderId)
-        // You can update backend / show success UI
+        navigate('/customer/bookings')
       }
 
       // Called when user closes the popup without paying
       payhere.onDismissed = function onDismissed() {
-        console.log('Payment dismissed')
+        addToast({
+          title: 'Payment Cancelled',
+          description: 'You have cancelled the payment.',
+          color: 'warning',
+        })
+        console.warn('Payment dismissed')
       }
 
       // Called if an error occurs
       payhere.onError = function onError(error: string) {
-        console.error('Error:', error)
+        addToast({
+          title: 'Payment Error',
+          description: 'An error occurred during payment.',
+          color: 'danger',
+        })
+        console.error('Payment error:', error)
       }
     }
   }, [])
@@ -102,50 +125,23 @@ export function PaymentStep({
     )
   }
 
-  if (paymentPayload) {
-    return (
-      <div>
-        <h1 className='text-2xl font-semibold mb-6'>Proceed to Payment</h1>
-        <Button
-          onClick={() => {
-            const payhere = (window as any).payhere
-            if (payhere) {
-              const payHerePayload = {
-                ...paymentPayload,
-                return_url: window.location.origin + '/payment/success',
-                cancel_url: window.location.origin + '/payment/cancel',
-              }
-              payhere.startPayment(payHerePayload)
-            } else {
-              console.error('PayHere SDK not loaded')
-            }
-          }}
-          color='secondary'
-          radius='lg'
-          variant='shadow'
-          className='mt-4 w-full'
-        >
-          Pay Now
-        </Button>
-      </div>
-    )
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    paymentMutation.mutate({
+      bookingId: bookingResponse!.id,
+      address1: billingInfo.address1,
+      address2: billingInfo.address2,
+      city: billingInfo.city,
+    })
   }
 
   return (
-    <div>
+    <div className='w-full flex flex-col items-center'>
       <h1 className='text-2xl font-semibold mb-6'>Payment</h1>
       {showPaymentForm && bookingResponse && (
         <form
-          className='space-y-4 max-w-md'
-          onSubmit={e => {
-            e.preventDefault()
-            paymentMutation.mutate({
-              bookingId: bookingResponse.id,
-              address1: billingInfo.address1,
-              address2: billingInfo.address2,
-              city: billingInfo.city,
-            })
-          }}
+          className='space-y-4 w-2/3 flex flex-col bg-white p-8 rounded-lg shadow'
+          onSubmit={handleSubmit}
         >
           <div>
             <label className='block mb-1 font-medium'>Address Line 1</label>
@@ -178,13 +174,17 @@ export function PaymentStep({
           </div>
           <Button
             type='submit'
-            color='secondary'
             radius='lg'
-            variant='shadow'
-            className='mt-4 w-full'
+            size='lg'
+            className='mt-4 w-full max-w-72 self-center bg-quaternary border border-blue-600 hover:shadow-lg transition-all duration-250'
             disabled={paymentMutation.isPending}
           >
-            Initiate Payment
+            Pay With
+            <img
+              src='https://payherestorage.blob.core.windows.net/payhere-resources/www/images/PayHere-Logo.png'
+              alt='PayHere'
+              className='h-full'
+            />
           </Button>
         </form>
       )}

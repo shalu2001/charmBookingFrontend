@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getSalonsRanked } from '../../actions/salonActions'
 import CustomMapContainer from '../../components/Leaflet/CustomMapContainer'
 import SalonGrid from '../../components/SalonGrid'
-import { NavbarBrand, ScrollShadow, Spinner, Link } from '@heroui/react'
+import { ScrollShadow, Spinner, Link } from '@heroui/react'
 import SearchBar from '../../components/SearchBar'
 
 const SearchSalons = () => {
