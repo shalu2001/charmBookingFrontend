@@ -106,6 +106,12 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
             <p className='text-sm text-muted-foreground'>Service</p>
             <p className='font-medium'>{booking.serviceName}</p>
           </div>
+          {viewMode === 'salon' && (
+            <div className='pt-2'>
+              <p className='text-sm text-muted-foreground'>Assigned Worker</p>
+              <p className='font-medium'>{booking.workerName}</p>
+            </div>
+          )}
           {isCustomerView && (
             <>
               <div className='pt-2'>

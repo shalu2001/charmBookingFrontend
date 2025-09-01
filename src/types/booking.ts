@@ -19,6 +19,7 @@ export interface BaseBooking {
   salon_id: string
   salon_service_id: string
   worker_id: string
+  workerName: string
   amount: number
   date: string
   time: string

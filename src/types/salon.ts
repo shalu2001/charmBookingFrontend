@@ -214,9 +214,18 @@ export interface WorkersLeaves {
   leaves: WorkerLeave[]
 }
 
-export interface WorkerLeaveRequest {
-  workerId: string
+export interface LeaveInput {
   date: string
   startTime: string
   endTime: string
+}
+
+export interface WorkerLeaveRequest {
+  leaveInputs: LeaveInput[]
+}
+
+export interface CreateWorkerDto {
+  name: string
+  salonId: string
+  services: string[]
 }

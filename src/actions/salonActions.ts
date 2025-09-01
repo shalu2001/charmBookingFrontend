@@ -14,6 +14,7 @@ import {
   WorkerLeaveRequest,
   WorkersLeaves,
   BaseSalonWorker,
+  CreateWorkerDto,
 } from '../types/salon'
 import axiosInstance from './axiosInstance'
 
@@ -150,7 +151,7 @@ export async function getSalonWorkers(salonId: string): Promise<SalonWorker[]> {
   return response.data
 }
 
-export async function addSalonWorker(workerData: BaseSalonWorker): Promise<SalonWorker> {
+export async function addSalonWorker(workerData: CreateWorkerDto): Promise<SalonWorker> {
   const response = await axiosInstance.post('/salonWorker/createWorker', workerData)
   return response.data
 }
@@ -162,8 +163,12 @@ export async function getSalonLeaves(salonId: string): Promise<WorkersLeaves[]> 
 
 export async function addWorkerLeaves(
   workerId: string,
+  salonId: string,
   leaveData: WorkerLeaveRequest,
 ): Promise<WorkersLeaves> {
-  const response = await axiosInstance.post(`/salon/worker/${workerId}/leaves`, leaveData)
+  const response = await axiosInstance.post(
+    `/salonWorker/${salonId}/addWorkerLeave/${workerId}`,
+    leaveData,
+  )
   return response.data
 }

@@ -25,21 +25,32 @@ import {
   Select,
   SelectItem,
   Textarea,
+  addToast,
 } from '@heroui/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Modal from '../../../components/commonModal'
 import {
   addSalonWorker,
+  addWorkerLeaves,
   getSalonLeaves,
   getSalonServices,
   getSalonWorkers,
 } from '../../../actions/salonActions'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import { BaseSalonWorker, SalonAdmin, SalonWorker } from '../../../types/salon'
+import {
+  BaseSalonWorker,
+  CreateWorkerDto,
+  LeaveInput,
+  SalonAdmin,
+  SalonWorker,
+  WorkerLeaveRequest,
+} from '../../../types/salon'
+import CommonModal from '../../../components/commonModal'
 
 export function WorkersPage() {
   const admin = useAuthUser<SalonAdmin>()
   const queryClient = useQueryClient()
+  const [selectedTab, setSelectedTab] = useState<'workers' | 'leave'>('workers')
 
   // Fetch workers
   const { data: workers = [], isPending: loadingWorkersData } = useQuery({
@@ -63,12 +74,25 @@ export function WorkersPage() {
   })
 
   //add worker
-  const { mutate: addWorker, isPending: workerPending } = useMutation({
-    mutationFn: (workerData: BaseSalonWorker) => addSalonWorker(workerData),
-    onSuccess: newWorker => {
-      queryClient.setQueryData<BaseSalonWorker[]>(['workers'], old => [...(old ?? []), newWorker])
+  const { mutate: createWorker, isPending: isCreating } = useMutation({
+    mutationFn: (data: CreateWorkerDto) => addSalonWorker(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workers'] })
       setShowAddModal(false)
-      setNewWorker({ salonId: admin!.salonId, name: '', services: [] })
+      setNewWorker({ name: '', salonId: admin?.salonId || '', services: [] })
+      addToast({
+        color: 'success',
+        title: 'Worker added successfully',
+        description: 'The worker has been added to your salon.',
+      })
+    },
+    onError: error => {
+      addToast({
+        color: 'danger',
+        title: 'Failed to add worker',
+        description: 'An error occurred while adding the worker.',
+      })
+      console.error('Error adding worker:', error)
     },
   })
 
@@ -83,41 +107,44 @@ export function WorkersPage() {
     // },
   })
 
+  const { mutate: addLeave, isPending: addingLeave } = useMutation({
+    mutationFn: (data: WorkerLeaveRequest) =>
+      addWorkerLeaves(selectedWorker!.workerId, admin!.salonId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leaves'] })
+      setShowLeaveModal(false)
+      setLeaveInputs([])
+      setNewLeave({ date: '', startTime: '', endTime: '' })
+      addToast({
+        color: 'success',
+        title: 'Leave added successfully',
+        description: 'The leave has been added for the worker.',
+      })
+    },
+    onError: error => {
+      addToast({
+        color: 'danger',
+        title: 'Failed to add leave',
+        description: 'An error occurred while adding the leave.',
+      })
+      console.error('Error adding leave:', error)
+    },
+  })
+
   const [showAddModal, setShowAddModal] = useState(false)
   const [showLeaveModal, setShowLeaveModal] = useState(false)
   const [selectedWorker, setSelectedWorker] = useState<SalonWorker | null>(null)
-  const [newWorker, setNewWorker] = useState<{
-    salonId: string
-    name: string
-    services: { id: string; name: string }[]
-  }>({
+  const [newWorker, setNewWorker] = useState<CreateWorkerDto>({
     salonId: admin!.salonId,
     name: '',
     services: [],
   })
-  const [newLeave, setNewLeave] = useState({
+  const [leaveInputs, setLeaveInputs] = useState<LeaveInput[]>([])
+  const [newLeave, setNewLeave] = useState<LeaveInput>({
     date: '',
-    type: 'full' as 'full' | 'half',
-    reason: '',
+    startTime: '',
+    endTime: '',
   })
-
-  const handleAddWorker = () => {
-    if (!newWorker.name) return
-    addWorker(newWorker)
-    setNewWorker({ name: '', services: [], salonId: admin!.salonId })
-    setShowAddModal(false)
-  }
-
-  const addWorkerModalFooter = (
-    <>
-      <Button variant='flat' onPress={() => setShowAddModal(false)}>
-        Cancel
-      </Button>
-      <Button color='primary' onPress={handleAddWorker}>
-        Add
-      </Button>
-    </>
-  )
 
   const handleDeleteWorker = (id: string) => {
     deleteWorkerMutation.mutate(id)
@@ -127,17 +154,36 @@ export function WorkersPage() {
     <div className='space-y-6'>
       {/* Header */}
       <div className='flex justify-between items-start'>
-        <div>
-          <h2 className='text-3xl font-bold'>Workers Management</h2>
-          <p className='text-gray-500'>Manage your salon staff and their schedules</p>
-        </div>
-        <Button onPress={() => setShowAddModal(true)} color='primary'>
-          <FontAwesomeIcon icon={faPlus} className='mr-2' />
-          Add Worker
-        </Button>
+        {selectedTab === 'workers' ? (
+          <>
+            <div>
+              <h2 className='text-3xl font-bold'>Workers Management</h2>
+              <p className='text-gray-500'>Manage your salon staff and their schedules</p>
+            </div>
+            <Button onPress={() => setShowAddModal(true)} color='primary'>
+              <FontAwesomeIcon icon={faPlus} className='mr-2' />
+              Add Worker
+            </Button>
+          </>
+        ) : (
+          <>
+            <div>
+              <h2 className='text-3xl font-bold'>Leave Management</h2>
+              <p className='text-gray-500'>Manage your workers' leave requests</p>
+            </div>
+            <Button onPress={() => setShowLeaveModal(true)} color='primary'>
+              <FontAwesomeIcon icon={faPlus} className='mr-2' />
+              Add Leave
+            </Button>
+          </>
+        )}
       </div>
 
-      <Tabs aria-label='Workers Management Tabs'>
+      <Tabs
+        aria-label='Workers Management Tabs'
+        selectedKey={selectedTab}
+        onSelectionChange={key => setSelectedTab(key as 'workers' | 'leave')}
+      >
         <Tab
           key='workers'
           title={
@@ -264,51 +310,50 @@ export function WorkersPage() {
           )}
         </Tab>
       </Tabs>
-
       {/* Add Worker Modal */}
-      <Modal
+      <CommonModal
         isOpen={showAddModal}
         onOpenChange={setShowAddModal}
         title='Add Worker'
-        footer={addWorkerModalFooter}
+        footer={
+          <div className='flex justify-end gap-2'>
+            <Button variant='flat' onPress={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              color='primary'
+              isDisabled={!newWorker.name || newWorker.services.length === 0 || isCreating}
+              onPress={() => createWorker(newWorker)}
+            >
+              {isCreating ? 'Adding...' : 'Add Worker'}
+            </Button>
+          </div>
+        }
       >
         <div className='space-y-4'>
           <Input
             label='Name'
             value={newWorker.name}
             onChange={e => setNewWorker({ ...newWorker, name: e.target.value })}
+            placeholder='Enter worker name'
+            isRequired
           />
-          {/* <Input
-            label='Email'
-            type='email'
-            value={newWorker.email}
-            onChange={e => setNewWorker({ ...newWorker, email: e.target.value })}
-          />
-          <Input
-            label='Phone'
-            value={newWorker.phone}
-            onChange={e => setNewWorker({ ...newWorker, phone: e.target.value })}
-          />
-          <Input
-            label='Role'
-            value={newWorker.role}
-            onChange={e => setNewWorker({ ...newWorker, role: e.target.value })}
-          /> */}
+
           <div className='space-y-2'>
             <p className='text-sm font-medium'>Services</p>
             <div className='space-y-2'>
               {services?.map(service => (
                 <Checkbox
                   key={service.serviceId}
-                  isSelected={newWorker.services.some(s => s.id === service.serviceId)}
-                  onChange={() =>
+                  isSelected={newWorker.services.includes(service.name)}
+                  onChange={() => {
                     setNewWorker(prev => ({
                       ...prev,
-                      services: prev.services.some(s => s.id === service.serviceId)
-                        ? prev.services.filter(s => s.id !== service.serviceId)
-                        : [...prev.services, { id: service.serviceId, name: service.name }],
+                      services: prev.services.includes(service.name)
+                        ? prev.services.filter(s => s !== service.name)
+                        : [...prev.services, service.name],
                     }))
-                  }
+                  }}
                 >
                   {service.name}
                 </Checkbox>
@@ -316,46 +361,123 @@ export function WorkersPage() {
             </div>
           </div>
         </div>
-      </Modal>
+      </CommonModal>
+
       {/* Add Leave Modal */}
-      <Modal
+      <CommonModal
         isOpen={showLeaveModal}
-        onOpenChange={setShowLeaveModal}
+        onOpenChange={(isOpen: boolean) => {
+          setShowLeaveModal(isOpen)
+
+          if (!isOpen) {
+            // Reset state when modal closes
+            setSelectedWorker(null)
+            setLeaveInputs([])
+            setNewLeave({ date: '', startTime: '', endTime: '' })
+          }
+        }}
         title='Add Leave'
         footer={
-          <>
+          <div className='flex justify-end gap-2'>
             <Button variant='flat' onPress={() => setShowLeaveModal(false)}>
               Cancel
             </Button>
-            <Button color='primary'>Save</Button>
-          </>
+            <Button
+              color='primary'
+              isDisabled={!selectedWorker || leaveInputs.length === 0 || addingLeave}
+              onPress={() =>
+                addLeave({
+                  leaveInputs,
+                })
+              }
+            >
+              {addingLeave ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
         }
       >
         <div className='space-y-4'>
+          {/* Select Worker */}
+          <Select
+            label='Select Worker'
+            placeholder='Choose a worker'
+            selectedKeys={selectedWorker ? [selectedWorker.workerId] : []}
+            onSelectionChange={keys => {
+              const selectedId = Array.from(keys)[0] as string
+              const worker = workers.find(w => w.workerId === selectedId) || null
+              setSelectedWorker(worker)
+            }}
+          >
+            {workers.map(worker => (
+              <SelectItem key={worker.workerId}>{worker.name}</SelectItem>
+            ))}
+          </Select>
+
+          {/* Date & Time Inputs */}
           <Input
             type='date'
             label='Date'
             value={newLeave.date}
             onChange={e => setNewLeave({ ...newLeave, date: e.target.value })}
           />
-          <Select
-            label='Leave Type'
-            selectedKeys={[newLeave.type]}
-            onSelectionChange={keys => {
-              const value = Array.from(keys)[0] as 'full' | 'half'
-              setNewLeave({ ...newLeave, type: value })
+          <div className='grid grid-cols-2 gap-4'>
+            <Input
+              type='time'
+              label='Start Time'
+              value={newLeave.startTime}
+              onChange={e => setNewLeave({ ...newLeave, startTime: e.target.value + ':00' })}
+            />
+            <Input
+              type='time'
+              label='End Time'
+              value={newLeave.endTime}
+              onChange={e => setNewLeave({ ...newLeave, endTime: e.target.value + ':00' })}
+            />
+          </div>
+
+          {/* Add Leave Button */}
+          <Button
+            variant='flat'
+            color='primary'
+            className='w-full'
+            onPress={() => {
+              if (newLeave.date && newLeave.startTime && newLeave.endTime) {
+                setLeaveInputs([...leaveInputs, newLeave])
+                setNewLeave({ date: '', startTime: '', endTime: '' })
+              }
             }}
           >
-            <SelectItem key='full'>Full Day</SelectItem>
-            <SelectItem key='half'>Half Day</SelectItem>
-          </Select>
-          <Textarea
-            label='Reason'
-            value={newLeave.reason}
-            onChange={e => setNewLeave({ ...newLeave, reason: e.target.value })}
-          />
+            Add Leave Period
+          </Button>
+
+          {/* Show Added Leave Periods */}
+          {leaveInputs.length > 0 && (
+            <div className='mt-4'>
+              <p className='text-sm font-medium mb-2'>Added Leave Periods:</p>
+              <div className='space-y-2'>
+                {leaveInputs.map((leave, index) => (
+                  <div key={index} className='flex justify-between items-center p-2 border rounded'>
+                    <div>
+                      <p className='font-medium'>{leave.date}</p>
+                      <p className='text-sm text-gray-500'>
+                        {leave.startTime.slice(0, 5)} - {leave.endTime.slice(0, 5)}
+                      </p>
+                    </div>
+                    <Button
+                      size='sm'
+                      variant='flat'
+                      color='danger'
+                      onPress={() => setLeaveInputs(leaves => leaves.filter((_, i) => i !== index))}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </Modal>
+      </CommonModal>
     </div>
   )
 }

@@ -158,7 +158,7 @@ export function BookingsPage() {
     { key: 'Service', label: 'Service' },
     { key: 'Date & Time', label: 'Date & Time' },
     { key: 'Status', label: 'Status' },
-    // { key: 'Payment', label: 'Payment' },
+    { key: 'Worker', label: 'Worker' },
     { key: 'Amount', label: 'Amount' },
     { key: 'Actions', label: 'Actions' },
   ]
@@ -186,6 +186,7 @@ export function BookingsPage() {
       </div>
     ),
     Status: getStatusBadge(booking.status),
+    Worker: booking.workerName,
     Payment: getPaymentBadge(booking.paymentStatus),
     Amount: `${booking.amount}`,
     Actions: (
@@ -318,29 +319,6 @@ export function BookingsPage() {
             ]}
             onItemSelect={value => setPaymentFilter(value)}
           />
-          {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className='w-[150px]'>
-                  <SelectValue placeholder='Status' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='all'>All Status</SelectItem>
-                  <SelectItem value='pending'>Pending</SelectItem>
-                  <SelectItem value='confirmed'>Confirmed</SelectItem>
-                  <SelectItem value='cancelled'>Cancelled</SelectItem>
-                  <SelectItem value='completed'>Completed</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-                <SelectTrigger className='w-[150px]'>
-                  <SelectValue placeholder='Payment' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='all'>All Payments</SelectItem>
-                  <SelectItem value='paid'>Paid</SelectItem>
-                  <SelectItem value='unpaid'>Unpaid</SelectItem>
-                  <SelectItem value='refunded'>Refunded</SelectItem>
-                </SelectContent>
-              </Select> */}
         </div>
       </div>
       {/* </CardBody>
