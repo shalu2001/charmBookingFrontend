@@ -19,7 +19,7 @@ import {
 import axiosInstance from './axiosInstance'
 
 export async function getSalons(): Promise<Salon[]> {
-  const response = await axiosInstance.get('/getSalons')
+  const response = await axiosInstance.get('/salon/getSalons')
   return response.data
 }
 

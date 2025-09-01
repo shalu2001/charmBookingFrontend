@@ -38,11 +38,6 @@ const products = [
     rating: 4.8,
     image: '/sillicone hair treatment.jpeg',
   },
-  // { name: 'Moisturizing Lotion', description: 'Hydrates and softens skin', price: 19.99, rating: 4.6, image: 'lotion.jpg' },
-  // { name: 'Exfoliating Scrub', description: 'Removes dead skin cells', price: 14.99, rating: 4.4, image: 'scrub.jpg' },
-  // { name: 'Sunscreen SPF 50', description: 'Protects skin from UV rays', price: 17.99, rating: 4.7, image: 'sunscreen.jpg' },
-  // { name: 'Hair Mask', description: 'Deeply conditions and repairs hair', price: 22.99, rating: 4.5, image: 'hairmask.jpg' },
-  // Add more products here
 ]
 
 const OPTIONS: EmblaOptionsType = { loop: true, duration: 60 }

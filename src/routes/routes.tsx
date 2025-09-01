@@ -12,7 +12,7 @@ import { BookingsPage } from '../pages/salon/salonDashboard/manageBookings'
 import { AccountPage } from '../pages/salon/salonDashboard/manageSalonProfile'
 import LoginSalon from '../pages/salon/loginSalon'
 import AuthProvider from 'react-auth-kit'
-import { customerStore, salonStore } from '../AuthStore'
+import { customerStore, salonStore, SuperAdminStore } from '../AuthStore'
 import { BookTimeAndDate } from '../pages/booking/BookingForm'
 import { ManageCustomerProfile } from '../pages/customer/cutomerDashboard/manageCustomerProfile'
 import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/dashboardLayoutWrapper'
@@ -22,6 +22,8 @@ import Layout from '../layout/layout'
 import { CustomerBookingsPage } from '../pages/customer/cutomerDashboard/manageBookings'
 import SearchSalons from '../pages/salon/searchSalons'
 import { WorkersPage } from '../pages/salon/salonDashboard/manageSalonWorkers'
+import SuperAdminLogin from '../pages/superAdmin/superAdminLogin'
+import { SuperAdminDashboard } from '../pages/superAdmin/superAdminDashboard'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -38,6 +40,14 @@ function CustomerAuth() {
 function SalonAuth() {
   return (
     <AuthProvider store={salonStore}>
+      <Outlet />
+    </AuthProvider>
+  )
+}
+
+function SuperAdminAuth() {
+  return (
+    <AuthProvider store={SuperAdminStore}>
       <Outlet />
     </AuthProvider>
   )
@@ -74,6 +84,12 @@ export default function AppRoutes() {
             <Route path='account' element={<AccountPage />} />
             <Route path='workers' element={<WorkersPage />} />
           </Route>
+        </Route>
+
+        {/* Super Admin routes */}
+        <Route path='/super-admin' element={<SuperAdminAuth />}>
+          <Route path='login' element={<SuperAdminLogin />} />
+          <Route path='dashboard' element={<SuperAdminDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -8,6 +8,7 @@ export interface BaseSalon {
   description: string
   longitude: string
   latitude: string
+  verificationStatus?: 'PENDING' | 'VERIFIED' | 'FAILED'
 }
 
 export enum DayOfWeek {
