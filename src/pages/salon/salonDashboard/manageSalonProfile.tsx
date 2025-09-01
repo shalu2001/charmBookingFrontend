@@ -7,6 +7,7 @@ import {
   faClock,
   faGear,
   faCamera,
+  faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Input, Tabs, Tab, Avatar, Badge, Spinner, Textarea, Checkbox } from '@heroui/react'
@@ -22,6 +23,8 @@ import {
 } from '../../../actions/salonActions'
 import CustomUpload from '../../../components/ImageUpload'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import { SalonSubmitDetails } from './salonSubmitDetails'
+import { VerificationStatus } from '../../../types/superAdmin'
 
 export function AccountPage() {
   const [selected, setSelected] = useState('profile')
@@ -342,6 +345,30 @@ export function AccountPage() {
           <CustomCard title='Salon Gallery' icon={<FontAwesomeIcon icon={faImage} />}>
             <CustomUpload />
           </CustomCard>
+        </Tab>
+        <Tab
+          key='submit-details'
+          title={
+            <span
+              className={`flex items-center gap-2 ${
+                profile.verificationStatus === VerificationStatus.PENDING
+                  ? 'text-yellow-800 animate-blink'
+                  : profile.verificationStatus === VerificationStatus.VERIFIED
+                  ? ''
+                  : ''
+              }`}
+            >
+              <FontAwesomeIcon icon={faPaperPlane} /> Get Verified
+            </span>
+          }
+        >
+          {profile.verificationStatus === VerificationStatus.VERIFIED ? (
+            <div className='p-6 text-green-600 font-semibold text-center'>
+              You are already verified.
+            </div>
+          ) : (
+            <SalonSubmitDetails salonId={profile.id} />
+          )}
         </Tab>
       </Tabs>
     </div>

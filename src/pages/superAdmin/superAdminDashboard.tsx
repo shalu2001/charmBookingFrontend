@@ -3,51 +3,31 @@ import {
   faFilter,
   faCircleCheck,
   faClock,
-  faCircleXmark,
   faMagnifyingGlass,
-  faEye,
+  faChevronRight,
+  faX,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomCard } from '../../components/Cards/CustomCard'
 import { CustomTable } from '../../components/Table'
-import { addToast, Button, Chip, Input } from '@heroui/react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import CommonModal from '../../components/commonModal'
-import { getSalons } from '../../actions/salonActions'
+import { Badge, Button, Chip, Input } from '@heroui/react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { BaseSalon } from '../../types/salon'
-import { verifySalon } from '../../actions/superAdminActions'
+import { getAllSalons } from '../../actions/superAdminActions'
+import { useNavigate } from 'react-router-dom'
+import { VerificationStatus } from '../../types/superAdmin'
 
 export function SuperAdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedSalon, setSelectedSalon] = useState<BaseSalon | null>(null)
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   // Fetch salons
   const { data: salons = [], isPending } = useQuery<BaseSalon[]>({
     queryKey: ['salons'],
-    queryFn: getSalons,
-  })
-
-  // Verify salon mutation
-  const { mutate: verifySalonMutation, isPending: isVerifying } = useMutation({
-    mutationFn: (salonId: string) => verifySalon(salonId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['salons'] })
-      addToast({
-        title: 'Salon verified successfully',
-        description: 'The salon has been marked as verified.',
-        color: 'success',
-      })
-    },
-    onError: () => {
-      addToast({
-        title: 'Error verifying salon',
-        description: 'Something went wrong. Please try again.',
-        color: 'danger',
-      })
-    },
+    queryFn: getAllSalons,
   })
 
   if (isPending) {
@@ -68,16 +48,23 @@ export function SuperAdminDashboard() {
 
   const getStatusChip = (status: string) => {
     switch (status) {
-      case 'VERIFIED':
+      case VerificationStatus.VERIFIED:
         return (
           <Chip className='bg-success/10 text-success border-success/20'>
             <FontAwesomeIcon icon={faCircleCheck} className='w-3 h-3 mr-1' />
             Verified
           </Chip>
         )
-      case 'PENDING':
+      case VerificationStatus.FAILED:
         return (
-          <Chip className='bg-pending/10 text-pending border-pending/20'>
+          <Chip className='bg-danger/10 text-danger-700 border-danger/20'>
+            <FontAwesomeIcon icon={faX} className='w-3 h-3 mr-1' />
+            Failed
+          </Chip>
+        )
+      case VerificationStatus.PENDING:
+        return (
+          <Chip className='bg-warning/10 text-warning-700 border-warning/20'>
             <FontAwesomeIcon icon={faClock} className='w-3 h-3 mr-1' />
             Pending
           </Chip>
@@ -99,7 +86,7 @@ export function SuperAdminDashboard() {
     { key: 'Location', label: 'Location' },
     { key: 'Phone', label: 'Phone' },
     { key: 'Status', label: 'Status' },
-    { key: 'Actions', label: 'Actions' },
+    { key: 'Actions', label: '' },
   ]
 
   const tableData = filteredSalons.map((salon: BaseSalon) => ({
@@ -111,20 +98,17 @@ export function SuperAdminDashboard() {
     Status: getStatusChip(salon.verificationStatus ?? 'PENDING'),
     Actions: (
       <div className='flex gap-2'>
-        <Button variant='ghost' size='sm' onPress={() => setSelectedSalon(salon)}>
-          <FontAwesomeIcon icon={faEye} className='w-4 h-4' />
-        </Button>
-        {salon.verificationStatus === 'PENDING' && (
-          <Button
-            variant='ghost'
-            size='sm'
-            color='success'
-            isDisabled={isVerifying}
-            onPress={() => verifySalonMutation(salon.id)}
-          >
-            <FontAwesomeIcon icon={faCircleCheck} className='w-4 h-4' />
+        <Badge
+          color='success'
+          content=''
+          placement='top-right'
+          shape='circle'
+          isInvisible={salon.verificationStatus !== 'PENDING'}
+        >
+          <Button variant='ghost' size='sm' onPress={() => navigate(`salon/${salon.id}`)}>
+            <FontAwesomeIcon icon={faChevronRight} className='w-4 h-4' />
           </Button>
-        )}
+        </Badge>
       </div>
     ),
   }))
@@ -194,35 +178,6 @@ export function SuperAdminDashboard() {
       ) : (
         <CustomTable tableHeaders={tableHeaders} tableData={tableData} pagination />
       )}
-
-      {/* Salon Details Modal */}
-      <CommonModal
-        isOpen={!!selectedSalon}
-        onOpenChange={() => setSelectedSalon(null)}
-        title='Salon Details'
-        size='lg'
-      >
-        {selectedSalon && (
-          <div className='space-y-4'>
-            <p>
-              <span className='font-medium'>Name:</span> {selectedSalon.name}
-            </p>
-            <p>
-              <span className='font-medium'>Owner:</span> {selectedSalon.ownerName}
-            </p>
-            <p>
-              <span className='font-medium'>Location:</span> {selectedSalon.location}
-            </p>
-            <p>
-              <span className='font-medium'>Phone:</span> {selectedSalon.phone}
-            </p>
-            <p>
-              <span className='font-medium'>Status:</span>{' '}
-              {selectedSalon.verificationStatus ?? 'PENDING'}
-            </p>
-          </div>
-        )}
-      </CommonModal>
     </div>
   )
 }

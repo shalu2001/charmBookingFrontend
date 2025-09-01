@@ -23,6 +23,7 @@ interface TableProps {
   pageSize?: number
   onPageChange?: (page: number) => void
   'aria-label'?: string
+  onRowAction?: (key: React.Key) => void
 }
 
 export function CustomTable({
@@ -31,6 +32,7 @@ export function CustomTable({
   pagination,
   pageSize = 7,
   onPageChange,
+  onRowAction,
 }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const handlePageChange = (page: number) => {
@@ -51,6 +53,7 @@ export function CustomTable({
   return (
     <>
       <Table
+        onRowAction={onRowAction}
         bottomContent={
           pagination && (
             <div className='flex w-full justify-center'>

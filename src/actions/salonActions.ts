@@ -172,3 +172,12 @@ export async function addWorkerLeaves(
   )
   return response.data
 }
+
+export async function submitSalonDetails(formData: FormData): Promise<void> {
+  const response = await axiosInstance.post('/salon/submitSalonDetails', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
+}

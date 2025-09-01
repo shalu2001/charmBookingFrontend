@@ -50,9 +50,9 @@ export default function SuperAdminLogin() {
   }
 
   return (
-    <div className=' h-full p-5 flex items-center justify-center'>
-      <div className=' text-center mx-50 my-10 bg-white shadow-xl rounded-3xl py-8 px-5'>
-        <div className='text-center text-primary font-extrabold text-5xl mb-10'>
+    <div className='h-full p-5 flex items-center justify-center'>
+      <div className=' text-center mx-50 my-10 bg-white shadow-xl rounded-3xl p-10'>
+        <div className='text-center text-primary font-semibold text-5xl mb-10'>
           <h1>Super Admin Login</h1>
         </div>
 

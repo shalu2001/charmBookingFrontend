@@ -16,14 +16,13 @@ import { customerStore, salonStore, SuperAdminStore } from '../AuthStore'
 import { BookTimeAndDate } from '../pages/booking/BookingForm'
 import { ManageCustomerProfile } from '../pages/customer/cutomerDashboard/manageCustomerProfile'
 import DashboardLayoutWrapperCustomer from '../pages/customer/cutomerDashboard/dashboardLayoutWrapper'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 import Layout from '../layout/layout'
 import { CustomerBookingsPage } from '../pages/customer/cutomerDashboard/manageBookings'
 import SearchSalons from '../pages/salon/searchSalons'
 import { WorkersPage } from '../pages/salon/salonDashboard/manageSalonWorkers'
 import SuperAdminLogin from '../pages/superAdmin/superAdminLogin'
 import { SuperAdminDashboard } from '../pages/superAdmin/superAdminDashboard'
+import { SalonVerifyPage } from '../pages/superAdmin/salonVerifyPage'
 
 // Auth wrapper for customer routes
 function CustomerAuth() {
@@ -90,6 +89,7 @@ export default function AppRoutes() {
         <Route path='/super-admin' element={<SuperAdminAuth />}>
           <Route path='login' element={<SuperAdminLogin />} />
           <Route path='dashboard' element={<SuperAdminDashboard />} />
+          <Route path='dashboard/salon/:salonId' element={<SalonVerifyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
