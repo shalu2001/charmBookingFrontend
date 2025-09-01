@@ -35,3 +35,9 @@ export interface BookingDetails {
   serviceName: string
   salonName: string
 }
+
+export interface CreateReview {
+  rating: number
+  comment: string
+  salonId: string
+}

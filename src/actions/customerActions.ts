@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance'
-import { Customer, LoginResponse, UpdatePassword } from '../types/customer'
+import { CreateReview, Customer, LoginResponse, UpdatePassword } from '../types/customer'
 import { CustomerBooking } from '../types/booking'
 import { Salon } from '../types/salon'
 
@@ -46,4 +46,12 @@ export const cancelBookingById = async (bookingId: string): Promise<void> => {
 export const getSalonById = async (salonId: string): Promise<Salon> => {
   const response = await axiosInstance.get(`salon/getSalon/${salonId}`)
   return response.data
+}
+
+export const createReview = async (
+  bookingId: string,
+  userId: string,
+  reviewData: CreateReview,
+): Promise<void> => {
+  await axiosInstance.post(`user/${userId}/createReview/${bookingId}`, reviewData)
 }

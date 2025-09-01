@@ -1,14 +1,14 @@
-import * as React from 'react';
-import Rating from '@mui/material/Rating';
+import * as React from 'react'
+import Rating from '@mui/material/Rating'
 
 interface StarRatingProps {
-  name: string;
-  value: number | undefined;
-  onChange?: (event: React.ChangeEvent<unknown>, newValue: number | null) => void;
-  readOnly?: boolean;
-  disabled?: boolean;
-  controlled?: boolean;
-  size?: 'small' | 'medium' | 'large';
+  name: string
+  value: number | undefined
+  onChange?: (event: React.ChangeEvent<unknown>, newValue: number | null) => void
+  readOnly?: boolean
+  disabled?: boolean
+  controlled?: boolean
+  size?: 'small' | 'medium' | 'large'
 }
 
 const StarRating: React.FC<StarRatingProps> = ({
@@ -29,9 +29,9 @@ const StarRating: React.FC<StarRatingProps> = ({
       disabled={disabled}
       sx={{ color: '#AC958A' }}
       size={size}
-      precision={0.5}
+      precision={1}
     />
-  );
-};
+  )
+}
 
-export default StarRating;
+export default StarRating

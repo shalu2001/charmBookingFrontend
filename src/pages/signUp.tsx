@@ -27,7 +27,7 @@ export default function SignUp() {
         !formData.email ||
         !formData.password
       ) {
-        throw new Error('All fields are required - FE')
+        throw new Error('All fields are required')
       }
       if (formData.password !== confirmPassword) {
         throw new Error('Passwords do not match')

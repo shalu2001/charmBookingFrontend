@@ -120,14 +120,14 @@ export function BookingsPage() {
         )
       case 'CANCELLED':
         return (
-          <Chip className='bg-cancelled/10 text-cancelled border-cancelled/20'>
+          <Chip className='bg-danger-50 text-cancelled border-cancelled/20'>
             <FontAwesomeIcon icon={faCircleXmark} className='w-3 h-3 mr-1' />
             Cancelled
           </Chip>
         )
       case 'COMPLETED':
         return (
-          <Chip className='bg-accent/10 text-accent border-accent/20'>
+          <Chip className='bg-primary text-quaternary border-accent/20'>
             <FontAwesomeIcon icon={faCheckCircle} className='w-3 h-3 mr-1' />
             Completed
           </Chip>
@@ -201,10 +201,10 @@ export function BookingsPage() {
             </Button>
           }
           dropdownItems={[
-            ...(booking.status === 'COMPLETED'
+            ...(booking.status === 'CONFIRMED'
               ? [{ label: 'Booking Completed', value: 'Booking Completed' }]
               : []),
-            ...(booking.status !== 'CANCELLED'
+            ...(booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED'
               ? [{ label: 'Cancel Booking', value: 'Cancel Booking' }]
               : []),
           ]}
@@ -221,7 +221,7 @@ export function BookingsPage() {
   const stats = {
     total: bookings.length,
     confirmed: bookings.filter(b => b.status === 'CONFIRMED').length,
-    pending: bookings.filter(b => b.status === 'PENDING').length,
+    completed: bookings.filter(b => b.status === 'COMPLETED').length,
     cancelled: bookings.filter(b => b.status === 'CANCELLED').length,
     totalRevenue: bookings
       .filter(b => b.paymentStatus === 'PAID')
@@ -243,7 +243,7 @@ export function BookingsPage() {
         <CustomCard
           icon={<FontAwesomeIcon icon={faCalendar} className='w-6 h-6 text-primary' />}
           title='Total Bookings'
-          className='bg-primary/10 text-primary'
+          className='bg-foreground-50 text-primary'
         >
           {stats.total}
         </CustomCard>
@@ -256,15 +256,15 @@ export function BookingsPage() {
         </CustomCard>
         <CustomCard
           icon={<FontAwesomeIcon icon={faCircleExclamation} className='w-6 h-6 text-pending' />}
-          title='Pending'
-          className='bg-pending/10 text-pending'
+          title='Completed'
+          className='bg-primary text-quaternary'
         >
-          {stats.pending}
+          {stats.completed}
         </CustomCard>
         <CustomCard
           icon={<FontAwesomeIcon icon={faCircleXmark} className='w-6 h-6 text-cancelled' />}
           title='Cancelled'
-          className='bg-cancelled/10 text-cancelled'
+          className='bg-danger-50 text-cancelled'
         >
           {stats.cancelled}
         </CustomCard>

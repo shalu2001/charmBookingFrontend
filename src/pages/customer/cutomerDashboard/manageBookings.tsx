@@ -10,6 +10,7 @@ import {
   faCircleXmark,
   faCircleExclamation,
   faMagnifyingGlass,
+  faStar,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomCard } from '../../../components/Cards/CustomCard'
@@ -17,13 +18,13 @@ import { CustomTable } from '../../../components/Table'
 import { addToast, Badge, Button, Chip, Input } from '@heroui/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import { Customer } from '../../../types/customer'
+import { CreateReview, Customer } from '../../../types/customer'
 import CommonModal from '../../../components/commonModal'
 import BookingDetailsView from '../../../components/Booking/BookingDetailsView'
-import { getCustomerBookingsById } from '../../../actions/customerActions'
+import { createReview, getCustomerBookingsById } from '../../../actions/customerActions'
 import { CustomerBooking, BookingStatus } from '../../../types/booking'
 import { cancelConfirmedBookingCustomer } from '../../../actions/bookingActions'
-import { set } from 'date-fns'
+import StarRating from '../../../components/StarRating'
 
 export function CustomerBookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -32,6 +33,12 @@ export function CustomerBookingsPage() {
   const customer = useAuthUser<Customer>()
   const queryClient = useQueryClient()
   const [cancelConfirmation, setCancelConfirmation] = useState<string | null>(null)
+  const [reviewComment, setReviewComment] = useState('')
+  const [reviewRating, setReviewRating] = useState<number>(0)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [selectedBookingForReview, setSelectedBookingForReview] = useState<CustomerBooking | null>(
+    null,
+  )
 
   // Fetch customer bookings
   const { data: bookings, isPending } = useQuery<CustomerBooking[]>({
@@ -60,6 +67,33 @@ export function CustomerBookingsPage() {
         color: 'danger',
       })
       console.error('Error cancelling booking:', error)
+    },
+  })
+
+  //Add review to completed bookings
+  const { mutate: addReview, isPending: addingReview } = useMutation({
+    mutationFn: ({
+      bookingId,
+      userId,
+      data,
+    }: {
+      bookingId: string
+      userId: string
+      data: CreateReview
+    }) => createReview(bookingId, userId, data),
+    onSuccess: () => {
+      addToast({
+        title: 'Review added successfully',
+        description: 'Your review has been added.',
+        color: 'success',
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Error adding review',
+        description: 'Failed to add review. Please try again.',
+        color: 'danger',
+      })
     },
   })
 
@@ -163,6 +197,20 @@ export function CustomerBookingsPage() {
             }}
           >
             <FontAwesomeIcon icon={faCircleXmark} className='w-4 h-4' />
+          </Button>
+        )}
+        {booking.status === 'COMPLETED' && (
+          <Button
+            variant='ghost'
+            size='sm'
+            color='primary'
+            isDisabled={addingReview}
+            onPress={() => {
+              setSelectedBookingForReview(booking)
+              setReviewModalOpen(true)
+            }}
+          >
+            <FontAwesomeIcon icon={faStar} className='w-4 h-4' />
           </Button>
         )}
       </div>
@@ -290,6 +338,89 @@ export function CustomerBookingsPage() {
             Confirm
           </Button>
         </div>
+      </CommonModal>
+
+      {/* Add Review Modal */}
+      <CommonModal
+        isOpen={reviewModalOpen}
+        onOpenChange={open => {
+          if (!open) {
+            setReviewModalOpen(false)
+            setReviewComment('')
+            setReviewRating(0)
+            setSelectedBookingForReview(null)
+          }
+        }}
+        title='Add Review'
+        size='sm'
+      >
+        {selectedBookingForReview && (
+          <div className='space-y-6'>
+            <div className='bg-gray-50 p-3 rounded-lg'>
+              <p className='font-medium'>{selectedBookingForReview.salonName}</p>
+              <p className='text-sm text-gray-500'>{selectedBookingForReview.serviceName}</p>
+            </div>
+
+            <div className='space-y-4'>
+              <div>
+                <label className='block text-sm font-medium mb-2'>Rating</label>
+                <StarRating
+                  name='booking-rating'
+                  value={reviewRating}
+                  onChange={(_, value) => setReviewRating(value || 0)}
+                  size='large'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-medium mb-2'>Comment</label>
+                <Input
+                  placeholder='Share your experience...'
+                  value={reviewComment}
+                  onChange={e => setReviewComment(e.target.value)}
+                  className='w-full'
+                />
+              </div>
+            </div>
+
+            <div className='flex justify-end gap-2'>
+              <Button
+                variant='flat'
+                onPress={() => {
+                  setReviewModalOpen(false)
+                  setReviewComment('')
+                  setReviewRating(0)
+                  setSelectedBookingForReview(null)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                color='primary'
+                isDisabled={!reviewRating || !reviewComment.trim() || addingReview}
+                onPress={() => {
+                  if (selectedBookingForReview) {
+                    addReview({
+                      bookingId: selectedBookingForReview.id,
+                      userId: customer!.customerId,
+                      data: {
+                        rating: reviewRating,
+                        comment: reviewComment,
+                        salonId: selectedBookingForReview.salon_id,
+                      },
+                    })
+                    setReviewModalOpen(false)
+                    setReviewComment('')
+                    setReviewRating(0)
+                    setSelectedBookingForReview(null)
+                  }
+                }}
+              >
+                {addingReview ? 'Submitting...' : 'Submit Review'}
+              </Button>
+            </div>
+          </div>
+        )}
       </CommonModal>
     </div>
   )

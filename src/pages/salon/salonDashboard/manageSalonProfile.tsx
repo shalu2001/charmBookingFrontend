@@ -117,6 +117,10 @@ export function AccountPage() {
 
   return (
     <div className='space-y-6'>
+      <div>
+        <h2 className='text-3xl font-bold text-foreground'>Salon Profile Management</h2>
+        <p className='text-muted-foreground'>Manage your salon details</p>
+      </div>
       <Tabs selectedKey={selected} onSelectionChange={k => setSelected(String(k))}>
         <Tab
           key='profile'

@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Input } from '@heroui/react'
 import { Outlet } from 'react-router-dom'
 import { DashboardLayoutProps } from '../../../types/salon'
+import Header from '../../../components/Header'
 
 const sidebarItems = [
   // { id: 'overview', label: 'Overview', icon: faHome },
@@ -89,7 +90,7 @@ export default function DashboardLayout({ currentPage, onPageChange }: Dashboard
       {/* Main Content */}
       <div className='flex-1 flex flex-col'>
         {/* Header */}
-        <header className='bg-card border-b border-border px-6 py-4'>
+        {/* <header className='bg-card border-b border-border px-6 py-4'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-4'>
               <h1 className='text-2xl font-bold text-foreground capitalize font-instrumentSerif'>
@@ -99,29 +100,29 @@ export default function DashboardLayout({ currentPage, onPageChange }: Dashboard
 
             <div className='flex items-center gap-4'>
               {/* Search */}
-              <div className='relative'>
+        {/* <div className='relative'>
                 <FontAwesomeIcon
                   icon={faSearch}
                   className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground'
                 />
                 <Input placeholder='Search...' className='pl-10 w-64 bg-background' />
-              </div>
+              </div> */}
 
-              {/* Notifications */}
-              <Button variant='light' size='sm' className='relative'>
+        {/* Notifications */}
+        {/* <Button variant='light' size='sm' className='relative'>
                 <FontAwesomeIcon icon={faBell} className='w-5 h-5' />
                 <span className='absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full text-xs'>
                   3
                 </span>
-              </Button>
+              </Button> */}
 
-              {/* Profile */}
-              <div className='w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center'>
+        {/* Profile */}
+        {/* <div className='w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center'>
                 <FontAwesomeIcon icon={faUser} className='w-4 h-4 text-accent-foreground' />
               </div>
             </div>
-          </div>
-        </header>
+          </div> */}
+        {/* </header> */}
 
         {/* Page Content */}
         <main className='flex-1 p-6 overflow-auto'>{<Outlet />}</main>
