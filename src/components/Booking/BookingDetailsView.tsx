@@ -29,14 +29,14 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
   const customerBooking = booking as CustomerBooking
   const salonBooking = booking as Booking
 
-  // Add cancel booking mutation
-  const { mutate: cancelBooking, isPending: isCancelling } = useMutation<void, unknown, string>({
-    mutationFn: cancelBookingById,
-    onSuccess: () => {
-      // Invalidate and refetch bookings
-      queryClient.invalidateQueries({ queryKey: ['customerBookings'] })
-    },
-  })
+  // // Add cancel booking mutation
+  // const { mutate: cancelBooking, isPending: isCancelling } = useMutation<void, unknown, string>({
+  //   mutationFn: cancelBookingById,
+  //   onSuccess: () => {
+  //     // Invalidate and refetch bookings
+  //     queryClient.invalidateQueries({ queryKey: ['customerBookings'] })
+  //   },
+  // })
 
   const canCancel = () => {
     if (booking.status === BookingStatus.CANCELLED) return false
@@ -122,7 +122,7 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
                     : 'Cancellation period has expired'}
                 </p>
               </div>
-              <div className='pt-2'>
+              {/* <div className='pt-2'>
                 <Button
                   color='danger'
                   variant='flat'
@@ -137,7 +137,7 @@ const BookingDetailsView: React.FC<BookingDetailsViewProps> = ({
                 >
                   {isCancelling ? 'Cancelling...' : 'Cancel Booking'}
                 </Button>
-              </div>
+              </div> */}
             </>
           )}
         </div>

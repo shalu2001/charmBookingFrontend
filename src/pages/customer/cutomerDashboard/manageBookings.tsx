@@ -97,6 +97,18 @@ export function CustomerBookingsPage() {
     },
   })
 
+  const calculateCanCancel = (booking: CustomerBooking): boolean => {
+    if (!booking) return false
+    // Can't cancel if already cancelled or completed
+    if (booking.status === 'CANCELLED' || booking.status === 'COMPLETED') {
+      return false
+    }
+    const bookingDateTime = new Date(`${booking.date}T${booking.time}`)
+    const now = new Date()
+    const hoursDifference = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
+    return hoursDifference > 24
+  }
+
   if (!bookings || isPending) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -185,7 +197,7 @@ export function CustomerBookingsPage() {
         <Button variant='ghost' size='sm' onPress={() => setSelectedBooking(booking)}>
           <FontAwesomeIcon icon={faEye} className='w-4 h-4' />
         </Button>
-        {booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED' && (
+        {calculateCanCancel(booking) && (
           <Button
             variant='ghost'
             size='sm'
@@ -382,7 +394,6 @@ export function CustomerBookingsPage() {
                 />
               </div>
             </div>
-
             <div className='flex justify-end gap-2'>
               <Button
                 variant='flat'
