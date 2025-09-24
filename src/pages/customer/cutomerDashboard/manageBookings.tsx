@@ -25,6 +25,7 @@ import { createReview, getCustomerBookingsById } from '../../../actions/customer
 import { CustomerBooking, BookingStatus } from '../../../types/booking'
 import { cancelConfirmedBookingCustomer } from '../../../actions/bookingActions'
 import StarRating from '../../../components/StarRating'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export function CustomerBookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -39,12 +40,13 @@ export function CustomerBookingsPage() {
   const [selectedBookingForReview, setSelectedBookingForReview] = useState<CustomerBooking | null>(
     null,
   )
+  const authHeader = useAuthHeader()
 
   // Fetch customer bookings
   const { data: bookings, isPending } = useQuery<CustomerBooking[]>({
     queryKey: ['customerBookings', customer!.customerId],
-    enabled: !!customer!.customerId,
-    queryFn: () => getCustomerBookingsById(customer!.customerId),
+    enabled: !!customer!.customerId && !!authHeader,
+    queryFn: () => getCustomerBookingsById(customer!.customerId, authHeader!),
   })
 
   // Add cancel booking mutation
@@ -80,7 +82,7 @@ export function CustomerBookingsPage() {
       bookingId: string
       userId: string
       data: CreateReview
-    }) => createReview(bookingId, userId, data),
+    }) => createReview(bookingId, userId, data, authHeader!),
     onSuccess: () => {
       addToast({
         title: 'Review added successfully',

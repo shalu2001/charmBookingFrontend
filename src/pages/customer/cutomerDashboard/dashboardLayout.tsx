@@ -1,17 +1,14 @@
 import { useState } from 'react'
 import {
-  faMagic,
   faUser,
   faCalendarAlt,
-  faCreditCard,
   faBars,
   faTimes,
-  faSearch,
-  faBell,
+  faSignOut,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Input, Avatar } from '@heroui/react'
-import Header from '../../../components/Header'
+import useSignOut from 'react-auth-kit/hooks/useSignOut'
 
 interface DashboardLayoutProps {
   currentPage: string
@@ -26,6 +23,12 @@ const sidebarItems = [
 
 export function DashboardLayout({ currentPage, onPageChange, children }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const signOut = useSignOut()
+
+  const handleLogout = () => {
+    signOut()
+    window.location.href = '/login'
+  }
 
   return (
     <>
@@ -60,6 +63,15 @@ export function DashboardLayout({ currentPage, onPageChange, children }: Dashboa
           </nav>
 
           {/* Collapse Toggle */}
+          <Button
+            variant='flat'
+            size='md'
+            className='m-4 mt-auto'
+            startContent={<FontAwesomeIcon icon={faSignOut} className='w-4 h-4' />}
+            onPress={handleLogout}
+          >
+            Logout
+          </Button>
           <div className='p-4 border-t border-sidebar-border'>
             <Button
               variant='light'

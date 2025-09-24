@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import axios from 'axios'
-import { Button, Input, Spinner } from '@heroui/react'
+import { addToast, Button, Input, Spinner } from '@heroui/react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { loginCustomer } from '../actions/customerActions'
@@ -34,6 +34,11 @@ export default function Login() {
           email: data.email,
           token: '',
         },
+      })
+      addToast({
+        title: 'Login successful!',
+        description: `Welcome back, ${data.firstName}!`,
+        color: 'success',
       })
       // Handle navigation with return URL
       if (location.state?.returnUrl) {

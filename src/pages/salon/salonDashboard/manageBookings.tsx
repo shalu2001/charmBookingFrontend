@@ -29,6 +29,7 @@ import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { SalonAdmin } from '../../../types/salon'
 import CommonModal from '../../../components/commonModal'
 import BookingDetailsView from '../../../components/Booking/BookingDetailsView'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export function BookingsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -38,10 +39,12 @@ export function BookingsPage() {
   const admin = useAuthUser<SalonAdmin>()
   const queryClient = useQueryClient()
   const [cancelConfirmation, setCancelConfirmation] = useState<string | null>(null)
+  const authHeader = useAuthHeader()
 
   const { data: bookings, isPending: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ['bookings'],
-    queryFn: () => getBookings(admin!.salonId),
+    queryFn: () => getBookings(admin!.salonId, authHeader!),
+    enabled: !!admin?.salonId && !!authHeader,
   })
 
   const { mutate: cancelBooking, isPending: isCancelling } = useMutation({

@@ -10,11 +10,13 @@ import {
 import { SalonDetails, SalonDocuments, VerificationStatus } from '../../types/superAdmin'
 import { addToast, Button, Spinner } from '@heroui/react'
 import { getSalonById } from '../../actions/customerActions'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export function SalonVerifyPage() {
   const queryClient = useQueryClient()
   const params = useParams<{ salonId: string }>()
   const navigate = useNavigate()
+  const authHeader = useAuthHeader()
 
   useEffect(() => {
     if (!params.salonId) {
@@ -30,18 +32,18 @@ export function SalonVerifyPage() {
 
   const { data: salonDetails, isLoading: isLoadingDetails } = useQuery<SalonDetails>({
     queryKey: ['salon', 'details', params.salonId],
-    queryFn: () => getSalonDetails(params.salonId!),
+    queryFn: () => getSalonDetails(params.salonId!, authHeader!),
     enabled: !!params.salonId,
   })
 
   const { data: documents, isLoading: isLoadingDocuments } = useQuery<SalonDocuments[]>({
     queryKey: ['salon', params.salonId, 'documents'],
-    queryFn: () => getSalonDocuments(params.salonId!),
+    queryFn: () => getSalonDocuments(params.salonId!, authHeader!),
     enabled: !!params.salonId,
   })
 
   const { mutate: verifySalonMutation, isPending: isVerifying } = useMutation({
-    mutationFn: (salonId: string) => verifySalon(salonId),
+    mutationFn: (salonId: string) => verifySalon(salonId, authHeader!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salons'] })
       queryClient.invalidateQueries({ queryKey: ['salon', params.salonId] })
@@ -61,7 +63,7 @@ export function SalonVerifyPage() {
   })
 
   const { mutate: failVerify, isPending: isFailing } = useMutation({
-    mutationFn: (salonId: string) => failVerification(salonId),
+    mutationFn: (salonId: string) => failVerification(salonId, authHeader!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salons'] })
       queryClient.invalidateQueries({ queryKey: ['salon', params.salonId] })

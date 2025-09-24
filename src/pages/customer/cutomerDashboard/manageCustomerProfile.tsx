@@ -19,6 +19,7 @@ import {
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { Customer, LoginResponse, UpdatePassword } from '../../../types/customer'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export function ManageCustomerProfile() {
   const [selected, setSelected] = useState('profile')
@@ -37,18 +38,19 @@ export function ManageCustomerProfile() {
   const customer = useAuthUser<Customer>()
   const queryClient = useQueryClient()
   const signIn = useSignIn()
+  const authHeader = useAuthHeader()
 
   // Get customer profile data
   const { data: profile, isPending } = useQuery({
     queryKey: ['customerProfile', customer!.customerId],
     enabled: !!customer!.customerId,
-    queryFn: () => getCustomerProfile(customer!.customerId!),
+    queryFn: () => getCustomerProfile(customer!.customerId!, authHeader!),
   })
 
   // Update profile mutation
   const { mutate: updateProfile, isPending: isUpdating } = useMutation({
     mutationFn: (profileData: Partial<LoginResponse>) =>
-      updateCustomerByID(customer!.customerId!, profileData),
+      updateCustomerByID(customer!.customerId!, profileData, authHeader!),
     onSuccess: data => {
       console.log('Profile updated successfully:', data)
       // Add toast notification here
@@ -62,7 +64,7 @@ export function ManageCustomerProfile() {
   //update password
   const { mutate: updatePassword, isPending: isPasswordUpdating } = useMutation({
     mutationFn: (passwordData: UpdatePassword) =>
-      updateCustomerPassword(customer!.customerId!, passwordData),
+      updateCustomerPassword(customer!.customerId!, passwordData, authHeader!),
     onSuccess: data => {
       console.log('Password updated successfully:', data)
       // Add toast notification here
