@@ -1,22 +1,19 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import AuthProvider from "react-auth-kit";
-import store from "./AuthStore.tsx";
-import { NextUIProvider } from "@nextui-org/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { HeroUIProvider, ToastProvider } from '@heroui/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1 } } })
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider store={store}>
-        <NextUIProvider>
-          <App />
-        </NextUIProvider>
-      </AuthProvider>
+      <HeroUIProvider>
+        <ToastProvider placement='top-right' toastOffset={60} />
+        <App />
+      </HeroUIProvider>
     </QueryClientProvider>
-  </StrictMode>
-);
+  </StrictMode>,
+)
