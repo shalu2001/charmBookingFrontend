@@ -88,6 +88,30 @@ export function BookingsPage() {
     },
   })
 
+  const { mutate: confirmBooking } = useMutation({
+    mutationFn: (bookingId: string) => {
+      // You'll need to implement this function in your bookingActions
+      // For now, I'll use a placeholder that you can replace with your actual API call
+      return fetch(`/api/bookings/${bookingId}/confirm`, { method: 'PUT' })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+      addToast({
+        title: 'Booking confirmed successfully',
+        description: 'The booking has been confirmed.',
+        color: 'success',
+      })
+    },
+    onError: error => {
+      addToast({
+        title: 'Error confirming booking',
+        description: 'Failed to confirm booking',
+        color: 'danger',
+      })
+      console.error('Error confirming booking:', error)
+    },
+  })
+
   if (!bookings || bookingsLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -204,6 +228,9 @@ export function BookingsPage() {
             </Button>
           }
           dropdownItems={[
+            ...(booking.status === 'PENDING'
+              ? [{ label: 'Confirm Booking', value: 'Confirm Booking' }]
+              : []),
             ...(booking.status === 'CONFIRMED'
               ? [{ label: 'Booking Completed', value: 'Booking Completed' }]
               : []),
@@ -212,6 +239,7 @@ export function BookingsPage() {
               : []),
           ]}
           onItemSelect={item => {
+            if (item === 'Confirm Booking') confirmBooking(booking.bookingId)
             if (item === 'Booking Completed') updateBookingStatus(booking.bookingId)
             if (item === 'Cancel Booking') setCancelConfirmation(booking.bookingId)
           }}
@@ -223,6 +251,7 @@ export function BookingsPage() {
   // Statistics
   const stats = {
     total: bookings.length,
+    pending: bookings.filter(b => b.status === 'PENDING').length,
     confirmed: bookings.filter(b => b.status === 'CONFIRMED').length,
     completed: bookings.filter(b => b.status === 'COMPLETED').length,
     cancelled: bookings.filter(b => b.status === 'CANCELLED').length,
@@ -242,13 +271,20 @@ export function BookingsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4'>
         <CustomCard
           icon={<FontAwesomeIcon icon={faCalendar} className='w-6 h-6 text-primary' />}
           title='Total Bookings'
           className='bg-foreground-50 text-primary'
         >
           {stats.total}
+        </CustomCard>
+        <CustomCard
+          icon={<FontAwesomeIcon icon={faCircleExclamation} className='w-6 h-6 text-warning' />}
+          title='Pending'
+          className='bg-warning/10 text-warning'
+        >
+          {stats.pending}
         </CustomCard>
         <CustomCard
           icon={<FontAwesomeIcon icon={faCheckCircle} className='w-6 h-6 text-success' />}
@@ -301,6 +337,7 @@ export function BookingsPage() {
             }
             dropdownItems={[
               { label: 'All Status', value: 'all' },
+              { label: 'Pending', value: BookingStatus.PENDING },
               { label: 'Confirmed', value: BookingStatus.CONFIRMED },
               { label: 'Cancelled', value: BookingStatus.CANCELLED },
               { label: 'Completed', value: BookingStatus.COMPLETED },
@@ -352,6 +389,17 @@ export function BookingsPage() {
                 {getPaymentBadge(selectedBooking.paymentStatus)}
               </div>
               <div className='flex gap-2'>
+                {selectedBooking.status === 'PENDING' && (
+                  <Button
+                    color='success'
+                    onPress={() => {
+                      confirmBooking(selectedBooking.id)
+                      setSelectedBooking(null)
+                    }}
+                  >
+                    Confirm Booking
+                  </Button>
+                )}
                 {selectedBooking.status === 'CONFIRMED' && (
                   <Button
                     color='primary'

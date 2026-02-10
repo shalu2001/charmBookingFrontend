@@ -1,5 +1,9 @@
+import { useState, useEffect } from 'react'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import { AvailableWorkersResponse, SalonWorker } from '../../types/booking'
 import { formatTime } from '../../utils/helper'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { LoginPromptModal } from '../../components/loginPromptModalProps'
 
 export function WorkerStep({
   availableWorkers,
@@ -12,6 +16,24 @@ export function WorkerStep({
   selectedWorker: SalonWorker | null
   setSelectedWorker: (w: SalonWorker) => void
 }) {
+  const [searchParams] = useSearchParams()
+  const salonId = searchParams.get('salonId') || undefined
+  const serviceId = searchParams.get('serviceId') || undefined
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const isAuthenticated = useIsAuthenticated()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated) setShowLoginPrompt(true)
+    // eslint-disable-next-line
+  }, [])
+  const handleLoginPromptClose = () => {
+    setShowLoginPrompt(false)
+    navigate(-1)
+  }
+
+  const returnUrl = `/book/timeslot?salonId=${salonId}&serviceId=${serviceId}`
+
   return (
     <div className='flex flex-col w-1/2 gap-6'>
       <h1 className='text-2xl font-semibold mb-2'>Choose a Worker</h1>
@@ -52,6 +74,11 @@ export function WorkerStep({
           No workers available for this time slot.
         </div>
       )}
+      <LoginPromptModal
+        isOpen={showLoginPrompt}
+        onClose={handleLoginPromptClose}
+        returnUrl={returnUrl}
+      />
     </div>
   )
 }
