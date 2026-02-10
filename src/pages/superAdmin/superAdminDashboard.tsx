@@ -6,6 +6,7 @@ import {
   faMagnifyingGlass,
   faChevronRight,
   faX,
+  faSignOut,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomCard } from '../../components/Cards/CustomCard'
@@ -17,17 +18,26 @@ import { BaseSalon } from '../../types/salon'
 import { getAllSalons } from '../../actions/superAdminActions'
 import { useNavigate } from 'react-router-dom'
 import { VerificationStatus } from '../../types/superAdmin'
+import useSignOut from 'react-auth-kit/hooks/useSignOut'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export function SuperAdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [searchTerm, setSearchTerm] = useState('')
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const signOut = useSignOut()
+  const authHeader = useAuthHeader()
 
+  const handleLogout = () => {
+    signOut()
+    window.location.href = '/super-admin/login'
+  }
   // Fetch salons
   const { data: salons = [], isPending } = useQuery<BaseSalon[]>({
     queryKey: ['salons'],
-    queryFn: getAllSalons,
+    queryFn: () => getAllSalons(authHeader!),
+    enabled: !!authHeader,
   })
 
   if (isPending) {
@@ -116,9 +126,22 @@ export function SuperAdminDashboard() {
   return (
     <div className='space-y-6 m-10'>
       {/* Header */}
-      <div>
-        <h2 className='text-3xl font-bold text-foreground'>Super Admin Dashboard</h2>
-        <p className='text-muted-foreground'>Manage all salons</p>
+      <div className='flex justify-between'>
+        <div>
+          <h2 className='text-3xl font-bold text-foreground'>Super Admin Dashboard</h2>
+          <p className='text-muted-foreground'>Manage all salons</p>
+        </div>
+        <div>
+          <Button
+            variant='flat'
+            size='md'
+            className='m-4 mt-auto'
+            startContent={<FontAwesomeIcon icon={faSignOut} className='w-4 h-4' />}
+            onPress={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

@@ -1,23 +1,20 @@
 import { useState } from 'react'
 import {
-  faHome,
   faCut,
   faCalendarAlt,
   faUser,
   faBars,
   faTimes,
-  faSearch,
-  faBell,
   faUsers,
+  faSignOut,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Input } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { Outlet } from 'react-router-dom'
 import { DashboardLayoutProps } from '../../../types/salon'
-import Header from '../../../components/Header'
+import useSignOut from 'react-auth-kit/hooks/useSignOut'
 
 const sidebarItems = [
-  // { id: 'overview', label: 'Overview', icon: faHome },
   { id: 'services', label: 'Services', icon: faCut },
   { id: 'bookings', label: 'Bookings', icon: faCalendarAlt },
   { id: 'account', label: 'Account', icon: faUser },
@@ -26,6 +23,12 @@ const sidebarItems = [
 
 export default function DashboardLayout({ currentPage, onPageChange }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const signOut = useSignOut()
+
+  const handleLogout = () => {
+    signOut()
+    window.location.href = '/business/login-salon' // Redirect to login page after logout
+  }
 
   return (
     <div className='min-h-screen bg-background flex'>
@@ -72,6 +75,15 @@ export default function DashboardLayout({ currentPage, onPageChange }: Dashboard
           </div>
         </nav>
         {/* Collapse Toggle */}
+        <Button
+          variant='flat'
+          size='md'
+          className='m-4 mt-auto'
+          startContent={<FontAwesomeIcon icon={faSignOut} className='w-4 h-4' />}
+          onPress={handleLogout}
+        >
+          Logout
+        </Button>
         <div className='p-4 border-t border-sidebar-border'>
           <Button
             variant='light'

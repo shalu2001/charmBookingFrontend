@@ -46,6 +46,7 @@ import {
   WorkerLeaveRequest,
 } from '../../../types/salon'
 import CommonModal from '../../../components/commonModal'
+import { WorkerScheduler } from '../../../components/WorkerScheduler'
 
 export function WorkersPage() {
   const admin = useAuthUser<SalonAdmin>()
@@ -184,6 +185,17 @@ export function WorkersPage() {
         selectedKey={selectedTab}
         onSelectionChange={key => setSelectedTab(key as 'workers' | 'leave')}
       >
+        <Tab
+          key='schedules'
+          title={
+            <span>
+              <FontAwesomeIcon icon={faUsers} className='mr-2' />
+              Worker Schedules
+            </span>
+          }
+        >
+          <WorkerScheduler />
+        </Tab>
         <Tab
           key='workers'
           title={

@@ -173,6 +173,11 @@ export async function addWorkerLeaves(
   return response.data
 }
 
+export async function getSalonSchedule(salonId: string): Promise<any> {
+  const response = await axiosInstance.get(`/salonWorker/${salonId}/getWorkerSchedules`)
+  return response.data
+}
+
 export async function submitSalonDetails(formData: FormData): Promise<void> {
   const response = await axiosInstance.post('/salon/submitSalonDetails', formData, {
     headers: {

@@ -1,8 +1,12 @@
 import { AvailableWorkersResponse, Booking, TimeSlotResponse } from '../types/booking'
 import axiosInstance from './axiosInstance'
 
-export async function getBookings(salonId: string): Promise<Booking[]> {
-  const response = await axiosInstance.get(`/booking/${salonId}/bookings`)
+export async function getBookings(salonId: string, authHeader: string): Promise<Booking[]> {
+  const response = await axiosInstance.get(`/booking/${salonId}/bookings`, {
+    headers: {
+      Authorization: authHeader,
+    },
+  })
   return response.data
 }
 

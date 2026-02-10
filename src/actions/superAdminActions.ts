@@ -10,27 +10,58 @@ export async function loginSuperAdmin(username: string, password: string) {
   return response.data
 }
 
-export async function getAllSalons(): Promise<Salon[]> {
-  const response = await axiosInstance.get('/super-admin/all-salons')
+export async function getAllSalons(authHeader: string): Promise<Salon[]> {
+  const response = await axiosInstance.get('/super-admin/all-salons', {
+    headers: {
+      Authorization: authHeader,
+    },
+  })
   return response.data
 }
 
-export async function getSalonDocuments(salonId: string): Promise<SalonDocuments[]> {
-  const response = await axiosInstance.get(`/super-admin/salon-documents/${salonId}`)
+export async function getSalonDocuments(
+  salonId: string,
+  authHeader: string,
+): Promise<SalonDocuments[]> {
+  const response = await axiosInstance.get(`/super-admin/salon-documents/${salonId}`, {
+    headers: {
+      Authorization: authHeader,
+    },
+  })
   return response.data
 }
 
-export async function getSalonDetails(salonId: string): Promise<SalonDetails> {
-  const response = await axiosInstance.get(`/super-admin/salon-details/${salonId}`)
+export async function getSalonDetails(salonId: string, authHeader: string): Promise<SalonDetails> {
+  const response = await axiosInstance.get(`/super-admin/salon-details/${salonId}`, {
+    headers: {
+      Authorization: authHeader,
+    },
+  })
   return response.data
 }
 
-export async function verifySalon(salonId: string): Promise<void> {
-  const response = await axiosInstance.post('/super-admin/verify-salon', { salonId })
+export async function verifySalon(salonId: string, authHeader: string): Promise<void> {
+  const response = await axiosInstance.post(
+    '/super-admin/verify-salon',
+    { salonId },
+    {
+      headers: {
+        Authorization: authHeader,
+      },
+    },
+  )
   return response.data
 }
 
-export async function failVerification(salonId: string): Promise<void> {
-  const response = await axiosInstance.post('/super-admin/fail-verification', { salonId })
+export async function failVerification(salonId: string, authHeader: string): Promise<void> {
+  const response = await axiosInstance.post(
+    '/super-admin/fail-verification',
+    { salonId },
+    {
+      headers: {
+        Authorization: authHeader,
+      },
+    },
+  )
   return response.data
 }

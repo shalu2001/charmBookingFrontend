@@ -24,8 +24,6 @@ export const BookTimeAndDate = () => {
   const timeParam = searchParams.get('time') || undefined
   const [selectedStep, setSelectedStep] = useState(0)
   const [selectedWorker, setSelectedWorker] = useState<SalonWorker | null>(null)
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
-  const isAuthenticated = useIsAuthenticated()
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -37,17 +35,6 @@ export const BookTimeAndDate = () => {
       document.body.removeChild(script)
     }
   }, [])
-
-  useEffect(() => {
-    if (!isAuthenticated) setShowLoginPrompt(true)
-    // eslint-disable-next-line
-  }, [])
-  const handleLoginPromptClose = () => {
-    setShowLoginPrompt(false)
-    navigate(-1)
-  }
-
-  const returnUrl = `/book/timeslot?salonId=${salonId}&serviceId=${serviceId}`
 
   // Redirect to home if salonId or serviceId is missing
   useEffect(() => {
@@ -182,11 +169,6 @@ export const BookTimeAndDate = () => {
         selectedStep={selectedStep}
         setSelectedStep={setSelectedStep}
         handleContinue={handleContinue}
-      />
-      <LoginPromptModal
-        isOpen={showLoginPrompt}
-        onClose={handleLoginPromptClose}
-        returnUrl={returnUrl}
       />
     </div>
   )
